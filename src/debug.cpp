@@ -18,4 +18,9 @@ DebugStream& operator<<(DebugStream& ds, const char* s){
     return ds;
 }
 
+DebugStream& operator<<(DebugStream& ds, s32 s){
+    std::cout << s;
+    return ds;
+}
+
 }

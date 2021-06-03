@@ -1,0 +1,3 @@
+main : pub fn s32 {
+    0;
+}

@@ -15,6 +15,7 @@ set(SOURCES
     ../src/debug.cpp
     ../src/parse/lexer.cpp
     ../src/parse/parser.cpp
+    ../src/parse/ast.cpp
     ../src/gen/generator.cpp
 )
 

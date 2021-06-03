@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <types.h>
 
 namespace Frost{
 
@@ -21,6 +22,7 @@ public:
     
     friend DebugStream& operator<<(DebugStream& ds, Debugable& debugable);
     friend DebugStream& operator<<(DebugStream& ds, const char* s);
+    friend DebugStream& operator<<(DebugStream& ds, s32 s);
 
 };
 
@@ -30,5 +32,6 @@ inline DebugStream& dbg(){
 }
 extern DebugStream& operator<<(DebugStream& ds, Debugable& debugable);
 extern DebugStream& operator<<(DebugStream& ds, const char* s);
+extern DebugStream& operator<<(DebugStream& ds, s32 s);
 
 }
