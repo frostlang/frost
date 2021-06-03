@@ -8,11 +8,16 @@ namespace Frost::Parse{
 
 AST* Parser::parse(){
 
+    dbg() << "parsing...\n";
+
     std::vector<AST*> statements;
-    
+
     while(!m_tokens->end()){
+
         auto t = m_tokens->next();
+
         dbg() << "token="<<t<<"\n";
+        
         switch(t.type()){
 
             case TokenType::IDENTIFIER: {

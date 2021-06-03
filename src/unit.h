@@ -12,13 +12,22 @@ namespace Frost{
     class Unit : public Debugable {
     public:
 
-        static Unit create(std::string file, std::string_view source){
+        static Unit create(){
             Unit u;
-            u.m_file = file;
-            u.m_source = source;
             return u;
         }
         
+        Unit& from_file(std::string file){
+            // load up file
+            return *this;
+        }
+
+        Unit& from_source(std::string file, std::string_view source){
+            m_file = file;
+            m_source = source;
+            return *this;
+        }
+
         std::string debug() override {
             return file();
         }

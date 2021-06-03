@@ -8,12 +8,12 @@
 int main(){
     using namespace Frost;
 
-    Unit u = Unit::create("test.frost", "main : pub fn (){}");
+    Unit u = Unit::create().from_source("test.frost", "{");
 
     dbg() << u << "\n";
 
 
-    Parse::Lexer l = Parse::Lexer::create(u);
+    Parse::Lexer l = Parse::Lexer::create(&u);
     Parse::TokenStream& tokens = l.lex();
 
     Parse::Parser p = Parse::Parser::create(&u, &tokens);

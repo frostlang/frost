@@ -42,6 +42,16 @@ enum class TokenType : u8 {
     STAR,
     DIV,
     MODULO,
+    REMAINDER,
+
+    INCREMENT,
+    DECREMENT,
+
+    LAND, // logial and
+    LOR,
+
+    ARROW,
+    AMPERSAND
 
 
 };
@@ -110,6 +120,9 @@ void push(Token t){
     m_tokens.push_back(t);
 }
 
+u32 size(){
+    return m_tokens.size();
+}
 u1 end() const {
     return m_index>=m_tokens.size();
 }
@@ -123,17 +136,14 @@ void reset() {
 }
 
 Token& prev() {
-    ASSERT(m_index>0);
     return m_tokens[m_index-1];
 }
 
 Token& next() {
-    ASSERT(m_index<=m_tokens.size()-1);
     return m_tokens[m_index++];
 }
 
 Token& peek() {
-    ASSERT(m_index>=0 && m_index<=m_tokens.size()-1);
     return m_tokens[m_index];
 }
 

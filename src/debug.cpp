@@ -23,4 +23,14 @@ DebugStream& operator<<(DebugStream& ds, s32 s){
     return ds;
 }
 
+DebugStream& operator<<(DebugStream& ds, char s){
+    std::cout << s;
+    return ds;
+}
+
+DebugStream& operator<<(DebugStream& ds, u1 s){
+    std::cout << s;
+    return ds;
+}
+
 }
