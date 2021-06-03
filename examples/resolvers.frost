@@ -1,0 +1,44 @@
+
+
+//
+// resolvers can be used as macros to edit source code
+//
+// the below resolver joins to identifiers together and results in
+// xy : U8 = 123;
+//
+
+join : Resolver fn(ast : AST){
+    return ast.next() + ast.next();
+}
+
+@join(x, y) : U8 = 123;
+
+
+
+
+
+//
+// this resolver implements the debugable interface for a type
+// note resolvers are actually functions but we don't need the brackets
+// (just like regular functions)
+//
+
+debugable : Resolver fn (ast : AST){
+    ...
+}
+
+@debugable
+Data : type {
+    First : String;
+    Second : String;
+}
+
+//
+// we can of course nest resolvers
+//
+
+@serialisable
+@debugable
+Data : type {
+    ...
+}

@@ -10,9 +10,40 @@ namespace Frost::Parse{
 
 enum class TokenType : u8 {
     UNKNOWN,
+    UNDERSCORE,
     IDENTIFIER,
+
     LCURLY,
-    RCURLY
+    RCURLY,
+    LPAREN,
+    RPAREN,
+    LBRACKET,
+    RBRACKET,
+
+    QUOTE,
+    APOSTROPHE,
+    NUMBER,
+    TRUE,
+    FALSE,
+
+    U8,
+    S8,
+    U16,
+    S16,
+    U32,
+    S32,
+    F32,
+    U64,
+    S64,
+    F64,
+
+    PLUS,
+    MINUS,
+    STAR,
+    DIV,
+    MODULO,
+
+
 };
 
 

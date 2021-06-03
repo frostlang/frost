@@ -1,0 +1,16 @@
+
+
+
+Person : type {
+    name : String;
+    age : U8;
+}
+
+
+import("io");
+
+
+//
+// [ name : String, age : U8 ]
+//
+io.println(Person.members);

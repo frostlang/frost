@@ -1,0 +1,5 @@
+import("io");
+
+main : pub fn {
+    io.println("hello, world!");
+}
