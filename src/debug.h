@@ -19,6 +19,7 @@ public:
         return {};
     }
     
+    friend DebugStream& operator<<(DebugStream& ds, Debugable& debugable);
     friend DebugStream& operator<<(DebugStream& ds, const char* s);
 
 };
@@ -27,7 +28,7 @@ extern DebugStream default_dbg_stream;
 inline DebugStream& dbg(){
     return default_dbg_stream;
 }
-
+extern DebugStream& operator<<(DebugStream& ds, Debugable& debugable);
 extern DebugStream& operator<<(DebugStream& ds, const char* s);
 
 }

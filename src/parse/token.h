@@ -15,7 +15,7 @@ class Token : public Frost::Debugable{
 
 public:
 
-    std::string debug(){
+    std::string debug() override {
         return "Token!";
     }
 
