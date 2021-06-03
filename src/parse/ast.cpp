@@ -9,10 +9,14 @@ namespace Frost::Parse{
     }                                           
 
 DEF_AST_VISIT(ProgramAST)
+DEF_AST_VISIT(BlockAST)
 
 
 
 AST* CleanupVisitor::visit(ProgramAST* program_ast){
+
+    for(auto& ast : program_ast->statements())
+        ast->visit(*this);
 
     dbg() << "delete ProgramAST\n";
 
@@ -21,5 +25,16 @@ AST* CleanupVisitor::visit(ProgramAST* program_ast){
 
 }
 
+AST* CleanupVisitor::visit(BlockAST* block_ast){
+
+    for(auto& ast : block_ast->statements())
+        ast->visit(*this);
+
+    dbg() << "delete BlockAST\n";
+
+    delete block_ast;
+    return 0;
+
+}
 
 }

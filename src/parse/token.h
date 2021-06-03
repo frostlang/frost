@@ -9,7 +9,10 @@
 namespace Frost::Parse{
 
 enum class TokenType : u8 {
-    UNKNOWN
+    UNKNOWN,
+    IDENTIFIER,
+    LCURLY,
+    RCURLY
 };
 
 
@@ -33,17 +36,32 @@ class Token : public Frost::Debugable{
 
 public:
 
+    static Token create(){
+        return {};
+    }
+
+    static Token create(TokenType type){
+        Token t;
+        t.m_type = type;
+        return t;
+    }
+
     std::string debug() override {
         return "Token!";
     }
 
-    std::string_view& value(){
+    const std::string_view& value() const {
         return m_value;
+    }
+
+    const TokenType& type(){
+        return m_type;
     }
 
 private:
 
     std::string_view m_value;
+    TokenType m_type;
 
 };
 
@@ -57,24 +75,33 @@ static TokenStream create(){
     return t;
 }
 
-std::vector<Token>& tokens(){
+void push(Token t){
+    m_tokens.push_back(t);
+}
+
+u1 end() const {
+    return m_index>=m_tokens.size();
+}
+
+std::vector<Token>& tokens() {
     return m_tokens;
 }
 
-void reset(){
+void reset() {
     m_index = 0;
 }
 
-Token& prev(){
+Token& prev() {
     ASSERT(m_index>0);
     return m_tokens[m_index-1];
 }
-Token& next(){
+
+Token& next() {
     ASSERT(m_index<=m_tokens.size()-1);
     return m_tokens[m_index++];
 }
 
-Token& peek(){
+Token& peek() {
     ASSERT(m_index>=0 && m_index<=m_tokens.size()-1);
     return m_tokens[m_index];
 }

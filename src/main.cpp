@@ -16,7 +16,7 @@ int main(){
     Parse::Lexer l = Parse::Lexer::create(u);
     Parse::TokenStream& tokens = l.lex();
 
-    Parse::Parser p = Parse::Parser::create(u, tokens);
+    Parse::Parser p = Parse::Parser::create(&u, &tokens);
     Parse::AST* ast = p.parse();
 
     Parse::CleanupVisitor cleanup;

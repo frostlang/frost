@@ -8,18 +8,20 @@ namespace Frost::Parse{
 
 class Parser{
 public:
-    Parser(Unit& u, TokenStream& t) : m_unit(u), m_tokens(t){}
-    static Parser create(Unit& u, TokenStream& t){
-        Parser p(u, t);
+    static Parser create(Unit* u, TokenStream* t){
+        Parser p;
+        p.m_unit = u;
+        p.m_tokens = t;
         return p;
     }
 
     AST* parse();
-
+    AST* identifier();
+    AST* block();
 private:
 
-    const Unit& m_unit;
-    const TokenStream& m_tokens;
+    Unit* m_unit;
+    TokenStream* m_tokens;
 };
 
 }
