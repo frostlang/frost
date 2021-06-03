@@ -8,8 +8,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../build)
 
+include_directories(../src)
+
 set(SOURCES
     ../src/main.cpp
+    ../src/debug.cpp
+    ../src/parse/lexer.cpp
+    ../src/parse/parser.cpp
+    ../src/gen/generator.cpp
 )
 
 add_executable(Frost ${SOURCES})

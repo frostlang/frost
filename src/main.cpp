@@ -1,6 +1,9 @@
-#include <iostream>
+#include <debug.h>
 
 int main(){
-    std::cout << "hello world!\n";
+    using namespace Frost;
+
+    dbg() << "hello world!";
+
     return 0;
 }
