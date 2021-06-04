@@ -22,6 +22,7 @@ public:
     
     friend DebugStream& operator<<(DebugStream& ds, Debugable& debugable);
     friend DebugStream& operator<<(DebugStream& ds, const char* s);
+    friend DebugStream& operator<<(DebugStream& ds, std::string s);
     friend DebugStream& operator<<(DebugStream& ds, s32 s);
     friend DebugStream& operator<<(DebugStream& ds, char s);
     friend DebugStream& operator<<(DebugStream& ds, u1 s);
@@ -34,6 +35,7 @@ inline DebugStream& dbg(){
 }
 extern DebugStream& operator<<(DebugStream& ds, Debugable& debugable);
 extern DebugStream& operator<<(DebugStream& ds, const char* s);
+extern DebugStream& operator<<(DebugStream& ds, std::string s);
 extern DebugStream& operator<<(DebugStream& ds, s32 s);
 extern DebugStream& operator<<(DebugStream& ds, char s);
 extern DebugStream& operator<<(DebugStream& ds, u1 s);

@@ -3,6 +3,13 @@
 
 namespace Frost::Parse{
 
+u1 is_num(char c){
+    return c>='0' && c <= '9';
+}
+
+u1 is_alpha(char c){
+    return c>='a' && c <= 'z';
+}
 
 TokenStream& Lexer::lex(){
 
@@ -49,10 +56,35 @@ TokenStream& Lexer::lex(){
                     default: m_tokens.push(Token::create(TokenType::AMPERSAND)); break;
                 }
             }
+            default: {
+                if(is_num(c)){
+                    number();
+                    break;
+                }else if(is_alpha(c)){
+                    alpha();
+                    break;
+                }
+            }
         }
 
     }
     return m_tokens;
+}
+
+void Lexer::number(){
+    char c = next();
+    while(is_num(c)){
+        next();
+    }
+    m_tokens.push(Token::create(TokenType::UNKNOWN));
+}
+
+void Lexer::alpha(){
+    char c = next();
+    while(is_alpha(c)){
+        next();
+    }
+    m_tokens.push(Token::create(TokenType::UNKNOWN));
 }
 
 char Lexer::current(){

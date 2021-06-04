@@ -1,0 +1,23 @@
+
+
+//
+// The Any type can take any value.
+// under the hood, Any is a void pointer, by copying values to an Any type,
+// we are actually just taking a reference to the value
+//
+test : fn (value : Any) {
+    import("io").println("value type = {}", value.type);
+}
+
+main : pub fn{
+
+    //
+    // prints
+    // "value type = s32"
+    // "value type = []char"
+    // "value type = tuple (f32, anonymous struct, []char)
+    //
+    test(123);
+    test("hello world!");
+    test((6.78, {}, "abc"));
+}

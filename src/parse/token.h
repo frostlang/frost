@@ -13,6 +13,8 @@ enum class TokenType : u8 {
     UNDERSCORE,
     IDENTIFIER,
 
+    COLON,
+
     LCURLY,
     RCURLY,
     LPAREN,
@@ -51,8 +53,20 @@ enum class TokenType : u8 {
     LOR,
 
     ARROW,
-    AMPERSAND
+    AMPERSAND,
 
+    BREAK,
+    CONTINUE,
+    RETURN,
+    IF,
+    ELSE,
+    FOR,
+    MATCH,
+
+    PUB,
+    PRIV,
+    MUT,
+    CONST
 
 };
 
@@ -137,6 +151,14 @@ void reset() {
 
 Token& prev() {
     return m_tokens[m_index-1];
+}
+
+u1 expect(TokenType type){
+    return peek().type()==type;
+}
+
+Token& consume(TokenType type){
+    return next();
 }
 
 Token& next() {

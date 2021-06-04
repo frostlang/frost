@@ -1,10 +1,28 @@
 #pragma once
 
+#include <exception>
 #include <unit.h>
 #include <parse/token.h>
 #include <parse/ast.h>
 
 namespace Frost::Parse{
+
+enum class ParseError : u8{
+    PANIC,    // we must immediately stop
+    WARNING,  // we notify that there is a problem and attempt to fix it
+    SILENT,   // we don't notify and silently fix it
+};
+
+/*
+we need to decide on the approach to 
+*/
+class ParseException : public std::exception {
+public:
+    ParseException(std::string msg){
+
+    }
+private:
+};
 
 class Parser{
 public:
@@ -15,9 +33,20 @@ public:
         return p;
     }
 
+    void panic(std::string msg){
+        dbg() << "PANIC=" << msg << "\n";
+        throw ParseException(msg);
+    }
+
     AST* parse();
+    AST* statement();
+    AST* ifstmt();
+    AST* forloop();
+    AST* define();
+    AST* expression();
     AST* identifier();
     AST* block();
+    AST* group();
 private:
 
     Unit* m_unit;

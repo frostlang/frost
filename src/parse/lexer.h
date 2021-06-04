@@ -22,6 +22,8 @@ public:
     char current();
     char peek(u32 ahead = 0);
     char next();
+    void number();
+    void alpha();
 
 
 private:

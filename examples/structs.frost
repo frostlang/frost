@@ -1,0 +1,29 @@
+
+
+Person : pub type struct {
+    name : pub String = "default name";
+    age : pub U8;
+}
+
+
+// constructor
+Person.construct : pub fn (){}
+
+
+//
+// structs have special resolvers
+// @bind will bind new and delete operations to this member, meaning when we call
+// new A, A.b will be allocated aswel. Same goes for delete A
+//
+
+@pack
+A : type struct {
+
+    B : type struct {
+        data : U32;
+    }
+
+    // member variable b
+    @bind b : B; 
+
+}

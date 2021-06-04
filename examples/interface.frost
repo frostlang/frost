@@ -1,0 +1,23 @@
+
+
+speaker : type interface {
+
+    speak : pub fn;
+
+}
+
+
+person : type struct {
+
+}
+
+person.speak : pub fn {
+    import("io").println("hello!");
+}
+
+
+
+main : pub fn {
+    s : speaker = Person;
+    s.speak();
+}

@@ -5,13 +5,13 @@
 #include <asserts.h>
 #include <unit.h>
 
+#include <type.h>
 int main(){
     using namespace Frost;
 
     Unit u = Unit::create().from_source("test.frost", "{");
 
     dbg() << u << "\n";
-
 
     Parse::Lexer l = Parse::Lexer::create(&u);
     Parse::TokenStream& tokens = l.lex();
@@ -21,7 +21,6 @@ int main(){
 
     Parse::CleanupVisitor cleanup;
     ast->visit(cleanup);
-
 
     return 0;
 }
