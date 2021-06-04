@@ -21,9 +21,10 @@ public:
     TokenStream& lex();
     char current();
     char peek(u32 ahead = 0);
-    char next();
+    char next(u32 ahead = 1);
     void number();
     void alpha();
+    u1 match(const char* keyword);
 
 
 private:

@@ -7,7 +7,6 @@ namespace Frost::Parse{
 
 
 AST* Parser::parse(){
-
     try {
         dbg() << "parsing...\n";
 
@@ -53,6 +52,24 @@ AST* Parser::parse(){
 
     return new ErrorAST(ErrorAST::create());
     
+}
+
+Type Parser::parse_type(){
+
+    auto t = Type::create(TypeType::U0);
+
+
+    switch(m_tokens->peek().type()){
+        case TokenType::ARROW: {
+
+            t.set_type(TypeType::POINTER);
+
+            // now parse the inner type
+            break;
+        }
+    }
+
+    return t;
 }
 
 AST* Parser::statement(){
@@ -169,5 +186,20 @@ AST* Parser::group(){
 
 }
 
+//
+// (){}
+//
+AST* Parser::fn(){
+
+    return 0;
+
+}
+
+AST* Parser::literal(){
+
+
+
+    return 0;
+}
 
 }

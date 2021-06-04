@@ -3,6 +3,7 @@
 #include <exception>
 #include <unit.h>
 #include <parse/token.h>
+#include <type.h>
 #include <parse/ast.h>
 
 namespace Frost::Parse{
@@ -38,6 +39,7 @@ public:
         throw ParseException(msg);
     }
 
+    Type parse_type();
     AST* parse();
     AST* statement();
     AST* ifstmt();
@@ -47,6 +49,8 @@ public:
     AST* identifier();
     AST* block();
     AST* group();
+    AST* fn();
+    AST* literal();
 private:
 
     Unit* m_unit;

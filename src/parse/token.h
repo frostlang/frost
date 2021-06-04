@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string_view>
+#include <sstream>
 #include <vector>
 #include <types.h>
 #include <debug.h>
@@ -14,6 +15,7 @@ enum class TokenType : u8 {
     IDENTIFIER,
 
     COLON,
+    SEMICOLON,
 
     LCURLY,
     RCURLY,
@@ -28,6 +30,8 @@ enum class TokenType : u8 {
     TRUE,
     FALSE,
 
+    ANY,
+    U0,
     U8,
     S8,
     U16,
@@ -38,6 +42,7 @@ enum class TokenType : u8 {
     U64,
     S64,
     F64,
+    FN,
 
     PLUS,
     MINUS,
@@ -62,6 +67,9 @@ enum class TokenType : u8 {
     ELSE,
     FOR,
     MATCH,
+
+    STRUCT,
+    INTERFACE,
 
     PUB,
     PRIV,
@@ -102,7 +110,9 @@ public:
     }
 
     std::string debug() override {
-        return "Token!";
+        std::stringstream ss;
+        ss << "Token type="<<(s32)m_type<<"\n";
+        return ss.str();
     }
 
     const std::string_view& value() const {

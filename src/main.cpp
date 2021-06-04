@@ -9,7 +9,7 @@
 int main(){
     using namespace Frost;
 
-    Unit u = Unit::create().from_source("test.frost", "{");
+    Unit u = Unit::create().from_source("test.frost", "struct");
 
     dbg() << u << "\n";
 

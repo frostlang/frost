@@ -22,7 +22,8 @@ enum class TypeType{
     STRUCT,
     INTERFACE,
     TUPLE,
-    SLICE
+    SLICE,
+    FN
 };
 
 enum class AccessType{
