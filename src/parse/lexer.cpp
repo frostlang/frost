@@ -197,7 +197,6 @@ void Lexer::alpha(){
         }
     }
 
-
     u32 start = m_index;
     u32 offset = 1;
     char c = next();

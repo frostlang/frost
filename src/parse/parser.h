@@ -46,11 +46,26 @@ public:
     AST* forloop();
     AST* define();
     AST* expression();
-    AST* identifier();
+
+    AST* lor();
+    AST* land();
+    AST* bor();
+    AST* band();
+    AST* eq();
+    AST* cmp();
+    AST* shift();
+    AST* pm(); // + -
+    AST* mdmr(); // * / % /%
+    AST* un();
+    AST* cast();
+
     AST* block();
     AST* group();
     AST* fn();
-    AST* literal();
+    AST* single();
+    AST* identifier();
+    AST* num();
+    AST* string();
 private:
 
     Unit* m_unit;

@@ -15,6 +15,7 @@ DEF_AST_VISIT(ForAST)
 DEF_AST_VISIT(BlockAST)
 DEF_AST_VISIT(BreakAST)
 DEF_AST_VISIT(ContinueAST)
+DEF_AST_VISIT(LiteralAST)
 
 
 
@@ -87,4 +88,12 @@ AST* CleanupVisitor::visit(ContinueAST* continue_ast){
 
 }
 
+AST* CleanupVisitor::visit(LiteralAST* literal_ast){
+
+    dbg() << "delete LiteralAST\n";
+
+    delete literal_ast;
+    return 0;
+
+}
 }

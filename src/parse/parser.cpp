@@ -147,9 +147,25 @@ AST* Parser::expression(){
     return 0;
 }
 
-AST* Parser::identifier(){
-    return 0;
+
+AST* Parser::lor(){
+    auto higher_precedence = land();
+    if(m_tokens->expect(TokenType::LOR)){
+
+    }
+    return higher_precedence;
 }
+AST* Parser::land(){return 0;}
+AST* Parser::bor(){return 0;}
+AST* Parser::band(){return 0;}
+AST* Parser::eq(){return 0;}
+AST* Parser::cmp(){return 0;}
+AST* Parser::shift(){return 0;}
+AST* Parser::pm(){return 0;}
+AST* Parser::mdmr(){return 0;}
+AST* Parser::un(){return 0;}
+AST* Parser::cast(){return 0;}
+
 
 AST* Parser::block(){
 
@@ -195,11 +211,48 @@ AST* Parser::fn(){
 
 }
 
-AST* Parser::literal(){
+AST* Parser::single(){
 
-
-
+    switch(m_tokens->peek().type()){
+        case TokenType::IDENTIFIER: return identifier();
+        case TokenType::NUMBER: return num();
+        case TokenType::QUOTE: return string();
+    }
     return 0;
+}
+
+AST* Parser::identifier(){
+    
+    // parse an identifier (variable)
+    if(!m_tokens->expect(TokenType::IDENTIFIER)){}
+    auto& token = m_tokens->next();
+
+    return new LiteralAST(LiteralAST::create(token));
+}
+
+AST* Parser::string(){
+    // parse an identifier (variable)
+    if(!m_tokens->expect(TokenType::QUOTE)){}
+    auto& opening_string = m_tokens->next();
+
+    // expect an identifier
+    if(!m_tokens->expect(TokenType::IDENTIFIER)){}
+    auto& token = m_tokens->next();
+
+    // ensure we have the closing string (")
+    if(m_tokens->expect(opening_string.type())){}
+    m_tokens->next();
+
+    return new LiteralAST(LiteralAST::create(token));
+}
+
+AST* Parser::num(){
+
+    // parse a number literal
+    if(!m_tokens->expect(TokenType::NUMBER)){}
+    auto& token = m_tokens->next();
+
+    return new LiteralAST(LiteralAST::create(token));
 }
 
 }

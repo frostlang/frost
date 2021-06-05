@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <parse/token.h>
 
 namespace Frost::Parse{
 
@@ -115,19 +116,35 @@ public:
 private:
 };
 
+class LiteralAST : public AST {
+public:
+
+    
+    LiteralAST(Token& token) : m_token(token){}
+
+    static LiteralAST create(Token& token){
+        LiteralAST l(token);
+        return l;
+    }
+    DEF_VISIT_INHERIT_AST
+private:
+    const Token& m_token;
+};
+
 
 
 #define DEF_VISITOR_VIRTUAL_VISIT_AST(param) virtual AST* visit(param) = 0;
 
 class ASTVisitor{
 public:
-    DEF_VISITOR_VIRTUAL_VISIT_AST(ErrorAST* error_ast)
-    DEF_VISITOR_VIRTUAL_VISIT_AST(ProgramAST* program_ast)
-    DEF_VISITOR_VIRTUAL_VISIT_AST(IfAST* if_ast)
-    DEF_VISITOR_VIRTUAL_VISIT_AST(ForAST* for_ast)
-    DEF_VISITOR_VIRTUAL_VISIT_AST(BlockAST* block_ast)
-    DEF_VISITOR_VIRTUAL_VISIT_AST(BreakAST* break_ast)
-    DEF_VISITOR_VIRTUAL_VISIT_AST(ContinueAST* continue_ast)
+    DEF_VISITOR_VIRTUAL_VISIT_AST(ErrorAST*)
+    DEF_VISITOR_VIRTUAL_VISIT_AST(ProgramAST*)
+    DEF_VISITOR_VIRTUAL_VISIT_AST(IfAST*)
+    DEF_VISITOR_VIRTUAL_VISIT_AST(ForAST*)
+    DEF_VISITOR_VIRTUAL_VISIT_AST(BlockAST*)
+    DEF_VISITOR_VIRTUAL_VISIT_AST(BreakAST*)
+    DEF_VISITOR_VIRTUAL_VISIT_AST(ContinueAST*)
+    DEF_VISITOR_VIRTUAL_VISIT_AST(LiteralAST*)
 private:
 };
 
@@ -135,13 +152,14 @@ private:
 
 class CleanupVisitor : public ASTVisitor {
 public:
-    DEF_VISITOR_OVERRIDE_VISIT_AST(ErrorAST* error_ast)
-    DEF_VISITOR_OVERRIDE_VISIT_AST(ProgramAST* program_ast)
-    DEF_VISITOR_OVERRIDE_VISIT_AST(IfAST* if_ast)
-    DEF_VISITOR_OVERRIDE_VISIT_AST(ForAST* for_ast)
-    DEF_VISITOR_OVERRIDE_VISIT_AST(BlockAST* block_ast)
-    DEF_VISITOR_OVERRIDE_VISIT_AST(BreakAST* break_ast)
-    DEF_VISITOR_OVERRIDE_VISIT_AST(ContinueAST* continue_ast)
+    DEF_VISITOR_OVERRIDE_VISIT_AST(ErrorAST*)
+    DEF_VISITOR_OVERRIDE_VISIT_AST(ProgramAST*)
+    DEF_VISITOR_OVERRIDE_VISIT_AST(IfAST*)
+    DEF_VISITOR_OVERRIDE_VISIT_AST(ForAST*)
+    DEF_VISITOR_OVERRIDE_VISIT_AST(BlockAST*)
+    DEF_VISITOR_OVERRIDE_VISIT_AST(BreakAST*)
+    DEF_VISITOR_OVERRIDE_VISIT_AST(ContinueAST*)
+    DEF_VISITOR_OVERRIDE_VISIT_AST(LiteralAST*)
 private:
 };
 }
