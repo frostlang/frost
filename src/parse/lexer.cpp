@@ -13,10 +13,13 @@ u1 is_alpha(char c){
 }
 
 void Lexer::skip_whitespace(){
-    // TODO broken :(
-    char c = peek();
-    while(c==' '||c=='\t'||c=='\n'||c=='\r'){
-        c=next();
+    char c;
+    while(true){
+        c = peek();
+        if(c==' '||c=='\t'||c=='\n'||c=='\r')
+            next();
+        else
+            return;
     }
 }
 
@@ -75,11 +78,9 @@ TokenStream& Lexer::lex(){
             }
             default: {
                 if(is_num(c)){
-                    dbg() << "is_num!\n";
                     number();
                     break;
                 }else if(is_alpha(c)){
-                    dbg() << "is_alpha!\n";
                     alpha();
                     break;
                 }
@@ -143,6 +144,8 @@ void Lexer::alpha(){
                 m_tokens.push(Token::create(TokenType::F32)); next(strlen("f64")); return;
             }else if(match("for")) {
                 m_tokens.push(Token::create(TokenType::FOR)); next(strlen("for")); return;
+            }else if(match("false")) {
+                m_tokens.push(Token::create(TokenType::FALSE)); next(strlen("false")); return;
             }
             break;
         }
@@ -171,6 +174,12 @@ void Lexer::alpha(){
                 m_tokens.push(Token::create(TokenType::S16)); next(strlen("s16")); return;
             }else if(match("s32")){
                 m_tokens.push(Token::create(TokenType::S32)); next(strlen("s32")); return;
+            }
+            break;
+        }
+        case 't':{
+            if(match("true")){
+                m_tokens.push(Token::create(TokenType::TRUE)); next(strlen("true")); return;
             }
             break;
         }

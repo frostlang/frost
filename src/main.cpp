@@ -9,7 +9,7 @@
 int main(){
     using namespace Frost;
 
-    Unit u = Unit::create().from_source("test.frost", "123");
+    Unit u = Unit::create().from_source("test.frost", "false true");
 
     dbg() << u << "\n";
 
