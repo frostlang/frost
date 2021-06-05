@@ -93,7 +93,7 @@ TokenStream& Lexer::lex(){
 
 void Lexer::number(){
     u32 start = m_index;
-    u32 offset = start+1;
+    u32 offset = 1;
     char c = next();
     while(is_num(peek())){
         next();
@@ -199,7 +199,7 @@ void Lexer::alpha(){
 
 
     u32 start = m_index;
-    u32 offset = start+1;
+    u32 offset = 1;
     char c = next();
     while(is_alpha(peek())){
         next();
