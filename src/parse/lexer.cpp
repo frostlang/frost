@@ -12,15 +12,22 @@ u1 is_alpha(char c){
     return c>='a' && c <= 'z';
 }
 
+void Lexer::skip_whitespace(){
+    // TODO broken :(
+    char c = peek();
+    while(c==' '||c=='\t'||c=='\n'||c=='\r'){
+        c=next();
+    }
+}
+
 TokenStream& Lexer::lex(){
 
     dbg() << "lexing...\n";
 
     while(peek()!='\0'){
 
+        skip_whitespace();
         char c = peek();
-        
-        dbg() << "next char = " << c << "\n";
 
         switch(c){
             case '{': m_tokens.push(Token::create(TokenType::LCURLY)); next(); break;
@@ -68,9 +75,11 @@ TokenStream& Lexer::lex(){
             }
             default: {
                 if(is_num(c)){
+                    dbg() << "is_num!\n";
                     number();
                     break;
                 }else if(is_alpha(c)){
+                    dbg() << "is_alpha!\n";
                     alpha();
                     break;
                 }
@@ -82,11 +91,15 @@ TokenStream& Lexer::lex(){
 }
 
 void Lexer::number(){
+    u32 start = m_index;
+    u32 offset = start+1;
     char c = next();
-    while(is_num(c)){
+    while(is_num(peek())){
         next();
+        offset++;
     }
-    m_tokens.push(Token::create(TokenType::UNKNOWN));
+    auto identifier_value = std::string_view(m_unit->source()).substr(start, offset);
+    m_tokens.push(Token::create(TokenType::NUMBER, identifier_value));
 }
 
 u1 Lexer::match(const char* keyword){
@@ -138,6 +151,12 @@ void Lexer::alpha(){
                 m_tokens.push(Token::create(TokenType::INTERFACE)); next(strlen("interface")); return;
             }
         }
+        case 'm':{
+            if(match("match")){
+                m_tokens.push(Token::create(TokenType::MATCH)); next(strlen("match")); return;
+            }
+            break;
+        }
         case 'o':{
             if(match("or")){
                 m_tokens.push(Token::create(TokenType::LOR)); next(strlen("or")); return;
@@ -170,12 +189,15 @@ void Lexer::alpha(){
     }
 
 
-
+    u32 start = m_index;
+    u32 offset = start+1;
     char c = next();
-    while(is_alpha(c)){
+    while(is_alpha(peek())){
         next();
+        offset++;
     }
-    m_tokens.push(Token::create(TokenType::UNKNOWN));
+    auto identifier_value = std::string_view(m_unit->source()).substr(start, offset);
+    m_tokens.push(Token::create(TokenType::IDENTIFIER, identifier_value));
 }
 
 char Lexer::current(){

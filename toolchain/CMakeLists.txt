@@ -13,6 +13,7 @@ include_directories(../src)
 set(SOURCES
     ../src/main.cpp
     ../src/debug.cpp
+    ../src/parse/token.cpp
     ../src/parse/lexer.cpp
     ../src/parse/parser.cpp
     ../src/parse/ast.cpp

@@ -19,6 +19,7 @@ public:
     }
 
     TokenStream& lex();
+    void skip_whitespace();
     char current();
     char peek(u32 ahead = 0);
     char next(u32 ahead = 1);

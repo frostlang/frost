@@ -9,12 +9,14 @@
 int main(){
     using namespace Frost;
 
-    Unit u = Unit::create().from_source("test.frost", "struct");
+    Unit u = Unit::create().from_source("test.frost", "123");
 
     dbg() << u << "\n";
 
     Parse::Lexer l = Parse::Lexer::create(&u);
     Parse::TokenStream& tokens = l.lex();
+
+    dbg() << tokens << "\n";
 
     Parse::Parser p = Parse::Parser::create(&u, &tokens);
     Parse::AST* ast = p.parse();

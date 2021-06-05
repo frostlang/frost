@@ -78,6 +78,7 @@ enum class TokenType : u8 {
 
 };
 
+extern const char* token_debug[];
 
 
 class Position : public Frost::Debugable{
@@ -109,9 +110,19 @@ public:
         return t;
     }
 
+    static Token create(TokenType type, std::string_view value){
+        Token t;
+        t.m_type = type;
+        t.m_value = value;
+        return t;
+    }
+
     std::string debug() override {
         std::stringstream ss;
-        ss << "Token type="<<(s32)m_type<<"\n";
+        ss << "Token type="<<token_debug[(u8)m_type];
+        if(m_type==TokenType::IDENTIFIER || m_type==TokenType::NUMBER)
+            ss << " value=" << m_value;
+        ss <<"\n";
         return ss.str();
     }
 
@@ -119,7 +130,7 @@ public:
         return m_value;
     }
 
-    const TokenType& type(){
+    const TokenType& type() const{
         return m_type;
     }
 
@@ -130,7 +141,7 @@ private:
 
 };
 
-class TokenStream {
+class TokenStream : public Debugable{
 
 public:
 
@@ -138,6 +149,13 @@ static TokenStream create(){
     TokenStream t;
     t.m_index=0;
     return t;
+}
+
+std::string debug(){
+    std::stringstream ss;
+    for(auto& t : m_tokens)
+        ss << t.debug() << "\n";
+    return ss.str();
 }
 
 void push(Token t){
