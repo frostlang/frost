@@ -39,6 +39,7 @@ TokenStream& Lexer::lex(){
             case ')': m_tokens.push(Token::create(TokenType::RPAREN)); next(); break;
             case ']': m_tokens.push(Token::create(TokenType::LBRACKET)); next(); break;
             case '[': m_tokens.push(Token::create(TokenType::RBRACKET)); next(); break;
+            case '|': m_tokens.push(Token::create(TokenType::BOR)); next(); break;
             case '"': m_tokens.push(Token::create(TokenType::QUOTE)); next(); break;
             case '\'': m_tokens.push(Token::create(TokenType::APOSTROPHE)); next(); break;
             case '^': m_tokens.push(Token::create(TokenType::ARROW)); next(); break;
@@ -69,7 +70,7 @@ TokenStream& Lexer::lex(){
                 break;
             }
             case '&': {
-                switch(peek()){
+                switch(peek(1)){
                     case '&': m_tokens.push(Token::create(TokenType::LAND)); next(); break;
                     default: m_tokens.push(Token::create(TokenType::AMPERSAND)); break;
                 }
@@ -95,7 +96,7 @@ void Lexer::number(){
     u32 start = m_index;
     u32 offset = 1;
     char c = next();
-    while(is_num(peek())){
+    while(is_num(peek()) || peek()=='.'){
         next();
         offset++;
     }

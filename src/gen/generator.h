@@ -9,4 +9,12 @@ public:
 
 };
 
+
+class ASTGenerator : public Generator{
+public:
+private:
+};
+
+class FIRGenerator : public Generator {};
+
 }

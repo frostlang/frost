@@ -49,6 +49,8 @@ const char* token_debug[]={
 
     "LAND", // logial and
     "LOR",
+    "BOR",
+    "BAND",
 
     "ARROW",
     "AMPERSAND",

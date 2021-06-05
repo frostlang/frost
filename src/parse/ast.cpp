@@ -17,6 +17,8 @@ DEF_AST_VISIT(BreakAST)
 DEF_AST_VISIT(ContinueAST)
 DEF_AST_VISIT(LOrAST)
 DEF_AST_VISIT(LAndAST)
+DEF_AST_VISIT(BOrAST)
+DEF_AST_VISIT(BAndAST)
 DEF_AST_VISIT(VariableAST)
 DEF_AST_VISIT(LiteralAST)
 
@@ -108,6 +110,26 @@ AST* CleanupVisitor::visit(LAndAST* land_ast){
     land_ast->rhs()->visit(*this);
     dbg() << "delete LAndAST\n";
     delete land_ast;
+    return 0;
+
+}
+
+AST* CleanupVisitor::visit(BOrAST* bor_ast){
+
+    bor_ast->lhs()->visit(*this);
+    bor_ast->rhs()->visit(*this);
+    dbg() << "delete BOrAST\n";
+    delete bor_ast;
+    return 0;
+
+}
+
+AST* CleanupVisitor::visit(BAndAST* band_ast){
+
+    band_ast->lhs()->visit(*this);
+    band_ast->rhs()->visit(*this);
+    dbg() << "delete BAndAST\n";
+    delete band_ast;
     return 0;
 
 }

@@ -13,29 +13,7 @@ AST* Parser::parse(){
         std::vector<AST*> statements;
 
         while(!m_tokens->end()){
-
-            auto t = m_tokens->peek();
-
-            dbg() << "token="<<t<<"\n";
-            
-            switch(t.type()){
-
-                case TokenType::LCURLY: {
-                    statements.push_back(block());
-                    break;
-                }
-
-                case TokenType::UNKNOWN: {
-                    dbg() << "unknown token type whils't parsing!\n";
-                    break;
-                }
-
-                default: {
-                    statements.push_back(statement());
-                    break;
-                }
-            }
-
+            statements.push_back(statement());
             break;
         }
         
@@ -78,9 +56,18 @@ AST* Parser::statement(){
         case TokenType::RETURN:{
             break;
         }
+        case TokenType::LCURLY: {
+            return block();
+            break;
+        }
+
+        case TokenType::UNKNOWN: {
+            dbg() << "unknown token type whils't parsing!\n";
+            break;
+        }
         default: return expression();
     }
-    return 0;
+    return new ErrorAST(ErrorAST::create());
 }
 AST* Parser::ifstmt(){
 
@@ -167,11 +154,30 @@ AST* Parser::land(){
     return higher_precedence;
 }
 AST* Parser::bor(){
-    return single();
-    return 0;
+    auto higher_precedence = band();
+    if(m_tokens->expect(TokenType::BOR)){
+        m_tokens->next();
+        dbg() << "BOR!\n";
+        auto rhs = bor();
+        return new BOrAST(BOrAST::create(higher_precedence, rhs));
+
     }
-AST* Parser::band(){return 0;}
-AST* Parser::eq(){return 0;}
+    return higher_precedence;
+}
+AST* Parser::band(){
+    auto higher_precedence = eq();
+    if(m_tokens->expect(TokenType::AMPERSAND)){
+        m_tokens->next();
+        dbg() << "BAND!\n";
+        auto rhs = band();
+        return new BAndAST(BAndAST::create(higher_precedence, rhs));
+
+    }
+    return higher_precedence;
+}
+AST* Parser::eq(){
+    return single();
+    return 0;}
 AST* Parser::cmp(){return 0;}
 AST* Parser::shift(){return 0;}
 AST* Parser::pm(){return 0;}

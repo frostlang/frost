@@ -4,12 +4,13 @@
 #include <parse/parser.h>
 #include <asserts.h>
 #include <unit.h>
-
 #include <type.h>
+#include <gen/x86astgen.h>
+
 int main(){
     using namespace Frost;
 
-    Unit u = Unit::create().from_source("test.frost", "1 and 2");
+    Unit u = Unit::create().from_source("test.frost", "1.001 & 2");
 
     dbg() << u << "\n";
 
@@ -20,6 +21,10 @@ int main(){
 
     Parse::Parser p = Parse::Parser::create(&u, &tokens);
     Parse::AST* ast = p.parse();
+
+
+    Gen::X86ASTGenerator generator = Gen::X86ASTGenerator::create(ast);
+
 
     Parse::CleanupVisitor cleanup;
     ast->visit(cleanup);

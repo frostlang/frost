@@ -56,6 +56,8 @@ enum class TokenType : u8 {
 
     LAND, // logial and
     LOR,
+    BOR,
+    BAND,
 
     ARROW,
     AMPERSAND,

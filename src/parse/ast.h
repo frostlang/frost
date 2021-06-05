@@ -17,6 +17,8 @@ class BreakAST;
 class ContinueAST;
 class LOrAST;
 class LAndAST;
+class BOrAST;
+class BAndAST;
 class VariableAST;
 class LiteralAST;
 
@@ -174,6 +176,48 @@ private:
     AST* m_rhs;
 };
 
+class BOrAST : public AST{
+public:
+    static BOrAST create(AST* lhs, AST* rhs){
+        BOrAST l;
+        l.m_lhs=lhs;
+        l.m_rhs=rhs;
+        return l;
+    }
+    DEF_VISIT_INHERIT_AST
+
+    AST* lhs(){
+        return m_lhs;
+    }
+    AST* rhs(){
+        return m_rhs;
+    }
+private:
+    AST* m_lhs;
+    AST* m_rhs;
+};
+
+class BAndAST : public AST{
+public:
+    static BAndAST create(AST* lhs, AST* rhs){
+        BAndAST l;
+        l.m_lhs=lhs;
+        l.m_rhs=rhs;
+        return l;
+    }
+    DEF_VISIT_INHERIT_AST
+
+    AST* lhs(){
+        return m_lhs;
+    }
+    AST* rhs(){
+        return m_rhs;
+    }
+private:
+    AST* m_lhs;
+    AST* m_rhs;
+};
+
 class VariableAST : public AST {
 public:
 
@@ -201,6 +245,10 @@ public:
         return l;
     }
     DEF_VISIT_INHERIT_AST
+
+    const Token& token(){
+        return m_token;
+    }
 private:
     const Token& m_token;
 };
@@ -220,6 +268,8 @@ public:
     DEF_VISITOR_VIRTUAL_VISIT_AST(ContinueAST*)
     DEF_VISITOR_VIRTUAL_VISIT_AST(LOrAST*)
     DEF_VISITOR_VIRTUAL_VISIT_AST(LAndAST*)
+    DEF_VISITOR_VIRTUAL_VISIT_AST(BOrAST*)
+    DEF_VISITOR_VIRTUAL_VISIT_AST(BAndAST*)
     DEF_VISITOR_VIRTUAL_VISIT_AST(VariableAST*)
     DEF_VISITOR_VIRTUAL_VISIT_AST(LiteralAST*)
 private:
@@ -238,6 +288,8 @@ public:
     DEF_VISITOR_OVERRIDE_VISIT_AST(ContinueAST*)
     DEF_VISITOR_OVERRIDE_VISIT_AST(LOrAST*)
     DEF_VISITOR_OVERRIDE_VISIT_AST(LAndAST*)
+    DEF_VISITOR_OVERRIDE_VISIT_AST(BOrAST*)
+    DEF_VISITOR_OVERRIDE_VISIT_AST(BAndAST*)
     DEF_VISITOR_OVERRIDE_VISIT_AST(VariableAST*)
     DEF_VISITOR_OVERRIDE_VISIT_AST(LiteralAST*)
 private:
