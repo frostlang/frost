@@ -7,6 +7,22 @@ namespace Frost::Parse{
 
 class ASTVisitor;
 
+
+class ErrorAST;
+class ProgramAST;
+class IfAST;
+class ForAST;
+class BlockAST;
+class BreakAST;
+class ContinueAST;
+class LOrAST;
+class LAndAST;
+class VariableAST;
+class LiteralAST;
+
+
+
+
 class AST {
 
 public:
@@ -116,6 +132,64 @@ public:
 private:
 };
 
+class LOrAST : public AST{
+public:
+    static LOrAST create(AST* lhs, AST* rhs){
+        LOrAST l;
+        l.m_lhs=lhs;
+        l.m_rhs=rhs;
+        return l;
+    }
+    DEF_VISIT_INHERIT_AST
+
+    AST* lhs(){
+        return m_lhs;
+    }
+    AST* rhs(){
+        return m_rhs;
+    }
+private:
+    AST* m_lhs;
+    AST* m_rhs;
+};
+
+class LAndAST : public AST{
+public:
+    static LAndAST create(AST* lhs, AST* rhs){
+        LAndAST l;
+        l.m_lhs=lhs;
+        l.m_rhs=rhs;
+        return l;
+    }
+    DEF_VISIT_INHERIT_AST
+
+    AST* lhs(){
+        return m_lhs;
+    }
+    AST* rhs(){
+        return m_rhs;
+    }
+private:
+    AST* m_lhs;
+    AST* m_rhs;
+};
+
+class VariableAST : public AST {
+public:
+
+    
+    VariableAST(Token& token) : m_token(token){}
+
+    static VariableAST create(Token& token){
+        VariableAST l(token);
+        return l;
+    }
+    DEF_VISIT_INHERIT_AST
+private:
+    const Token& m_token;
+};
+
+
 class LiteralAST : public AST {
 public:
 
@@ -144,6 +218,9 @@ public:
     DEF_VISITOR_VIRTUAL_VISIT_AST(BlockAST*)
     DEF_VISITOR_VIRTUAL_VISIT_AST(BreakAST*)
     DEF_VISITOR_VIRTUAL_VISIT_AST(ContinueAST*)
+    DEF_VISITOR_VIRTUAL_VISIT_AST(LOrAST*)
+    DEF_VISITOR_VIRTUAL_VISIT_AST(LAndAST*)
+    DEF_VISITOR_VIRTUAL_VISIT_AST(VariableAST*)
     DEF_VISITOR_VIRTUAL_VISIT_AST(LiteralAST*)
 private:
 };
@@ -159,6 +236,9 @@ public:
     DEF_VISITOR_OVERRIDE_VISIT_AST(BlockAST*)
     DEF_VISITOR_OVERRIDE_VISIT_AST(BreakAST*)
     DEF_VISITOR_OVERRIDE_VISIT_AST(ContinueAST*)
+    DEF_VISITOR_OVERRIDE_VISIT_AST(LOrAST*)
+    DEF_VISITOR_OVERRIDE_VISIT_AST(LAndAST*)
+    DEF_VISITOR_OVERRIDE_VISIT_AST(VariableAST*)
     DEF_VISITOR_OVERRIDE_VISIT_AST(LiteralAST*)
 private:
 };

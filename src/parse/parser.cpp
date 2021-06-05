@@ -14,16 +14,11 @@ AST* Parser::parse(){
 
         while(!m_tokens->end()){
 
-            auto t = m_tokens->next();
+            auto t = m_tokens->peek();
 
             dbg() << "token="<<t<<"\n";
             
             switch(t.type()){
-
-                case TokenType::IDENTIFIER: {
-                    statements.push_back(identifier());
-                    break;
-                }
 
                 case TokenType::LCURLY: {
                     statements.push_back(block());
@@ -36,7 +31,7 @@ AST* Parser::parse(){
                 }
 
                 default: {
-                    dbg() << "um...\n";
+                    statements.push_back(statement());
                     break;
                 }
             }
@@ -83,6 +78,7 @@ AST* Parser::statement(){
         case TokenType::RETURN:{
             break;
         }
+        default: return expression();
     }
     return 0;
 }
@@ -144,19 +140,36 @@ AST* Parser::define(){
 }
 
 AST* Parser::expression(){
-    return 0;
+    return lor();
 }
 
 
 AST* Parser::lor(){
     auto higher_precedence = land();
     if(m_tokens->expect(TokenType::LOR)){
+        m_tokens->next();
+        dbg() << "LOR!\n";
+        auto rhs = lor();
+        return new LOrAST(LOrAST::create(higher_precedence, rhs));
 
     }
     return higher_precedence;
 }
-AST* Parser::land(){return 0;}
-AST* Parser::bor(){return 0;}
+AST* Parser::land(){
+    auto higher_precedence = bor();
+    if(m_tokens->expect(TokenType::LAND)){
+        m_tokens->next();
+        dbg() << "LAND!\n";
+        auto rhs = land();
+        return new LAndAST(LAndAST::create(higher_precedence, rhs));
+
+    }
+    return higher_precedence;
+}
+AST* Parser::bor(){
+    return single();
+    return 0;
+    }
 AST* Parser::band(){return 0;}
 AST* Parser::eq(){return 0;}
 AST* Parser::cmp(){return 0;}
@@ -227,7 +240,7 @@ AST* Parser::identifier(){
     if(!m_tokens->expect(TokenType::IDENTIFIER)){}
     auto& token = m_tokens->next();
 
-    return new LiteralAST(LiteralAST::create(token));
+    return new VariableAST(VariableAST::create(token));
 }
 
 AST* Parser::string(){
