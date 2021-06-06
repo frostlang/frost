@@ -133,8 +133,7 @@ AST* Parser::expression(){
 
 AST* Parser::lor(){
     auto higher_precedence = land();
-    if(m_tokens->expect(TokenType::LOR)){
-        m_tokens->next();
+    if(m_tokens->consume(TokenType::LOR).has()){
         dbg() << "LOR!\n";
         auto rhs = lor();
         return new LOrAST(LOrAST::create(higher_precedence, rhs));
@@ -144,8 +143,7 @@ AST* Parser::lor(){
 }
 AST* Parser::land(){
     auto higher_precedence = bor();
-    if(m_tokens->expect(TokenType::LAND)){
-        m_tokens->next();
+    if(m_tokens->consume(TokenType::LAND).has()){
         dbg() << "LAND!\n";
         auto rhs = land();
         return new LAndAST(LAndAST::create(higher_precedence, rhs));
@@ -155,8 +153,7 @@ AST* Parser::land(){
 }
 AST* Parser::bor(){
     auto higher_precedence = band();
-    if(m_tokens->expect(TokenType::BOR)){
-        m_tokens->next();
+    if(m_tokens->consume(TokenType::BOR).has()){
         dbg() << "BOR!\n";
         auto rhs = bor();
         return new BOrAST(BOrAST::create(higher_precedence, rhs));
@@ -166,8 +163,7 @@ AST* Parser::bor(){
 }
 AST* Parser::band(){
     auto higher_precedence = eq();
-    if(m_tokens->expect(TokenType::AMPERSAND)){
-        m_tokens->next();
+    if(m_tokens->consume(TokenType::AMPERSAND).has()){
         dbg() << "BAND!\n";
         auto rhs = band();
         return new BAndAST(BAndAST::create(higher_precedence, rhs));
@@ -190,32 +186,28 @@ AST* Parser::block(){
 
     std::vector<AST*> statements;
 
-    if(!m_tokens->expect(TokenType::LCURLY))
+    if(!m_tokens->consume(TokenType::LCURLY).has())
         panic("expected { for opening block expression");
-    m_tokens->next();
     
     while(!m_tokens->expect(TokenType::RCURLY)){
         statements.push_back(statement());
     }
 
-    if(!m_tokens->expect(TokenType::RCURLY))
+    if(!m_tokens->consume(TokenType::RCURLY).has())
         panic("expected } for closing block expression");
-    m_tokens->next();
 
     return new BlockAST(BlockAST::create(statements));
 }
 
 AST* Parser::group(){
 
-    if(!m_tokens->expect(TokenType::LPAREN))
+    if(!m_tokens->consume(TokenType::LPAREN).has())
         panic("expected ( for opening group expression");
-    m_tokens->next();
 
     expression();
 
-    if(!m_tokens->expect(TokenType::RPAREN))
+    if(!m_tokens->consume(TokenType::RPAREN).has())
         panic("expected ) closing for group expression");
-    m_tokens->next();
     
     return 0;
 

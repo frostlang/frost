@@ -189,8 +189,11 @@ u1 expect(TokenType type){
     return peek().type()==type;
 }
 
-Token& consume(TokenType type){
-    return next();
+Optional<Token> consume(TokenType type){
+    if(peek().type()==type){
+        return Optional(next());
+    }
+    return Optional<Token>();
 }
 
 Token& next() {

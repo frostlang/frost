@@ -1,11 +1,42 @@
 #pragma once
 
 #include <debug.h>
+#include <type.h>
 #include <gen/executor.h>
 
 namespace Frost::Gen{
 
 using namespace Parse;
+
+
+// represents a basic value
+class BasicValue{
+public:
+    static BasicValue create(){
+        BasicValue b;
+        b.m_type = Type::create(TypeType::U0);
+        return b;
+    } 
+private:
+    Type m_type;
+};
+
+
+class BasicGC{
+public:
+
+    // allocate a value
+    BasicValue* value(Type type){
+        return 0;
+    }
+
+    // perform gc
+    void gc(){}
+
+private:
+    
+};
+
 /*
 A basic Tree-Walking interpreter
 */
@@ -39,6 +70,7 @@ public:
     DEF_VISITOR_OVERRIDE_VISIT_AST(VariableAST*)
     DEF_VISITOR_OVERRIDE_VISIT_AST(LiteralAST*)
 private:
+    BasicGC m_gc;
     Parse::AST* m_ast;
 };
 
