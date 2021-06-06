@@ -10,6 +10,8 @@
 int main(){
     using namespace Frost;
 
+    Type t = Type::create(TypeType::U8);
+    dbg() << t << "\n";
 
     Unit u = Unit::create().from_file("c:/frost/test/frost/1.frost");
 

@@ -16,6 +16,7 @@ enum class TokenType : u8 {
 
     COLON,
     SEMICOLON,
+    COMMA,
 
     LCURLY,
     RCURLY,
@@ -32,6 +33,7 @@ enum class TokenType : u8 {
 
     ANY,
     U0,
+    U1,
     U8,
     S8,
     U16,

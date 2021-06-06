@@ -39,13 +39,14 @@ public:
         throw ParseException(msg);
     }
 
-    Type parse_type();
+    Optional<Type> type();
     AST* parse();
     AST* statement();
+    AST* decl(); // decleration
     AST* ifstmt();
     AST* forloop();
-    AST* define();
     AST* expression();
+
 
     AST* lor();
     AST* land();

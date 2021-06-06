@@ -9,6 +9,7 @@ const char* token_debug[]={
 
     "COLON",
     "SEMICOLON",
+    "COMMA",
 
     "LCURLY",
     "RCURLY",
@@ -25,6 +26,7 @@ const char* token_debug[]={
 
     "ANY",
     "U0",
+    "U1",
     "U8",
     "S8",
     "U16",

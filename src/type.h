@@ -1,7 +1,9 @@
 #pragma once
 
+#include <sstream>
 #include <vector>
 #include <types.h>
+#include <debug.h>
 
 namespace Frost{
 
@@ -23,8 +25,11 @@ enum class TypeType{
     INTERFACE,
     TUPLE,
     SLICE,
+    ARRAY,
     FN
 };
+
+extern const char* type_debug[];
 
 enum class AccessType{
     PUB,
@@ -46,7 +51,7 @@ enum class AssignableType{
 // Type::create(TypeType::SLICE).set_inner(TypeType::U32)
 //
 //
-class Type{
+class Type : public Debugable{
 public:
     static Type create(TypeType type){
         Type t;
@@ -56,6 +61,13 @@ public:
         t.m_assignable_type = AssignableType::UNASSIGNABLE;
         return t;
     }
+
+    std::string debug(){
+        std::stringstream ss;
+        ss << "type="<<type_debug[(u8)m_type]<<"\n";
+        return ss.str();
+    }
+
     Type& set_type(TypeType type){
         m_type = type;
         return *this;

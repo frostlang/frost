@@ -27,24 +27,6 @@ AST* Parser::parse(){
     
 }
 
-Type Parser::parse_type(){
-
-    auto t = Type::create(TypeType::U0);
-
-
-    switch(m_tokens->peek().type()){
-        case TokenType::ARROW: {
-
-            t.set_type(TypeType::POINTER);
-
-            // now parse the inner type
-            break;
-        }
-    }
-
-    return t;
-}
-
 AST* Parser::statement(){
     switch(m_tokens->peek().type()){
         case TokenType::BREAK:{
@@ -102,6 +84,90 @@ AST* Parser::forloop(){
 }
 
 
+//
+// types can have the following form:
+// mut U32
+// const U32
+// mut ^U32
+// mut []U32
+// mut ()
+Optional<Type> Parser::type(){
+
+    if(!(
+        m_tokens->expect(TokenType::TYPE)
+        ||m_tokens->expect(TokenType::ANY)
+        ||m_tokens->expect(TokenType::U0)
+        ||m_tokens->expect(TokenType::U1)
+        ||m_tokens->expect(TokenType::U8)
+        ||m_tokens->expect(TokenType::S8)
+        ||m_tokens->expect(TokenType::U16)
+        ||m_tokens->expect(TokenType::S16)
+        ||m_tokens->expect(TokenType::U32)
+        ||m_tokens->expect(TokenType::S32)
+        ||m_tokens->expect(TokenType::F32)
+        ||m_tokens->expect(TokenType::U64)
+        ||m_tokens->expect(TokenType::S64)
+        ||m_tokens->expect(TokenType::F64)
+        ||m_tokens->expect(TokenType::MUT)
+        ||m_tokens->expect(TokenType::CONST)
+        ||m_tokens->expect(TokenType::LBRACKET)
+        ||m_tokens->expect(TokenType::ARROW)
+        ||m_tokens->expect(TokenType::LPAREN)
+        
+    )) return Optional<Type>();
+
+    Type t = Type::create(TypeType::U0);
+
+    if(m_tokens->consume(TokenType::MUT).has()){
+        t.set_mut(MutableType::MUT);
+    }
+    else if(m_tokens->consume(TokenType::CONST).has()){
+        t.set_mut(MutableType::CONST);
+    }
+
+    // tuple :)
+    if(m_tokens->consume(TokenType::LPAREN).has()){
+        while(!m_tokens->consume(TokenType::RPAREN).has()){
+            auto inner = type();
+            if(inner.has())
+                t.inner_types().push_back(inner.data());
+            else
+                dbg() << "um... this is an error?\n";
+        }
+    }
+
+    // array
+    if(m_tokens->consume(TokenType::LBRACKET).has()){
+        if(m_tokens->consume(TokenType::RBRACKET).has()){
+            t.set_type(TypeType::SLICE);
+            auto inner = type();
+            if(inner.has())
+                t.inner_types().push_back(inner.data());  
+            else
+                dbg() << "um... this is an error?\n";
+        }else{
+            // sized array
+            auto size = m_tokens->consume(TokenType::NUMBER);
+            t.set_type(TypeType::ARRAY);
+            m_tokens->consume(TokenType::RBRACKET);
+        }
+    }
+
+    if(auto n = m_tokens->consume(TokenType::U0); n.has()){
+        t.set_type(TypeType::U0);
+    }else if(auto n = m_tokens->consume(TokenType::U1); n.has()){
+        t.set_type(TypeType::U1);
+    }else if(auto n = m_tokens->consume(TokenType::U8); n.has()){
+        t.set_type(TypeType::U8);
+    }else if(auto n = m_tokens->consume(TokenType::S8); n.has()){
+        t.set_type(TypeType::S8);
+    }
+
+
+    return Optional<Type>();
+}
+
+
 
 //
 // x : pub const U32 = 123;   ->   public constant U32
@@ -113,15 +179,19 @@ AST* Parser::forloop(){
 //
 //
 //
-AST* Parser::define(){
+AST* Parser::decl(){
 
-    if(!m_tokens->expect(TokenType::IDENTIFIER)){
-        // TODO
+    // get the identifier
+    auto& identifier = m_tokens->consume(TokenType::IDENTIFIER).data();
+
+    // now consume the :
+    if(!m_tokens->consume(TokenType::COLON).has()){
+        return new ErrorAST(ErrorAST::create());
     }
-    auto& identifier = m_tokens->next();
 
-    if(!m_tokens->expect(TokenType::COLON)){
-        // TODO
+    // now look for the type information
+    if(auto t = type(); 1){
+
     }
 
     return 0;
@@ -217,9 +287,30 @@ AST* Parser::group(){
 }
 
 //
+// function literals can take the 2 basic forms:
 // (){}
-//
+// {}
+// () u32 {}
+// u32 {}
 AST* Parser::fn(){
+
+    // parse paramaters
+    std::vector<AST*> param_decls;
+    u1 has_params = m_tokens->consume(TokenType::LPAREN).has();
+    while(has_params && !m_tokens->consume(TokenType::RPAREN).has()){
+        param_decls.push_back(decl());
+        m_tokens->consume(TokenType::COMMA);
+
+    }
+    
+    // at this point we may be expecting a return type
+
+    // if epect(type) || expect(identifier)... possible return type?
+
+    // parse the body
+    AST* body = statement();
+
+
 
     return 0;
 
