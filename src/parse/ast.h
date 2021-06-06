@@ -81,6 +81,16 @@ public:
     void set_else_body(AST* else_body){
         m_else_body=else_body;
     }
+
+    AST* if_cond(){
+        return m_if_cond;
+    }
+    AST* if_body(){
+        return m_if_body;
+    }
+    AST* else_body(){
+        return m_else_body;
+    }
 private:
     AST* m_if_cond;
     AST* m_if_body;

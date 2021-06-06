@@ -136,6 +136,12 @@ void Lexer::alpha(){
             }
             break;
         }
+        case 'e':{
+            if(match("else")){
+                m_tokens.push(Token::create(TokenType::ELSE)); next(strlen("else")); return;
+            }
+            break;
+        }
         case 'f':{
             if(match("fn")){
                 m_tokens.push(Token::create(TokenType::FN)); next(strlen("fn")); return;
@@ -151,7 +157,9 @@ void Lexer::alpha(){
             break;
         }
         case 'i':{
-            if(match("interface")){
+            if(match("if")){
+                m_tokens.push(Token::create(TokenType::IF)); next(strlen("if")); return;
+            }else if(match("interface")){
                 m_tokens.push(Token::create(TokenType::INTERFACE)); next(strlen("interface")); return;
             }
         }

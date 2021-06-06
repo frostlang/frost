@@ -37,6 +37,12 @@ void* CleanupVisitor::visit(ProgramAST* program_ast){
 }
 
 void* CleanupVisitor::visit(IfAST* if_ast){
+    ASSERT(if_ast->if_cond());
+    ASSERT(if_ast->if_body());
+    if_ast->if_cond()->visit(*this);
+    if_ast->if_body()->visit(*this);
+    if(if_ast->else_body())
+        if_ast->else_body()->visit(*this);
 
     dbg() << "delete IfAST\n";
 

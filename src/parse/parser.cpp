@@ -56,6 +56,10 @@ AST* Parser::statement(){
         case TokenType::RETURN:{
             break;
         }
+        case TokenType::IF:{
+            return ifstmt();
+            break;
+        }
         case TokenType::LCURLY: {
             return block();
             break;
@@ -70,13 +74,12 @@ AST* Parser::statement(){
     return new ErrorAST(ErrorAST::create());
 }
 AST* Parser::ifstmt(){
-
+    m_tokens->consume(TokenType::IF);
     IfAST if_ast = IfAST::create();
     if_ast.set_if_cond(expression());
     if_ast.set_if_body(statement());
 
-    if(m_tokens->expect(TokenType::ELSE)){
-        m_tokens->next();
+    if(m_tokens->consume(TokenType::ELSE).has()){
         if_ast.set_else_body(statement());
     }
 
