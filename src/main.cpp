@@ -11,7 +11,7 @@ int main(){
     using namespace Frost;
 
 
-    Unit u = Unit::create().from_source("test.frost", "if 1 222 else 2");
+    Unit u = Unit::create().from_file("c:/frost/test/frost/1.frost");
 
     dbg() << u << "\n";
 

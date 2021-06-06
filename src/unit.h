@@ -2,6 +2,9 @@
 
 #include <string>
 #include <string_view>
+#include <sstream>
+#include <fstream>
+#include <iostream>
 #include <debug.h>
 
 namespace Frost{
@@ -18,6 +21,15 @@ namespace Frost{
         }
         
         Unit& from_file(std::string file){
+
+           std::ifstream f;
+            f.open(file);
+            std::stringstream buffer;
+            buffer << f.rdbuf();
+
+            m_file = file;
+            m_source = buffer.str();
+
             // load up file
             return *this;
         }
@@ -29,18 +41,20 @@ namespace Frost{
         }
 
         std::string debug() override {
-            return file();
+            std::stringstream ss;
+            ss << "file="<<file()<<"\nsource="<<source()<<"\n";
+            return ss.str();
         }
 
         std::string file(){
             return m_file;
         }
-        std::string_view& source(){
+        std::string& source(){
             return m_source;
         }
 
     private:
         std::string m_file;
-        std::string_view m_source;
+        std::string m_source;
     };
 }
