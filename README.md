@@ -12,7 +12,6 @@ forst is a programming language with a focus on low-friction systems programming
 import("io");
 
 @debuggable
-@serialisable
 Person : type {
     name : String;
     age  : U8;
@@ -20,14 +19,12 @@ Person : type {
 
 main : pub fn (args : []String){
 
-    Person^ person = new Person{
+    person : const Person = {
         args[0],
-        args[1].to_str()
+        args[1].to_u8()
     };
 
     io.println(person);
-
-    delete person;
 
 }
 

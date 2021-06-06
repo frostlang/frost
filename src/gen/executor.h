@@ -11,7 +11,9 @@ public:
 private:
 };
 
-class ASTExecutor : public Executor, public Parse::ASTVisitor{};
+class ASTExecutor : public Executor, public Parse::ASTVisitor{
+    
+};
 
 class FIRExecutor : public Executor{};
 }

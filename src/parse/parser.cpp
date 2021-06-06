@@ -93,6 +93,10 @@ AST* Parser::forloop(){
 // mut ()
 Optional<Type> Parser::type(){
 
+    //
+    // todo
+    // optimise this by casting to u8 and then checking > and < than TYPE and LPAREN etc
+    //
     if(!(
         m_tokens->expect(TokenType::TYPE)
         ||m_tokens->expect(TokenType::ANY)
