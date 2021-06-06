@@ -5,7 +5,7 @@
 #include <asserts.h>
 #include <unit.h>
 #include <type.h>
-#include <gen/x86astgen.h>
+#include <gen/basicastexecutor.h>
 
 int main(){
     using namespace Frost;
@@ -23,7 +23,8 @@ int main(){
     Parse::AST* ast = p.parse();
 
 
-    Gen::X86ASTGenerator generator = Gen::X86ASTGenerator::create(ast);
+    Gen::BasicASTExecutor executor = Gen::BasicASTExecutor::create(ast);
+    executor.exec();
 
 
     Parse::CleanupVisitor cleanup;

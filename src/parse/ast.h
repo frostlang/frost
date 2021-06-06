@@ -28,13 +28,13 @@ class LiteralAST;
 class AST {
 
 public:
-    virtual AST* visit(ASTVisitor& visitor) = 0;
+    virtual void* visit(ASTVisitor& visitor) = 0;
 private:
 
 };
 
 
-#define DEF_VISIT_INHERIT_AST AST* visit(ASTVisitor& visitor) override;
+#define DEF_VISIT_INHERIT_AST void* visit(ASTVisitor& visitor) override;
 
 class ErrorAST : public AST {
 public:
@@ -255,7 +255,7 @@ private:
 
 
 
-#define DEF_VISITOR_VIRTUAL_VISIT_AST(param) virtual AST* visit(param) = 0;
+#define DEF_VISITOR_VIRTUAL_VISIT_AST(param) virtual void* visit(param) = 0;
 
 class ASTVisitor{
 public:
@@ -275,7 +275,7 @@ public:
 private:
 };
 
-#define DEF_VISITOR_OVERRIDE_VISIT_AST(param) AST* visit(param) override;
+#define DEF_VISITOR_OVERRIDE_VISIT_AST(param) void* visit(param) override;
 
 class CleanupVisitor : public ASTVisitor {
 public:

@@ -18,6 +18,7 @@ set(SOURCES
     ../src/parse/parser.cpp
     ../src/parse/ast.cpp
     ../src/gen/generator.cpp
+    ../src/gen/basicastexecutor.cpp
 )
 
 add_executable(Frost ${SOURCES})

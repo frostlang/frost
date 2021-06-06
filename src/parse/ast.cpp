@@ -4,7 +4,7 @@
 namespace Frost::Parse{
 
 #define DEF_AST_VISIT(ast_class)                \
-    AST* ast_class::visit(ASTVisitor& visitor){ \
+    void* ast_class::visit(ASTVisitor& visitor){ \
         return visitor.visit(this);             \
     }                                           
 
@@ -24,7 +24,7 @@ DEF_AST_VISIT(LiteralAST)
 
 
 
-AST* CleanupVisitor::visit(ProgramAST* program_ast){
+void* CleanupVisitor::visit(ProgramAST* program_ast){
 
     for(auto& ast : program_ast->statements())
         ast->visit(*this);
@@ -36,7 +36,7 @@ AST* CleanupVisitor::visit(ProgramAST* program_ast){
 
 }
 
-AST* CleanupVisitor::visit(IfAST* if_ast){
+void* CleanupVisitor::visit(IfAST* if_ast){
 
     dbg() << "delete IfAST\n";
 
@@ -45,7 +45,7 @@ AST* CleanupVisitor::visit(IfAST* if_ast){
 
 }
 
-AST* CleanupVisitor::visit(ForAST* for_ast){
+void* CleanupVisitor::visit(ForAST* for_ast){
 
     dbg() << "delete ForAST\n";
 
@@ -54,7 +54,7 @@ AST* CleanupVisitor::visit(ForAST* for_ast){
 
 }
 
-AST* CleanupVisitor::visit(BlockAST* block_ast){
+void* CleanupVisitor::visit(BlockAST* block_ast){
 
     for(auto& ast : block_ast->statements())
         ast->visit(*this);
@@ -66,7 +66,7 @@ AST* CleanupVisitor::visit(BlockAST* block_ast){
 
 }
 
-AST* CleanupVisitor::visit(ErrorAST* error_ast){
+void* CleanupVisitor::visit(ErrorAST* error_ast){
 
     dbg() << "delete ErrorAST\n";
 
@@ -75,7 +75,7 @@ AST* CleanupVisitor::visit(ErrorAST* error_ast){
 
 }
 
-AST* CleanupVisitor::visit(BreakAST* break_ast){
+void* CleanupVisitor::visit(BreakAST* break_ast){
 
     dbg() << "delete BreakAST\n";
 
@@ -84,7 +84,7 @@ AST* CleanupVisitor::visit(BreakAST* break_ast){
 
 }
 
-AST* CleanupVisitor::visit(ContinueAST* continue_ast){
+void* CleanupVisitor::visit(ContinueAST* continue_ast){
 
     dbg() << "delete ContinueAST\n";
 
@@ -93,7 +93,7 @@ AST* CleanupVisitor::visit(ContinueAST* continue_ast){
 
 }
 
-AST* CleanupVisitor::visit(LOrAST* lor_ast){
+void* CleanupVisitor::visit(LOrAST* lor_ast){
 
     lor_ast->lhs()->visit(*this);
     lor_ast->rhs()->visit(*this);
@@ -104,7 +104,7 @@ AST* CleanupVisitor::visit(LOrAST* lor_ast){
 
 }
 
-AST* CleanupVisitor::visit(LAndAST* land_ast){
+void* CleanupVisitor::visit(LAndAST* land_ast){
 
     land_ast->lhs()->visit(*this);
     land_ast->rhs()->visit(*this);
@@ -114,7 +114,7 @@ AST* CleanupVisitor::visit(LAndAST* land_ast){
 
 }
 
-AST* CleanupVisitor::visit(BOrAST* bor_ast){
+void* CleanupVisitor::visit(BOrAST* bor_ast){
 
     bor_ast->lhs()->visit(*this);
     bor_ast->rhs()->visit(*this);
@@ -124,7 +124,7 @@ AST* CleanupVisitor::visit(BOrAST* bor_ast){
 
 }
 
-AST* CleanupVisitor::visit(BAndAST* band_ast){
+void* CleanupVisitor::visit(BAndAST* band_ast){
 
     band_ast->lhs()->visit(*this);
     band_ast->rhs()->visit(*this);
@@ -134,7 +134,7 @@ AST* CleanupVisitor::visit(BAndAST* band_ast){
 
 }
 
-AST* CleanupVisitor::visit(VariableAST* variable_ast){
+void* CleanupVisitor::visit(VariableAST* variable_ast){
 
     dbg() << "delete VariableAST\n";
 
@@ -143,7 +143,7 @@ AST* CleanupVisitor::visit(VariableAST* variable_ast){
 
 }
 
-AST* CleanupVisitor::visit(LiteralAST* literal_ast){
+void* CleanupVisitor::visit(LiteralAST* literal_ast){
 
     dbg() << "delete LiteralAST\n";
 

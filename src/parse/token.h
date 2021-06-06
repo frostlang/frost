@@ -43,6 +43,8 @@ enum class TokenType : u8 {
     S64,
     F64,
     FN,
+    TYPE,
+    MODULE,
 
     PLUS,
     MINUS,

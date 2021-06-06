@@ -8,7 +8,7 @@ using namespace Parse;
 //
 // NOTE this class takes the AST and generates 
 //
-class X86ASTGenerator : ASTGenerator{
+class X86ASTGenerator{// : ASTGenerator{
 
 public:
     static X86ASTGenerator create(Parse::AST* ast){

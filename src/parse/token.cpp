@@ -36,6 +36,8 @@ const char* token_debug[]={
     "S64",
     "F64",
     "FN",
+    "TYPE",
+    "MODULE",
 
     "PLUS",
     "MINUS",
