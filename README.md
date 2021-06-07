@@ -4,7 +4,7 @@ frost programming language
 
 ## About
 
-forst is a programming language with a focus on low-friction systems programming.
+frost is a programming language with a focus on low-friction systems programming.
 
 ## Example
 ```
