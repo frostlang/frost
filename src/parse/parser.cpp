@@ -212,8 +212,12 @@ AST* Parser::decl(ParseContext){
     }
 
     // now look for the type information
-    if(auto t = type(); 1){
+    if(auto t = type(); t.has()){
+        // has a type
+    }
 
+    if(!m_tokens->consume(TokenType::SEMICOLON).has()){
+        // has a value
     }
 
     dbg() << "done decl!\n";

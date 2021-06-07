@@ -6,6 +6,7 @@
 #include <unit.h>
 #include <type.h>
 #include <gen/basicastexecutor.h>
+#include <gen/x86astgen.h>
 
 int main(){
     using namespace Frost;
@@ -32,6 +33,18 @@ int main(){
 
     Parse::CleanupVisitor cleanup;
     ast->visit(cleanup);
+
+
+    Gen::Instruction i = Gen::Instruction::create("add", 04,
+        Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::REG, Gen::OperandEncoding::Size::_8),
+        Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::IMM, Gen::OperandEncoding::Size::_8),
+        Gen::OperandEncoding::create()
+    );
+        Gen::Instruction i = Gen::Instruction::create("add", 04,
+        Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::REG, Gen::OperandEncoding::Size::_8),
+        Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::IMM, Gen::OperandEncoding::Size::_8),
+        Gen::OperandEncoding::create()
+    );
 
     return 0;
 }

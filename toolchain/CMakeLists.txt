@@ -19,6 +19,7 @@ set(SOURCES
     ../src/parse/parser.cpp
     ../src/parse/ast.cpp
     ../src/gen/generator.cpp
+    ../src/gen/x86astgen.cpp
     ../src/gen/basicastexecutor.cpp
 )
 
