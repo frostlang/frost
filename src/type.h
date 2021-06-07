@@ -7,28 +7,6 @@
 
 namespace Frost{
 
-enum class TypeType{
-    ANY,
-
-    U0,
-    U1,
-    U8,
-    S8,
-    U16,
-    S16,
-    U32,
-    S32,
-    F32,
-
-    POINTER,
-    STRUCT,
-    INTERFACE,
-    TUPLE,
-    SLICE,
-    ARRAY,
-    FN
-};
-
 extern const char* type_debug[];
 
 enum class AccessType{
@@ -53,7 +31,28 @@ enum class AssignableType{
 //
 class Type : public Debugable{
 public:
-    static Type create(TypeType type){
+    enum class Storage{
+        ANY,
+
+        U0,
+        U1,
+        U8,
+        S8,
+        U16,
+        S16,
+        U32,
+        S32,
+        F32,
+
+        POINTER,
+        STRUCT,
+        INTERFACE,
+        TUPLE,
+        SLICE,
+        ARRAY,
+        FN
+    };
+    static Type create(Type::Storage type){
         Type t;
         t.m_type = type;
         t.m_access_type = AccessType::PRIV;
@@ -68,11 +67,11 @@ public:
         return ss.str();
     }
 
-    Type& set_type(TypeType type){
+    Type& set_type(Storage type){
         m_type = type;
         return *this;
     }
-    TypeType& type(){
+    Storage& type(){
         return m_type;
     }
     Type& set_access(AccessType access){
@@ -104,7 +103,7 @@ public:
         return m_inner_types;
     }
 private:
-    TypeType m_type;
+    Storage m_type;
     AccessType m_access_type;
     MutableType m_mutable_type;
     AssignableType m_assignable_type;

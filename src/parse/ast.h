@@ -163,7 +163,7 @@ private:
 
 class BinOpAST: public AST{
 public:
-    enum class Type : u8{
+    enum class Op : u8{
         LOR,
         LAND,
         BOR,
@@ -173,10 +173,14 @@ public:
         GT,
         GE,
         LT,
-        LE
+        LE,
+        PLUS,
+        MINUS,
+        MUL,
+        DIV
     };
 
-    static BinOpAST create(Type type, AST* lhs, AST* rhs){
+    static BinOpAST create(Op type, AST* lhs, AST* rhs){
         BinOpAST b;
         b.m_type = type;
         b.m_lhs = lhs;
@@ -186,7 +190,7 @@ public:
 
     DEF_VISIT_INHERIT_AST
 
-    Type& type(){
+    Op& op(){
         return m_type;
     }
 
@@ -199,7 +203,7 @@ public:
 private:
     AST* m_lhs;
     AST* m_rhs;
-    Type m_type;
+    Op m_type;
 };
 
 class VariableAST : public AST {
@@ -233,7 +237,11 @@ public:
     const Token& token(){
         return m_token;
     }
+    Type& type(){
+        return m_type;
+    }
 private:
+    Type m_type;
     const Token& m_token;
 };
 

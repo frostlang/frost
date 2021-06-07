@@ -14,7 +14,7 @@ class BasicValue{
 public:
     static BasicValue create(){
         BasicValue b;
-        b.m_type = Type::create(TypeType::U0);
+        b.m_type = Type::create(Type::Storage::U0);
         return b;
     } 
 private:

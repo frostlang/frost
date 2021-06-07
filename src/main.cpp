@@ -11,7 +11,7 @@
 int main(){
     using namespace Frost;
 
-    Type t = Type::create(TypeType::U8);
+    Type t = Type::create(Type::Storage::U8);
     dbg() << t << "\n";
 
     Unit u = Unit::create().from_file("c:/frost/test/frost/1.frost");
@@ -35,16 +35,7 @@ int main(){
     ast->visit(cleanup);
 
 
-    Gen::Instruction i = Gen::Instruction::create("add", 04,
-        Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::REG, Gen::OperandEncoding::Size::_8),
-        Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::IMM, Gen::OperandEncoding::Size::_8),
-        Gen::OperandEncoding::create()
-    );
-        Gen::Instruction i = Gen::Instruction::create("add", 04,
-        Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::REG, Gen::OperandEncoding::Size::_8),
-        Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::IMM, Gen::OperandEncoding::Size::_8),
-        Gen::OperandEncoding::create()
-    );
+
 
     return 0;
 }

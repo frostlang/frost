@@ -1,5 +1,6 @@
 #include <vector>
 #include <string>
+#include <string_view>
 #include <gen/generator.h>
 #include <gen/frostir.h>
 #include <parse/ast.h>
@@ -46,13 +47,13 @@ private:
     Size m_size;
 };
 
-class Instruction{
+class InstructionEncoding{
 public:
-    static Instruction create(std::string name, u8 op, 
+    static InstructionEncoding create(std::string name, u8 op, 
         OperandEncoding operand_encoding_0,
         OperandEncoding operand_encoding_1,
         OperandEncoding operand_encoding_2){
-        Instruction i;
+        InstructionEncoding i;
         i.m_name = name;
         i.m_op = op;
         i.m_operand_encoding[0] = operand_encoding_0;
@@ -66,6 +67,57 @@ private:
     OperandEncoding m_operand_encoding[3]; // can have 3 operands
 };
 
+// this represents an x86 instruction operand
+// e.g. 8, RAX, [RDI] etc
+class Operand{
+public:
+    static Operand create(OperandEncoding encoding, std::string_view value){
+        Operand o;
+        o.m_encoding = encoding;
+        o.m_value = value;
+        return o;
+    }
+    OperandEncoding& encoding(){
+        return m_encoding;
+    }
+    std::string_view& value(){
+        return m_value;
+    }
+private:
+    OperandEncoding m_encoding;
+    std::string_view m_value;
+};
+
+extern InstructionEncoding lookup_instr(
+    std::string name,
+    OperandEncoding op0,
+    OperandEncoding op1,
+    OperandEncoding op2
+);
+
+
+class Instruction{
+public:
+    static Instruction create(
+        std::string name, 
+        Operand op0,
+        Operand op1,
+        Operand op2
+        ){
+        Instruction i;
+        i.m_encoding = lookup_instr(name, op0.encoding(), op1.encoding(), op2.encoding());
+        i.m_op0 = op0;
+        i.m_op1 = op1;
+        i.m_op2 = op2;
+        return i;
+    }
+private:
+    Position m_position;
+    InstructionEncoding m_encoding;
+    Operand m_op0;
+    Operand m_op1;
+    Operand m_op2;
+};
 
 
 
@@ -78,15 +130,50 @@ public:
     static X86ASTGenerator create(Parse::AST* ast){
         X86ASTGenerator x;
         x.m_ast = ast;
+
+        // this defines the add instruction that takes the form add reg8 imm8 (adds 8 bit immediate to 8 bit register)
+        Gen::InstructionEncoding::create("add", 04,
+            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::REG, Gen::OperandEncoding::Size::_8),
+            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::IMM, Gen::OperandEncoding::Size::_8),
+            Gen::OperandEncoding::create()
+        );
+        // 16 & 32 bit add use the same op code
+        Gen::InstructionEncoding::create("add", 05,
+            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::REG, Gen::OperandEncoding::Size::_16),
+            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::IMM, Gen::OperandEncoding::Size::_16),
+            Gen::OperandEncoding::create()
+        );
+        Gen::InstructionEncoding::create("add", 05,
+            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::REG, Gen::OperandEncoding::Size::_32),
+            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::IMM, Gen::OperandEncoding::Size::_32),
+            Gen::OperandEncoding::create()
+        );
+
+        // add imm 8 to register or memory
+        Gen::InstructionEncoding::create("add", 80,
+            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::REG, Gen::OperandEncoding::Size::_32),
+            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::IMM, Gen::OperandEncoding::Size::_8),
+            Gen::OperandEncoding::create()
+        );
+        Gen::InstructionEncoding::create("add", 80,
+            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::MEM, Gen::OperandEncoding::Size::_32),
+            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::IMM, Gen::OperandEncoding::Size::_8),
+            Gen::OperandEncoding::create()
+        );
+
         return x;
     }
     
     void gen();
 
     void emit(const char*);
+    
+    OperandEncoding op_encoding_from_type(Type type);
+
+    void visit(Parse::BinOpAST* bin_op_ast);
+    void visit(Parse::LiteralAST* literal_ast);
 
 private:
     Parse::AST* m_ast;
 };
-
 }

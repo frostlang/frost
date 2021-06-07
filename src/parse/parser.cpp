@@ -137,7 +137,7 @@ Optional<Type> Parser::type(){
         
     )) return Optional<Type>();
 
-    Type t = Type::create(TypeType::U0);
+    Type t = Type::create(Type::Storage::U0);
 
     if(m_tokens->consume(TokenType::MUT).has()){
         t.set_mut(MutableType::MUT);
@@ -160,7 +160,7 @@ Optional<Type> Parser::type(){
     // array
     if(m_tokens->consume(TokenType::LBRACKET).has()){
         if(m_tokens->consume(TokenType::RBRACKET).has()){
-            t.set_type(TypeType::SLICE);
+            t.set_type(Type::Storage::SLICE);
             auto inner = type();
             if(inner.has())
                 t.inner_types().push_back(inner.data());  
@@ -169,19 +169,19 @@ Optional<Type> Parser::type(){
         }else{
             // sized array
             auto size = m_tokens->consume(TokenType::NUMBER);
-            t.set_type(TypeType::ARRAY);
+            t.set_type(Type::Storage::ARRAY);
             m_tokens->consume(TokenType::RBRACKET);
         }
     }
 
     if(auto n = m_tokens->consume(TokenType::U0); n.has()){
-        t.set_type(TypeType::U0);
+        t.set_type(Type::Storage::U0);
     }else if(auto n = m_tokens->consume(TokenType::U1); n.has()){
-        t.set_type(TypeType::U1);
+        t.set_type(Type::Storage::U1);
     }else if(auto n = m_tokens->consume(TokenType::U8); n.has()){
-        t.set_type(TypeType::U8);
+        t.set_type(Type::Storage::U8);
     }else if(auto n = m_tokens->consume(TokenType::S8); n.has()){
-        t.set_type(TypeType::S8);
+        t.set_type(Type::Storage::S8);
     }
 
 
@@ -236,7 +236,7 @@ AST* Parser::lor(ParseContext){
     if(m_tokens->consume(TokenType::LOR).has()){
         dbg() << "LOR!\n";
         auto rhs = lor({});
-        return new BinOpAST(BinOpAST::create(BinOpAST::Type::LOR, higher_precedence, rhs));
+        return new BinOpAST(BinOpAST::create(BinOpAST::Op::LOR, higher_precedence, rhs));
 
     }
     return higher_precedence;
@@ -246,7 +246,7 @@ AST* Parser::land(ParseContext){
     if(m_tokens->consume(TokenType::LAND).has()){
         dbg() << "LAND!\n";
         auto rhs = land({});
-        return new BinOpAST(BinOpAST::create(BinOpAST::Type::LAND, higher_precedence, rhs));
+        return new BinOpAST(BinOpAST::create(BinOpAST::Op::LAND, higher_precedence, rhs));
 
     }
     return higher_precedence;
@@ -256,7 +256,7 @@ AST* Parser::bor(ParseContext){
     if(m_tokens->consume(TokenType::BOR).has()){
         dbg() << "BOR!\n";
         auto rhs = bor({});
-        return new BinOpAST(BinOpAST::create(BinOpAST::Type::BOR, higher_precedence, rhs));
+        return new BinOpAST(BinOpAST::create(BinOpAST::Op::BOR, higher_precedence, rhs));
 
     }
     return higher_precedence;
@@ -266,7 +266,7 @@ AST* Parser::band(ParseContext){
     if(m_tokens->consume(TokenType::AMPERSAND).has()){
         dbg() << "BAND!\n";
         auto rhs = band({});
-        return new BinOpAST(BinOpAST::create(BinOpAST::Type::BAND, higher_precedence, rhs));
+        return new BinOpAST(BinOpAST::create(BinOpAST::Op::BAND, higher_precedence, rhs));
 
     }
     return higher_precedence;
@@ -276,7 +276,7 @@ AST* Parser::eq(ParseContext){
     if(m_tokens->expect(TokenType::EQUALS) || m_tokens->expect(TokenType::NEQUALS)){
         auto op = m_tokens->next();
         auto rhs = eq({});
-        auto bin_op_type = (op.type()==TokenType::EQUALS) ? BinOpAST::Type::EQ : BinOpAST::Type::NEQ;
+        auto bin_op_type = (op.type()==TokenType::EQUALS) ? BinOpAST::Op::EQ : BinOpAST::Op::NEQ;
         return new BinOpAST(BinOpAST::create(bin_op_type, higher_precedence, rhs));
     }
     return higher_precedence;
