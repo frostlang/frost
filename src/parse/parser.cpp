@@ -249,9 +249,17 @@ AST* Parser::band(){
     return higher_precedence;
 }
 AST* Parser::eq(){
-    return single();
-    return 0;}
-AST* Parser::cmp(){return 0;}
+    auto higher_precedence = cmp();
+    if(m_tokens->expect(TokenType::EQUALS) || m_tokens->expect(TokenType::NEQUALS)){
+        auto op = m_tokens->next();
+        auto rhs = eq();
+        auto bin_op_type = (op.type()==TokenType::EQUALS) ? BinOpAST::Type::EQ : BinOpAST::Type::NEQ;
+        return new BinOpAST(BinOpAST::create(bin_op_type, higher_precedence, rhs));
+    }
+    return higher_precedence;
+}
+
+AST* Parser::cmp(){return single();}
 AST* Parser::shift(){return 0;}
 AST* Parser::pm(){return 0;}
 AST* Parser::mdmr(){return 0;}

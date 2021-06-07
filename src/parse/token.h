@@ -48,6 +48,8 @@ enum class TokenType : u8 {
     TYPE,
     MODULE,
 
+    ASSIGN, // =
+
     PLUS,
     MINUS,
     STAR,
@@ -60,8 +62,13 @@ enum class TokenType : u8 {
 
     LAND, // logial and
     LOR,
+    LNOT,
     BOR,
     BAND,
+    BNOT,
+
+    EQUALS,
+    NEQUALS,
 
     ARROW,
     AMPERSAND,

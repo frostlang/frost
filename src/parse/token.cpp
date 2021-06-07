@@ -41,6 +41,8 @@ const char* token_debug[]={
     "TYPE",
     "MODULE",
 
+    "ASSIGN",
+
     "PLUS",
     "MINUS",
     "STAR",
@@ -53,8 +55,13 @@ const char* token_debug[]={
 
     "LAND", // logial and
     "LOR",
+    "LNOT",
     "BOR",
     "BAND",
+    "BNOT",
+
+    "EQUALS",
+    "NEQUALS",
 
     "ARROW",
     "AMPERSAND",

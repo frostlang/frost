@@ -77,6 +77,22 @@ TokenStream& Lexer::lex(){
                 next(); 
                 break;
             }
+            case '=': {
+                switch(peek(1)){
+                    case '=': m_tokens.push(Token::create(TokenType::EQUALS)); next(); break;
+                    default: m_tokens.push(Token::create(TokenType::ASSIGN)); break;
+                }
+                next(); 
+                break;
+            }
+            case '!': {
+                switch(peek(1)){
+                    case '=': m_tokens.push(Token::create(TokenType::NEQUALS)); next(); break;
+                    default: m_tokens.push(Token::create(TokenType::LNOT)); break;
+                }
+                next(); 
+                break;
+            }
             default: {
                 if(is_num(c)){
                     number();
