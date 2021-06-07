@@ -15,6 +15,7 @@ DEF_AST_VISIT(ForAST)
 DEF_AST_VISIT(BlockAST)
 DEF_AST_VISIT(BreakAST)
 DEF_AST_VISIT(ContinueAST)
+DEF_AST_VISIT(DeclAST)
 DEF_AST_VISIT(BinOpAST)
 DEF_AST_VISIT(VariableAST)
 DEF_AST_VISIT(LiteralAST)
@@ -92,6 +93,15 @@ void* CleanupVisitor::visit(ContinueAST* continue_ast){
     dbg() << "delete ContinueAST\n";
 
     delete continue_ast;
+    return 0;
+
+}
+
+void* CleanupVisitor::visit(DeclAST* decl_ast){
+
+    dbg() << "delete DeclAST\n";
+
+    delete decl_ast;
     return 0;
 
 }

@@ -48,7 +48,10 @@ AST* Parser::statement(ParseContext){
             return block({});
             break;
         }
-
+        case TokenType::IDENTIFIER:{
+            // this could potentially be a decl, or a variable
+            return identifier({});
+        }
         case TokenType::UNKNOWN: {
             dbg() << "unknown token type whils't parsing!\n";
             break;
@@ -85,6 +88,18 @@ AST* Parser::forloop(ParseContext){
 
 }
 
+// this means we have seen an identifier...
+// it could be a decl or a variable
+AST* Parser::identifier(ParseContext ctx){
+    
+    // dealing with a decleration here!
+    if(m_tokens->peek(1).type()==TokenType::COLON){
+        return decl(ctx);
+    }else{
+        // else we are dealing with an expr e.g. x + 33;
+        return expression(ctx);
+    }
+}
 
 //
 // types can have the following form:
@@ -190,6 +205,7 @@ AST* Parser::decl(ParseContext){
     // get the identifier
     auto& identifier = m_tokens->consume(TokenType::IDENTIFIER).data();
 
+
     // now consume the :
     if(!m_tokens->consume(TokenType::COLON).has()){
         return new ErrorAST(ErrorAST::create());
@@ -200,8 +216,9 @@ AST* Parser::decl(ParseContext){
 
     }
 
-    return 0;
+    dbg() << "done decl!\n";
 
+    return 0;
 
 }
 
@@ -333,19 +350,15 @@ AST* Parser::fn(ParseContext){
 AST* Parser::single(ParseContext){
 
     switch(m_tokens->peek().type()){
-        case TokenType::IDENTIFIER: return identifier({});
+        case TokenType::IDENTIFIER: return var({});
         case TokenType::NUMBER: return num({});
         case TokenType::QUOTE: return string({});
     }
     return 0;
 }
 
-AST* Parser::identifier(ParseContext){
-    
-    // parse an identifier (variable)
-    if(!m_tokens->expect(TokenType::IDENTIFIER)){}
-    auto& token = m_tokens->next();
-
+AST* Parser::var(ParseContext){
+    auto& token = m_tokens->consume(TokenType::IDENTIFIER).data();
     return new VariableAST(VariableAST::create(token));
 }
 

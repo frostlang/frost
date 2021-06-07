@@ -209,8 +209,8 @@ Token& next() {
     return m_tokens[m_index++];
 }
 
-Token& peek() {
-    return m_tokens[m_index];
+Token& peek(u32 ahead=0) {
+    return m_tokens[m_index+ahead];
 }
 
 private:

@@ -64,6 +64,14 @@ void* BasicASTExecutor::visit(ContinueAST* continue_ast){
 
 }
 
+void* BasicASTExecutor::visit(DeclAST* decl_ast){
+
+    dbg() << "exec DeclAST\n";
+
+    return 0;
+
+}
+
 void* BasicASTExecutor::visit(BinOpAST* bin_op_ast){
 
     bin_op_ast->lhs()->visit(*this);

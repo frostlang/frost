@@ -44,6 +44,7 @@ TokenStream& Lexer::lex(){
             case '\'': m_tokens.push(Token::create(TokenType::APOSTROPHE)); next(); break;
             case '^': m_tokens.push(Token::create(TokenType::ARROW)); next(); break;
             case '*': m_tokens.push(Token::create(TokenType::STAR)); next(); break;
+            case ':': m_tokens.push(Token::create(TokenType::COLON)); next(); break;
             case ';': m_tokens.push(Token::create(TokenType::SEMICOLON)); next(); break;
             case '+': {
                 switch(peek(1)){

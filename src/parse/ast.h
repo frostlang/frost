@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <parse/token.h>
+#include <type.h>
 
 namespace Frost::Parse{
 
@@ -15,6 +16,7 @@ class ForAST;
 class BlockAST;
 class BreakAST;
 class ContinueAST;
+class DeclAST;
 class BinOpAST;
 class VariableAST;
 class LiteralAST;
@@ -141,6 +143,24 @@ public:
 private:
 };
 
+class DeclAST : public AST{
+public:
+    DeclAST(Token& identifier) : m_identifier(identifier){}
+    static DeclAST create(Token& identifier, Type type, AST* value){
+        DeclAST d(identifier);
+        d.m_type = type;
+        d.m_value = value;
+        return d;
+    }
+    DEF_VISIT_INHERIT_AST
+private:
+    const Token& m_identifier;
+    Type m_type;
+    AST* m_value;
+};
+
+
+
 class BinOpAST: public AST{
 public:
     enum class Type : u8{
@@ -230,6 +250,7 @@ public:
     DEF_VISITOR_VIRTUAL_VISIT_AST(BlockAST*)
     DEF_VISITOR_VIRTUAL_VISIT_AST(BreakAST*)
     DEF_VISITOR_VIRTUAL_VISIT_AST(ContinueAST*)
+    DEF_VISITOR_VIRTUAL_VISIT_AST(DeclAST*)
     DEF_VISITOR_VIRTUAL_VISIT_AST(BinOpAST*)
     DEF_VISITOR_VIRTUAL_VISIT_AST(VariableAST*)
     DEF_VISITOR_VIRTUAL_VISIT_AST(LiteralAST*)
@@ -247,6 +268,7 @@ public:
     DEF_VISITOR_OVERRIDE_VISIT_AST(BlockAST*)
     DEF_VISITOR_OVERRIDE_VISIT_AST(BreakAST*)
     DEF_VISITOR_OVERRIDE_VISIT_AST(ContinueAST*)
+    DEF_VISITOR_OVERRIDE_VISIT_AST(DeclAST*)
     DEF_VISITOR_OVERRIDE_VISIT_AST(BinOpAST*)
     DEF_VISITOR_OVERRIDE_VISIT_AST(VariableAST*)
     DEF_VISITOR_OVERRIDE_VISIT_AST(LiteralAST*)

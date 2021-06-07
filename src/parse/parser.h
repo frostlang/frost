@@ -56,6 +56,7 @@ public:
     AST* ifstmt(ParseContext);
     AST* forloop(ParseContext);
     AST* expression(ParseContext);
+    AST* identifier(ParseContext);
 
 
     AST* lor(ParseContext);
@@ -74,7 +75,7 @@ public:
     AST* group(ParseContext);
     AST* fn(ParseContext);
     AST* single(ParseContext);
-    AST* identifier(ParseContext);
+    AST* var(ParseContext);
     AST* num(ParseContext);
     AST* string(ParseContext);
 private:
