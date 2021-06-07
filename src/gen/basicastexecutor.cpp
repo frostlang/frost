@@ -64,39 +64,12 @@ void* BasicASTExecutor::visit(ContinueAST* continue_ast){
 
 }
 
-void* BasicASTExecutor::visit(LOrAST* lor_ast){
+void* BasicASTExecutor::visit(BinOpAST* bin_op_ast){
 
-    lor_ast->lhs()->visit(*this);
-    lor_ast->rhs()->visit(*this);
-    dbg() << "exec LOrAST\n";
+    bin_op_ast->lhs()->visit(*this);
+    bin_op_ast->rhs()->visit(*this);
+    dbg() << "exec BinOpAST\n";
 
-    return 0;
-
-}
-
-void* BasicASTExecutor::visit(LAndAST* land_ast){
-
-    land_ast->lhs()->visit(*this);
-    land_ast->rhs()->visit(*this);
-    dbg() << "exec LAndAST\n";
-    return 0;
-
-}
-
-void* BasicASTExecutor::visit(BOrAST* bor_ast){
-
-    bor_ast->lhs()->visit(*this);
-    bor_ast->rhs()->visit(*this);
-    dbg() << "exec BOrAST\n";
-    return 0;
-
-}
-
-void* BasicASTExecutor::visit(BAndAST* band_ast){
-
-    band_ast->lhs()->visit(*this);
-    band_ast->rhs()->visit(*this);
-    dbg() << "exec BAndAST\n";
     return 0;
 
 }

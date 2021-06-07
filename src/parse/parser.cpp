@@ -213,7 +213,7 @@ AST* Parser::lor(){
     if(m_tokens->consume(TokenType::LOR).has()){
         dbg() << "LOR!\n";
         auto rhs = lor();
-        return new LOrAST(LOrAST::create(higher_precedence, rhs));
+        return new BinOpAST(BinOpAST::create(BinOpAST::Type::LOR, higher_precedence, rhs));
 
     }
     return higher_precedence;
@@ -223,7 +223,7 @@ AST* Parser::land(){
     if(m_tokens->consume(TokenType::LAND).has()){
         dbg() << "LAND!\n";
         auto rhs = land();
-        return new LAndAST(LAndAST::create(higher_precedence, rhs));
+        return new BinOpAST(BinOpAST::create(BinOpAST::Type::LAND, higher_precedence, rhs));
 
     }
     return higher_precedence;
@@ -233,7 +233,7 @@ AST* Parser::bor(){
     if(m_tokens->consume(TokenType::BOR).has()){
         dbg() << "BOR!\n";
         auto rhs = bor();
-        return new BOrAST(BOrAST::create(higher_precedence, rhs));
+        return new BinOpAST(BinOpAST::create(BinOpAST::Type::BOR, higher_precedence, rhs));
 
     }
     return higher_precedence;
@@ -243,7 +243,7 @@ AST* Parser::band(){
     if(m_tokens->consume(TokenType::AMPERSAND).has()){
         dbg() << "BAND!\n";
         auto rhs = band();
-        return new BAndAST(BAndAST::create(higher_precedence, rhs));
+        return new BinOpAST(BinOpAST::create(BinOpAST::Type::BAND, higher_precedence, rhs));
 
     }
     return higher_precedence;

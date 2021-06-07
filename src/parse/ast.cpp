@@ -15,10 +15,7 @@ DEF_AST_VISIT(ForAST)
 DEF_AST_VISIT(BlockAST)
 DEF_AST_VISIT(BreakAST)
 DEF_AST_VISIT(ContinueAST)
-DEF_AST_VISIT(LOrAST)
-DEF_AST_VISIT(LAndAST)
-DEF_AST_VISIT(BOrAST)
-DEF_AST_VISIT(BAndAST)
+DEF_AST_VISIT(BinOpAST)
 DEF_AST_VISIT(VariableAST)
 DEF_AST_VISIT(LiteralAST)
 
@@ -99,43 +96,13 @@ void* CleanupVisitor::visit(ContinueAST* continue_ast){
 
 }
 
-void* CleanupVisitor::visit(LOrAST* lor_ast){
+void* CleanupVisitor::visit(BinOpAST* bin_op_ast){
 
-    lor_ast->lhs()->visit(*this);
-    lor_ast->rhs()->visit(*this);
-    dbg() << "delete LOrAST\n";
+    bin_op_ast->lhs()->visit(*this);
+    bin_op_ast->rhs()->visit(*this);
+    dbg() << "delete BinOpAST\n";
 
-    delete lor_ast;
-    return 0;
-
-}
-
-void* CleanupVisitor::visit(LAndAST* land_ast){
-
-    land_ast->lhs()->visit(*this);
-    land_ast->rhs()->visit(*this);
-    dbg() << "delete LAndAST\n";
-    delete land_ast;
-    return 0;
-
-}
-
-void* CleanupVisitor::visit(BOrAST* bor_ast){
-
-    bor_ast->lhs()->visit(*this);
-    bor_ast->rhs()->visit(*this);
-    dbg() << "delete BOrAST\n";
-    delete bor_ast;
-    return 0;
-
-}
-
-void* CleanupVisitor::visit(BAndAST* band_ast){
-
-    band_ast->lhs()->visit(*this);
-    band_ast->rhs()->visit(*this);
-    dbg() << "delete BAndAST\n";
-    delete band_ast;
+    delete bin_op_ast;
     return 0;
 
 }

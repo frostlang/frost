@@ -15,10 +15,7 @@ class ForAST;
 class BlockAST;
 class BreakAST;
 class ContinueAST;
-class LOrAST;
-class LAndAST;
-class BOrAST;
-class BAndAST;
+class BinOpAST;
 class VariableAST;
 class LiteralAST;
 
@@ -144,15 +141,34 @@ public:
 private:
 };
 
-class LOrAST : public AST{
+class BinOpAST: public AST{
 public:
-    static LOrAST create(AST* lhs, AST* rhs){
-        LOrAST l;
-        l.m_lhs=lhs;
-        l.m_rhs=rhs;
-        return l;
+    enum class Type : u8{
+        LOR,
+        LAND,
+        BOR,
+        BAND,
+        EQ,
+        NEQ,
+        GT,
+        GE,
+        LT,
+        LE
+    };
+
+    static BinOpAST create(Type type, AST* lhs, AST* rhs){
+        BinOpAST b;
+        b.m_type = type;
+        b.m_lhs = lhs;
+        b.m_rhs = rhs;
+        return b;
     }
+
     DEF_VISIT_INHERIT_AST
+
+    Type& type(){
+        return m_type;
+    }
 
     AST* lhs(){
         return m_lhs;
@@ -163,69 +179,7 @@ public:
 private:
     AST* m_lhs;
     AST* m_rhs;
-};
-
-class LAndAST : public AST{
-public:
-    static LAndAST create(AST* lhs, AST* rhs){
-        LAndAST l;
-        l.m_lhs=lhs;
-        l.m_rhs=rhs;
-        return l;
-    }
-    DEF_VISIT_INHERIT_AST
-
-    AST* lhs(){
-        return m_lhs;
-    }
-    AST* rhs(){
-        return m_rhs;
-    }
-private:
-    AST* m_lhs;
-    AST* m_rhs;
-};
-
-class BOrAST : public AST{
-public:
-    static BOrAST create(AST* lhs, AST* rhs){
-        BOrAST l;
-        l.m_lhs=lhs;
-        l.m_rhs=rhs;
-        return l;
-    }
-    DEF_VISIT_INHERIT_AST
-
-    AST* lhs(){
-        return m_lhs;
-    }
-    AST* rhs(){
-        return m_rhs;
-    }
-private:
-    AST* m_lhs;
-    AST* m_rhs;
-};
-
-class BAndAST : public AST{
-public:
-    static BAndAST create(AST* lhs, AST* rhs){
-        BAndAST l;
-        l.m_lhs=lhs;
-        l.m_rhs=rhs;
-        return l;
-    }
-    DEF_VISIT_INHERIT_AST
-
-    AST* lhs(){
-        return m_lhs;
-    }
-    AST* rhs(){
-        return m_rhs;
-    }
-private:
-    AST* m_lhs;
-    AST* m_rhs;
+    Type m_type;
 };
 
 class VariableAST : public AST {
@@ -276,10 +230,7 @@ public:
     DEF_VISITOR_VIRTUAL_VISIT_AST(BlockAST*)
     DEF_VISITOR_VIRTUAL_VISIT_AST(BreakAST*)
     DEF_VISITOR_VIRTUAL_VISIT_AST(ContinueAST*)
-    DEF_VISITOR_VIRTUAL_VISIT_AST(LOrAST*)
-    DEF_VISITOR_VIRTUAL_VISIT_AST(LAndAST*)
-    DEF_VISITOR_VIRTUAL_VISIT_AST(BOrAST*)
-    DEF_VISITOR_VIRTUAL_VISIT_AST(BAndAST*)
+    DEF_VISITOR_VIRTUAL_VISIT_AST(BinOpAST*)
     DEF_VISITOR_VIRTUAL_VISIT_AST(VariableAST*)
     DEF_VISITOR_VIRTUAL_VISIT_AST(LiteralAST*)
 private:
@@ -296,10 +247,7 @@ public:
     DEF_VISITOR_OVERRIDE_VISIT_AST(BlockAST*)
     DEF_VISITOR_OVERRIDE_VISIT_AST(BreakAST*)
     DEF_VISITOR_OVERRIDE_VISIT_AST(ContinueAST*)
-    DEF_VISITOR_OVERRIDE_VISIT_AST(LOrAST*)
-    DEF_VISITOR_OVERRIDE_VISIT_AST(LAndAST*)
-    DEF_VISITOR_OVERRIDE_VISIT_AST(BOrAST*)
-    DEF_VISITOR_OVERRIDE_VISIT_AST(BAndAST*)
+    DEF_VISITOR_OVERRIDE_VISIT_AST(BinOpAST*)
     DEF_VISITOR_OVERRIDE_VISIT_AST(VariableAST*)
     DEF_VISITOR_OVERRIDE_VISIT_AST(LiteralAST*)
 private:
