@@ -13,7 +13,7 @@ AST* Parser::parse(){
         std::vector<AST*> statements;
 
         while(!m_tokens->end()){
-            statements.push_back(statement());
+            statements.push_back(statement({}));
             break;
         }
         
@@ -27,7 +27,7 @@ AST* Parser::parse(){
     
 }
 
-AST* Parser::statement(){
+AST* Parser::statement(ParseContext){
     switch(m_tokens->peek().type()){
         case TokenType::BREAK:{
             return new BreakAST(BreakAST::create());
@@ -38,12 +38,14 @@ AST* Parser::statement(){
         case TokenType::RETURN:{
             break;
         }
+        case TokenType::FOR:{
+            return forloop({});
+        }
         case TokenType::IF:{
-            return ifstmt();
-            break;
+            return ifstmt({});
         }
         case TokenType::LCURLY: {
-            return block();
+            return block({});
             break;
         }
 
@@ -51,24 +53,24 @@ AST* Parser::statement(){
             dbg() << "unknown token type whils't parsing!\n";
             break;
         }
-        default: return expression();
+        default: return expression({});
     }
     return new ErrorAST(ErrorAST::create());
 }
-AST* Parser::ifstmt(){
+AST* Parser::ifstmt(ParseContext){
     m_tokens->consume(TokenType::IF);
     IfAST if_ast = IfAST::create();
-    if_ast.set_if_cond(expression());
-    if_ast.set_if_body(statement());
+    if_ast.set_if_cond(expression({}));
+    if_ast.set_if_body(statement({}));
 
     if(m_tokens->consume(TokenType::ELSE).has()){
-        if_ast.set_else_body(statement());
+        if_ast.set_else_body(statement({}));
     }
 
     return new IfAST(if_ast);
 }
 
-AST* Parser::forloop(){
+AST* Parser::forloop(ParseContext){
 
     if(!m_tokens->expect(TokenType::FOR)){
 
@@ -183,7 +185,7 @@ Optional<Type> Parser::type(){
 //
 //
 //
-AST* Parser::decl(){
+AST* Parser::decl(ParseContext){
 
     // get the identifier
     auto& identifier = m_tokens->consume(TokenType::IDENTIFIER).data();
@@ -203,71 +205,71 @@ AST* Parser::decl(){
 
 }
 
-AST* Parser::expression(){
-    return lor();
+AST* Parser::expression(ParseContext){
+    return lor({});
 }
 
 
-AST* Parser::lor(){
-    auto higher_precedence = land();
+AST* Parser::lor(ParseContext){
+    auto higher_precedence = land({});
     if(m_tokens->consume(TokenType::LOR).has()){
         dbg() << "LOR!\n";
-        auto rhs = lor();
+        auto rhs = lor({});
         return new BinOpAST(BinOpAST::create(BinOpAST::Type::LOR, higher_precedence, rhs));
 
     }
     return higher_precedence;
 }
-AST* Parser::land(){
-    auto higher_precedence = bor();
+AST* Parser::land(ParseContext){
+    auto higher_precedence = bor({});
     if(m_tokens->consume(TokenType::LAND).has()){
         dbg() << "LAND!\n";
-        auto rhs = land();
+        auto rhs = land({});
         return new BinOpAST(BinOpAST::create(BinOpAST::Type::LAND, higher_precedence, rhs));
 
     }
     return higher_precedence;
 }
-AST* Parser::bor(){
-    auto higher_precedence = band();
+AST* Parser::bor(ParseContext){
+    auto higher_precedence = band({});
     if(m_tokens->consume(TokenType::BOR).has()){
         dbg() << "BOR!\n";
-        auto rhs = bor();
+        auto rhs = bor({});
         return new BinOpAST(BinOpAST::create(BinOpAST::Type::BOR, higher_precedence, rhs));
 
     }
     return higher_precedence;
 }
-AST* Parser::band(){
-    auto higher_precedence = eq();
+AST* Parser::band(ParseContext){
+    auto higher_precedence = eq({});
     if(m_tokens->consume(TokenType::AMPERSAND).has()){
         dbg() << "BAND!\n";
-        auto rhs = band();
+        auto rhs = band({});
         return new BinOpAST(BinOpAST::create(BinOpAST::Type::BAND, higher_precedence, rhs));
 
     }
     return higher_precedence;
 }
-AST* Parser::eq(){
-    auto higher_precedence = cmp();
+AST* Parser::eq(ParseContext){
+    auto higher_precedence = cmp({});
     if(m_tokens->expect(TokenType::EQUALS) || m_tokens->expect(TokenType::NEQUALS)){
         auto op = m_tokens->next();
-        auto rhs = eq();
+        auto rhs = eq({});
         auto bin_op_type = (op.type()==TokenType::EQUALS) ? BinOpAST::Type::EQ : BinOpAST::Type::NEQ;
         return new BinOpAST(BinOpAST::create(bin_op_type, higher_precedence, rhs));
     }
     return higher_precedence;
 }
 
-AST* Parser::cmp(){return single();}
-AST* Parser::shift(){return 0;}
-AST* Parser::pm(){return 0;}
-AST* Parser::mdmr(){return 0;}
-AST* Parser::un(){return 0;}
-AST* Parser::cast(){return 0;}
+AST* Parser::cmp(ParseContext){return single({});}
+AST* Parser::shift(ParseContext){return 0;}
+AST* Parser::pm(ParseContext){return 0;}
+AST* Parser::mdmr(ParseContext){return 0;}
+AST* Parser::un(ParseContext){return 0;}
+AST* Parser::cast(ParseContext){return 0;}
 
 
-AST* Parser::block(){
+AST* Parser::block(ParseContext){
 
     std::vector<AST*> statements;
 
@@ -275,7 +277,7 @@ AST* Parser::block(){
         panic("expected { for opening block expression");
     
     while(!m_tokens->expect(TokenType::RCURLY)){
-        statements.push_back(statement());
+        statements.push_back(statement({}));
     }
 
     if(!m_tokens->consume(TokenType::RCURLY).has())
@@ -284,12 +286,12 @@ AST* Parser::block(){
     return new BlockAST(BlockAST::create(statements));
 }
 
-AST* Parser::group(){
+AST* Parser::group(ParseContext){
 
     if(!m_tokens->consume(TokenType::LPAREN).has())
         panic("expected ( for opening group expression");
 
-    expression();
+    expression({});
 
     if(!m_tokens->consume(TokenType::RPAREN).has())
         panic("expected ) closing for group expression");
@@ -304,13 +306,13 @@ AST* Parser::group(){
 // {}
 // () u32 {}
 // u32 {}
-AST* Parser::fn(){
+AST* Parser::fn(ParseContext){
 
     // parse paramaters
     std::vector<AST*> param_decls;
     u1 has_params = m_tokens->consume(TokenType::LPAREN).has();
     while(has_params && !m_tokens->consume(TokenType::RPAREN).has()){
-        param_decls.push_back(decl());
+        param_decls.push_back(decl({}));
         m_tokens->consume(TokenType::COMMA);
 
     }
@@ -320,7 +322,7 @@ AST* Parser::fn(){
     // if epect(type) || expect(identifier)... possible return type?
 
     // parse the body
-    AST* body = statement();
+    AST* body = statement({});
 
 
 
@@ -328,17 +330,17 @@ AST* Parser::fn(){
 
 }
 
-AST* Parser::single(){
+AST* Parser::single(ParseContext){
 
     switch(m_tokens->peek().type()){
-        case TokenType::IDENTIFIER: return identifier();
-        case TokenType::NUMBER: return num();
-        case TokenType::QUOTE: return string();
+        case TokenType::IDENTIFIER: return identifier({});
+        case TokenType::NUMBER: return num({});
+        case TokenType::QUOTE: return string({});
     }
     return 0;
 }
 
-AST* Parser::identifier(){
+AST* Parser::identifier(ParseContext){
     
     // parse an identifier (variable)
     if(!m_tokens->expect(TokenType::IDENTIFIER)){}
@@ -347,7 +349,7 @@ AST* Parser::identifier(){
     return new VariableAST(VariableAST::create(token));
 }
 
-AST* Parser::string(){
+AST* Parser::string(ParseContext){
     // parse an identifier (variable)
     if(!m_tokens->expect(TokenType::QUOTE)){}
     auto& opening_string = m_tokens->next();
@@ -363,7 +365,7 @@ AST* Parser::string(){
     return new LiteralAST(LiteralAST::create(token));
 }
 
-AST* Parser::num(){
+AST* Parser::num(ParseContext){
 
     // parse a number literal
     if(!m_tokens->expect(TokenType::NUMBER)){}

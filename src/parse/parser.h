@@ -25,6 +25,16 @@ public:
 private:
 };
 
+class ParseContext{
+public:
+    enum class Scope{
+        GLOBAL,
+        FN,
+        BLOCK
+    };
+private:
+};
+
 class Parser{
 public:
     static Parser create(Unit* u, TokenStream* t){
@@ -41,32 +51,32 @@ public:
 
     Optional<Type> type();
     AST* parse();
-    AST* statement();
-    AST* decl(); // decleration
-    AST* ifstmt();
-    AST* forloop();
-    AST* expression();
+    AST* statement(ParseContext);
+    AST* decl(ParseContext); // decleration
+    AST* ifstmt(ParseContext);
+    AST* forloop(ParseContext);
+    AST* expression(ParseContext);
 
 
-    AST* lor();
-    AST* land();
-    AST* bor();
-    AST* band();
-    AST* eq();
-    AST* cmp();
-    AST* shift();
-    AST* pm(); // + -
-    AST* mdmr(); // * / % /%
-    AST* un();
-    AST* cast();
+    AST* lor(ParseContext);
+    AST* land(ParseContext);
+    AST* bor(ParseContext);
+    AST* band(ParseContext);
+    AST* eq(ParseContext);
+    AST* cmp(ParseContext);
+    AST* shift(ParseContext);
+    AST* pm(ParseContext); // + -
+    AST* mdmr(ParseContext); // * / % /%
+    AST* un(ParseContext);
+    AST* cast(ParseContext);
 
-    AST* block();
-    AST* group();
-    AST* fn();
-    AST* single();
-    AST* identifier();
-    AST* num();
-    AST* string();
+    AST* block(ParseContext);
+    AST* group(ParseContext);
+    AST* fn(ParseContext);
+    AST* single(ParseContext);
+    AST* identifier(ParseContext);
+    AST* num(ParseContext);
+    AST* string(ParseContext);
 private:
 
     Unit* m_unit;
