@@ -191,6 +191,12 @@ void Lexer::alpha(){
                 m_tokens.push(Token::create(TokenType::LOR)); next(strlen("or")); return;
             }
         }
+        case 'r':{
+            if(match("return")){
+                m_tokens.push(Token::create(TokenType::RETURN)); next(strlen("return")); return;
+            }
+            break;
+        }
         case 's':{
             if(match("struct")){
                 m_tokens.push(Token::create(TokenType::STRUCT)); next(strlen("struct")); return;

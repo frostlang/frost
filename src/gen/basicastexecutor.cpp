@@ -1,4 +1,4 @@
-#include <gen/basicastexecutor.h>
+/*#include <gen/basicastexecutor.h>
 
 namespace Frost::Gen{
 
@@ -99,4 +99,4 @@ void* BasicASTExecutor::visit(LiteralAST* literal_ast){
 }
 
 
-}
+}*/

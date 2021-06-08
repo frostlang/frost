@@ -24,6 +24,8 @@ Optional<Operand> X86ASTGenerator::visit(Parse::AST* ast, BuildContext& ctx){
             return visit(static_cast<Parse::ProgramAST*>(ast), ctx);
         }case Parse::AST::Type::DECL:{
             return visit(static_cast<Parse::DeclAST*>(ast), ctx);
+        }case Parse::AST::Type::RETURN:{
+            return visit(static_cast<Parse::ReturnAST*>(ast), ctx);
         } case Parse::AST::Type::BIN:{
             return visit(static_cast<Parse::BinOpAST*>(ast), ctx);
         } case Parse::AST::Type::VARIABLE:{
@@ -41,6 +43,17 @@ Optional<Operand> X86ASTGenerator::visit(Parse::ProgramAST* program_ast, BuildCo
     for(auto& ast : program_ast->statements()){
         visit(ast, ctx);
     }
+    return Optional<Operand>();
+}
+
+Optional<Operand> X86ASTGenerator::visit(Parse::ReturnAST* return_ast, BuildContext& ctx){
+    ctx.block().push(Instruction::create("ret"));
+    return Optional<Operand>();
+}
+
+Optional<Operand> X86ASTGenerator::visit(Parse::IfAST* if_ast, BuildContext& ctx){
+    ctx.block().push(Instruction::create("if_start:"));
+    ctx.block().push(Instruction::create("if_end:"));
     return Optional<Operand>();
 }
 
@@ -81,7 +94,7 @@ Optional<Operand> X86ASTGenerator::visit(Parse::BinOpAST* bin_op_ast, BuildConte
             lhs = visit(bin_op_ast->lhs(), ctx).data();
             Operand rhs = visit(bin_op_ast->rhs(), ctx).data();
            
-            auto add = Instruction::create("add", lhs, rhs, Operand::create());
+            auto add = Instruction::create("add", lhs, rhs);
 
             ctx.block().push(add);
 
@@ -114,7 +127,7 @@ Optional<Operand> X86ASTGenerator::visit(Parse::VariableAST* variable_ast, Build
     Operand mov_rhs = Operand::create(OperandEncoding::create(OperandEncoding::EncodingType::MEM, encoding.size()), ss.str());
     // create a mov instruction to put the variable in the register
     // emit("mov")
-    Instruction mov = Instruction::create("mov", mov_lhs, mov_rhs, Operand::create());
+    Instruction mov = Instruction::create("mov", mov_lhs, mov_rhs);
     ctx.block().push(mov);
 
     // finally return the register the variable is now in

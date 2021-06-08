@@ -1,4 +1,4 @@
-#pragma once
+/*#pragma once
 
 #include <debug.h>
 #include <type.h>
@@ -37,10 +37,10 @@ private:
     
 };
 
-/*
-A basic Tree-Walking interpreter
-*/
-class BasicASTExecutor : public ASTExecutor{
+
+//A basic Tree-Walking interpreter
+
+class BasicASTExecutor{
 public:
 
 
@@ -72,4 +72,4 @@ private:
     Parse::AST* m_ast;
 };
 
-}
+}*/

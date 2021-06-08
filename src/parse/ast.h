@@ -14,6 +14,7 @@ class ProgramAST;
 class IfAST;
 class ForAST;
 class BlockAST;
+class ReturnAST;
 class BreakAST;
 class ContinueAST;
 class DeclAST;
@@ -34,6 +35,7 @@ public:
         IF,
         FOR,
         BLOCK,
+        RETURN,
         BREAK,
         CONTINUE,
         DECL,
@@ -152,6 +154,19 @@ public:
     }
 private:
     std::vector<AST*> m_statements;
+};
+
+class ReturnAST : public AST{
+public:
+    Type type() const override {
+        return Type::RETURN;
+    }
+    static ReturnAST create(){
+        return {};
+    }
+
+    DEF_VISIT_INHERIT_AST
+private:
 };
 
 class BreakAST : public AST{
@@ -311,6 +326,7 @@ public:
     DEF_VISITOR_VIRTUAL_VISIT_AST(IfAST*)
     DEF_VISITOR_VIRTUAL_VISIT_AST(ForAST*)
     DEF_VISITOR_VIRTUAL_VISIT_AST(BlockAST*)
+    DEF_VISITOR_VIRTUAL_VISIT_AST(ReturnAST*)
     DEF_VISITOR_VIRTUAL_VISIT_AST(BreakAST*)
     DEF_VISITOR_VIRTUAL_VISIT_AST(ContinueAST*)
     DEF_VISITOR_VIRTUAL_VISIT_AST(DeclAST*)
@@ -329,6 +345,7 @@ public:
     DEF_VISITOR_OVERRIDE_VISIT_AST(IfAST*)
     DEF_VISITOR_OVERRIDE_VISIT_AST(ForAST*)
     DEF_VISITOR_OVERRIDE_VISIT_AST(BlockAST*)
+    DEF_VISITOR_OVERRIDE_VISIT_AST(ReturnAST*)
     DEF_VISITOR_OVERRIDE_VISIT_AST(BreakAST*)
     DEF_VISITOR_OVERRIDE_VISIT_AST(ContinueAST*)
     DEF_VISITOR_OVERRIDE_VISIT_AST(DeclAST*)

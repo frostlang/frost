@@ -257,6 +257,18 @@ public:
         i.m_encoding.type()=InstructionEncoding::Type::LABEL;
         return i;
     }
+        static Instruction create(
+        std::string name, 
+        Operand op0,
+        Operand op1
+        ){
+        Instruction i;
+        i.m_encoding = lookup_instr(name, op0.encoding(), op1.encoding(), OperandEncoding::create());
+        i.m_encoding.type()=InstructionEncoding::Type::OP2;
+        i.m_op0 = op0;
+        i.m_op1 = op1;
+        return i;
+    }
     static Instruction create(
         std::string name, 
         Operand op0,
@@ -265,7 +277,7 @@ public:
         ){
         Instruction i;
         i.m_encoding = lookup_instr(name, op0.encoding(), op1.encoding(), op2.encoding());
-        i.m_encoding.type()=InstructionEncoding::Type::OP2;
+        i.m_encoding.type()=InstructionEncoding::Type::OP3;
         i.m_op0 = op0;
         i.m_op1 = op1;
         i.m_op2 = op2;

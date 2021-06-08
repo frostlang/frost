@@ -13,6 +13,7 @@ DEF_AST_VISIT(ProgramAST)
 DEF_AST_VISIT(IfAST)
 DEF_AST_VISIT(ForAST)
 DEF_AST_VISIT(BlockAST)
+DEF_AST_VISIT(ReturnAST)
 DEF_AST_VISIT(BreakAST)
 DEF_AST_VISIT(ContinueAST)
 DEF_AST_VISIT(DeclAST)
@@ -75,6 +76,15 @@ void* CleanupVisitor::visit(ErrorAST* error_ast){
     dbg() << "delete ErrorAST\n";
 
     delete error_ast;
+    return 0;
+
+}
+
+void* CleanupVisitor::visit(ReturnAST* return_ast){
+
+    dbg() << "delete ReturnAST\n";
+
+    delete return_ast;
     return 0;
 
 }

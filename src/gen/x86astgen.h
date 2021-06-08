@@ -31,6 +31,8 @@ public:
     
     Optional<Operand> visit(Parse::AST*, BuildContext&);
     Optional<Operand> visit(Parse::ProgramAST*, BuildContext&);
+    Optional<Operand> visit(Parse::IfAST* if_ast, BuildContext& ctx);
+    Optional<Operand> visit(Parse::ReturnAST* return_ast, BuildContext& ctx);
     Optional<Operand> visit(Parse::DeclAST*, BuildContext&);
     Optional<Operand> visit(Parse::BinOpAST*, BuildContext&);
     Optional<Operand> visit(Parse::VariableAST*, BuildContext&);

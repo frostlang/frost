@@ -36,6 +36,7 @@ AST* Parser::statement(ParseContext){
             return new ContinueAST(ContinueAST::create());
         }
         case TokenType::RETURN:{
+            return new ReturnAST(ReturnAST::create());
             break;
         }
         case TokenType::FOR:{
