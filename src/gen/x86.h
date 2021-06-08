@@ -230,6 +230,31 @@ public:
     OperandEncoding& encoding(){
         return m_encoding;
     }
+
+    // todo put this in the variant instead of std::string
+    // e.g. 
+    // mov [rax], 2
+    // mov [rax + 4], 5
+    // mov [eax + ebx], 8
+    class MemoryLocation{
+    public:
+        enum class Type{
+            SINGLE,
+            DOUBLE
+        };
+        class Value{
+            enum class Type{
+                IMM,
+                REG
+            };
+            Type m_type;
+            std::variant<u32, Register> m_value;
+        };
+
+    private:
+        Type m_type;
+        Value m_offsets[2];
+    };
 private:
     OperandEncoding m_encoding;
     std::variant<Register, s32, std::string> m_value;

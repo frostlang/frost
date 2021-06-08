@@ -7,6 +7,7 @@
 #include <type.h>
 #include <gen/basicastexecutor.h>
 #include <gen/x86astgen.h>
+#include <gen/generator.h>
 
 int main(){
     using namespace Frost;
@@ -36,6 +37,10 @@ int main(){
 
     Parse::CleanupVisitor cleanup;
     ast->visit(cleanup);
+
+
+    dbg() << Gen::Target(Gen::Arch(Gen::Arch::Type::X86), Gen::Platform(Gen::Platform::Type::WINDOWS32)).is_supported();
+
 
     /*
     auto op0 = Gen::Operand::create(Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::REG, Gen::OperandEncoding::Size::_8), Gen::Register(Gen::Register::Type::AH));
