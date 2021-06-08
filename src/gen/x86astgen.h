@@ -316,75 +316,24 @@ public:
         X86ASTGenerator x;
         x.m_ast = ast;
 
-        register_instr(Gen::InstructionEncoding::create("add", 0,
-            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::MEM, Gen::OperandEncoding::Size::_8),
-            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::REG, Gen::OperandEncoding::Size::_8),
-            Gen::OperandEncoding::create()
-        ));
-        register_instr(Gen::InstructionEncoding::create("add", 0,
-            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::REG, Gen::OperandEncoding::Size::_8),
-            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::REG, Gen::OperandEncoding::Size::_8),
-            Gen::OperandEncoding::create()
-        ));
-
-        register_instr(Gen::InstructionEncoding::create("add", 1,
-            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::REG, Gen::OperandEncoding::Size::_16),
-            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::REG, Gen::OperandEncoding::Size::_16),
-            Gen::OperandEncoding::create()
-        ));
-        register_instr(Gen::InstructionEncoding::create("add", 1,
-            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::MEM, Gen::OperandEncoding::Size::_16),
-            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::REG, Gen::OperandEncoding::Size::_16),
-            Gen::OperandEncoding::create()
-        ));
+        #define INSTR(name, op, op0_type, op0_size, op1_type, op1_size) \
+            register_instr(Gen::InstructionEncoding::create(name, 0, \
+                Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::op0_type, Gen::OperandEncoding::Size::op0_size), \
+                Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::op1_type, Gen::OperandEncoding::Size::op1_size), \
+                Gen::OperandEncoding::create() \
+            )); 
 
 
-        // this defines the add instruction that takes the form add reg8 imm8 (adds 8 bit immediate to 8 bit register)
-        register_instr(Gen::InstructionEncoding::create("add", 4,
-            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::REG, Gen::OperandEncoding::Size::_8),
-            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::IMM, Gen::OperandEncoding::Size::_8),
-            Gen::OperandEncoding::create()
-        ));
-        // 16 & 32 bit add use the same op code
-        register_instr(Gen::InstructionEncoding::create("add", 5,
-            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::REG, Gen::OperandEncoding::Size::_16),
-            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::IMM, Gen::OperandEncoding::Size::_16),
-            Gen::OperandEncoding::create()
-        ));
-        register_instr(Gen::InstructionEncoding::create("add", 5,
-            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::REG, Gen::OperandEncoding::Size::_32),
-            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::IMM, Gen::OperandEncoding::Size::_32),
-            Gen::OperandEncoding::create()
-        ));
-
-        // add imm 8 to register or memory
-        register_instr(Gen::InstructionEncoding::create("add", 80,
-            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::REG, Gen::OperandEncoding::Size::_32),
-            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::IMM, Gen::OperandEncoding::Size::_8),
-            Gen::OperandEncoding::create()
-        ));
-        register_instr(Gen::InstructionEncoding::create("add", 80,
-            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::MEM, Gen::OperandEncoding::Size::_32),
-            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::IMM, Gen::OperandEncoding::Size::_8),
-            Gen::OperandEncoding::create()
-        ));
-
-        // move memory to register
-        register_instr(Gen::InstructionEncoding::create("mov", 88,
-            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::REG, Gen::OperandEncoding::Size::_8),
-            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::MEM, Gen::OperandEncoding::Size::_8),
-            Gen::OperandEncoding::create()
-        ));
-        register_instr(Gen::InstructionEncoding::create("mov", 88,
-            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::REG, Gen::OperandEncoding::Size::_16),
-            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::MEM, Gen::OperandEncoding::Size::_16),
-            Gen::OperandEncoding::create()
-        ));
-        register_instr(Gen::InstructionEncoding::create("mov", 88,
-            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::REG, Gen::OperandEncoding::Size::_32),
-            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::MEM, Gen::OperandEncoding::Size::_32),
-            Gen::OperandEncoding::create()
-        ));
+        INSTR("add", 0, MEM, _8, REG, _8)
+        INSTR("add", 0, REG, _8, REG, _8)
+        INSTR("add", 1, MEM, _16, REG, _16)
+        INSTR("add", 1, REG, _16, REG, _16)
+        INSTR("add", 4, REG, _8, IMM, _8)
+        INSTR("add", 5, REG, _16, IMM, _16)
+        INSTR("add", 5, REG, _32, IMM, _32)
+        INSTR("mov", 88, REG, _8, MEM, _8)
+        INSTR("mov", 88, REG, _8, MEM, _16)
+        INSTR("mov", 88, REG, _8, MEM, _32)
 
         return x;
     }
