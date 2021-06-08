@@ -3,40 +3,8 @@
 namespace Frost::Gen{
 
 
+using namespace X86;
 
-
-std::vector<InstructionEncoding> instruction_lookup_table;
-
-
-void register_instr(InstructionEncoding instruction_encoding){
-    instruction_lookup_table.push_back(instruction_encoding);
-}
-
-InstructionEncoding lookup_instr(
-    std::string name,
-    OperandEncoding op0,
-    OperandEncoding op1,
-    OperandEncoding op2
-){
-    /*dbg() << "name = " <<name<<"\n";
-    dbg() << "op0 = " << op0 << "\n";
-    dbg() << "op1 = " << op1 << "\n";
-    dbg() << "op2 = " << op2 << "\n";*/
-    for(auto& instruction_encoding : instruction_lookup_table){
-        /*dbg() << "checking...\n";
-        dbg() << "name = " <<instruction_encoding.name() <<"\n";
-        dbg() << "op0 = " << instruction_encoding.op0() << "\n";
-        dbg() << "op1 = " << instruction_encoding.op1() << "\n";
-        dbg() << "op2 = " << instruction_encoding.op2() << "\n";*/
-        if(instruction_encoding.name()==name
-        && instruction_encoding.op0()==op0
-        && instruction_encoding.op1()==op1
-        && instruction_encoding.op2()==op2){
-            return instruction_encoding;
-        }
-    }
-    return {};
-}
 
 void X86ASTGenerator::gen(){
     dbg() << "gen!\n";
@@ -49,11 +17,6 @@ void X86ASTGenerator::gen(){
 void X86ASTGenerator::emit(const char* instr){
     
 }
-
-Register BuildContext::alloc_reg(OperandEncoding::Size size){
-    return Register((Register::Type)m_used_registers++);
-}
-
 
 OperandEncoding X86ASTGenerator::op_encoding_from_type(Type type){
     switch(type.type()){
@@ -163,6 +126,16 @@ Optional<Operand> X86ASTGenerator::visit(Parse::VariableAST* variable_ast, Build
 
 
 Optional<Operand> X86ASTGenerator::visit(Parse::LiteralAST* literal_ast, BuildContext& ctx){    
+
+    // so... the problem with this is that we need to know if we are within a nested operation
+    // e.g. 1 + 2 + 3
+    // otherwise ^ would generate
+    // 
+    // add al 1
+    // 2   3  0
+    //
+    // the 2 is the first paramater and so should be stored in a register
+
     // first get the encoding
     auto encoding = op_encoding_from_type(literal_ast->lit_type());
     // then create the operand
