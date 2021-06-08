@@ -299,7 +299,9 @@ public:
     u32& stack_ptr(){
         return m_stack_ptr;
     }
+    Register alloc_reg(OperandEncoding::Size encoding_type);
 private:
+    u8 m_used_registers = 0;
     Block m_block;
     u32 m_stack_ptr = {0};
 };
@@ -313,6 +315,29 @@ public:
     static X86ASTGenerator create(Parse::AST* ast){
         X86ASTGenerator x;
         x.m_ast = ast;
+
+        register_instr(Gen::InstructionEncoding::create("add", 0,
+            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::MEM, Gen::OperandEncoding::Size::_8),
+            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::REG, Gen::OperandEncoding::Size::_8),
+            Gen::OperandEncoding::create()
+        ));
+        register_instr(Gen::InstructionEncoding::create("add", 0,
+            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::REG, Gen::OperandEncoding::Size::_8),
+            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::REG, Gen::OperandEncoding::Size::_8),
+            Gen::OperandEncoding::create()
+        ));
+
+        register_instr(Gen::InstructionEncoding::create("add", 1,
+            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::REG, Gen::OperandEncoding::Size::_16),
+            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::REG, Gen::OperandEncoding::Size::_16),
+            Gen::OperandEncoding::create()
+        ));
+        register_instr(Gen::InstructionEncoding::create("add", 1,
+            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::MEM, Gen::OperandEncoding::Size::_16),
+            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::REG, Gen::OperandEncoding::Size::_16),
+            Gen::OperandEncoding::create()
+        ));
+
 
         // this defines the add instruction that takes the form add reg8 imm8 (adds 8 bit immediate to 8 bit register)
         register_instr(Gen::InstructionEncoding::create("add", 4,
@@ -344,6 +369,23 @@ public:
             Gen::OperandEncoding::create()
         ));
 
+        // move memory to register
+        register_instr(Gen::InstructionEncoding::create("mov", 88,
+            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::REG, Gen::OperandEncoding::Size::_8),
+            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::MEM, Gen::OperandEncoding::Size::_8),
+            Gen::OperandEncoding::create()
+        ));
+        register_instr(Gen::InstructionEncoding::create("mov", 88,
+            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::REG, Gen::OperandEncoding::Size::_16),
+            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::MEM, Gen::OperandEncoding::Size::_16),
+            Gen::OperandEncoding::create()
+        ));
+        register_instr(Gen::InstructionEncoding::create("mov", 88,
+            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::REG, Gen::OperandEncoding::Size::_32),
+            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::MEM, Gen::OperandEncoding::Size::_32),
+            Gen::OperandEncoding::create()
+        ));
+
         return x;
     }
     
@@ -352,7 +394,6 @@ public:
     void emit(const char*);
     
     OperandEncoding op_encoding_from_type(Frost::Type type);
-    Register alloc_reg(Frost::Type, BuildContext&);
 
     Optional<Operand> visit(Parse::AST*, BuildContext&);
     Optional<Operand> visit(Parse::ProgramAST*, BuildContext&);

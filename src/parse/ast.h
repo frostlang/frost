@@ -260,6 +260,7 @@ public:
 
     static VariableAST create(Token& token){
         VariableAST l(token);
+        l.m_type=Frost::Type(Frost::Type::Storage::U8);
         return l;
     }
     Frost::Type& var_type(){

@@ -18,16 +18,16 @@ InstructionEncoding lookup_instr(
     OperandEncoding op1,
     OperandEncoding op2
 ){
-    dbg() << "name = " <<name<<"\n";
+    /*dbg() << "name = " <<name<<"\n";
     dbg() << "op0 = " << op0 << "\n";
     dbg() << "op1 = " << op1 << "\n";
-    dbg() << "op2 = " << op2 << "\n";
+    dbg() << "op2 = " << op2 << "\n";*/
     for(auto& instruction_encoding : instruction_lookup_table){
-        dbg() << "checking...\n";
+        /*dbg() << "checking...\n";
         dbg() << "name = " <<instruction_encoding.name() <<"\n";
         dbg() << "op0 = " << instruction_encoding.op0() << "\n";
         dbg() << "op1 = " << instruction_encoding.op1() << "\n";
-        dbg() << "op2 = " << instruction_encoding.op2() << "\n";
+        dbg() << "op2 = " << instruction_encoding.op2() << "\n";*/
         if(instruction_encoding.name()==name
         && instruction_encoding.op0()==op0
         && instruction_encoding.op1()==op1
@@ -51,10 +51,10 @@ void X86ASTGenerator::emit(const char* instr){
     
 }
 
-
-Register X86ASTGenerator::alloc_reg(Frost::Type type, BuildContext& ctx){
-    return Register(Register::Type::AH);
+Register BuildContext::alloc_reg(OperandEncoding::Size size){
+    return Register((Register::Type)m_used_registers++);
 }
+
 
 OperandEncoding X86ASTGenerator::op_encoding_from_type(Type type){
     switch(type.type()){
@@ -80,6 +80,8 @@ Optional<Operand> X86ASTGenerator::visit(Parse::AST* ast, BuildContext& ctx){
             return visit(static_cast<Parse::ProgramAST*>(ast), ctx);
         } case Parse::AST::Type::BIN:{
             return visit(static_cast<Parse::BinOpAST*>(ast), ctx);
+        } case Parse::AST::Type::VARIABLE:{
+            return visit(static_cast<Parse::VariableAST*>(ast), ctx);
         } case Parse::AST::Type::LITERAL:{
             return visit(static_cast<Parse::LiteralAST*>(ast), ctx);
         }
@@ -113,12 +115,11 @@ Optional<Operand> X86ASTGenerator::visit(Parse::BinOpAST* bin_op_ast, BuildConte
 
             Operand lhs = Operand::create(
                 OperandEncoding::create(OperandEncoding::EncodingType::REG, OperandEncoding::Size::_8),
-                Register(Register::Type::AH)
+                ctx.alloc_reg(OperandEncoding::Size::_8)
             );
 
 
             Operand rhs = visit(bin_op_ast->rhs(), ctx).data();
-
            
             auto add = Instruction::create("add", lhs, rhs, Operand::create());
 
@@ -140,16 +141,17 @@ Optional<Operand> X86ASTGenerator::visit(Parse::VariableAST* variable_ast, Build
     encoding.set_type(OperandEncoding::EncodingType::REG);
 
     // then find a register to put the variable in
-    Register reg = alloc_reg(variable_ast->var_type(), ctx);
+    Register reg = ctx.alloc_reg(encoding.size());
 
 
     // now we move the variable into the register
+    // todo this is wrong we need to find the offset of the variable on the stack...
     auto stack_ptr = ctx.stack_ptr();
     std::stringstream ss;
     ss << "[rbp-" << ctx.stack_ptr() << "]";
 
     Operand mov_lhs = Operand::create(encoding, reg);
-    Operand mov_rhs = Operand::create(encoding, ss.str());
+    Operand mov_rhs = Operand::create(OperandEncoding::create(OperandEncoding::EncodingType::MEM, encoding.size()), ss.str());
     // create a mov instruction to put the variable in the register
     // emit("mov")
     Instruction mov = Instruction::create("mov", mov_lhs, mov_rhs, Operand::create());
