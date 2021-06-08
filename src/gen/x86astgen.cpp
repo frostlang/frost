@@ -18,24 +18,6 @@ void X86ASTGenerator::emit(const char* instr){
     
 }
 
-OperandEncoding X86ASTGenerator::op_encoding_from_type(Type type){
-    switch(type.type()){
-        case Type::Storage::U8:
-        case Type::Storage::S8:{
-            return OperandEncoding::create(OperandEncoding::EncodingType::IMM, OperandEncoding::Size::_8);
-        }
-        case Type::Storage::U16:
-        case Type::Storage::S16:{
-             return OperandEncoding::create(OperandEncoding::EncodingType::IMM, OperandEncoding::Size::_16);
-        }
-        case Type::Storage::U32:
-        case Type::Storage::S32:{
-             return OperandEncoding::create(OperandEncoding::EncodingType::IMM, OperandEncoding::Size::_32);
-        }
-    }
-    return OperandEncoding::create(OperandEncoding::EncodingType::IMM, OperandEncoding::Size::ANY);
-}
-
 Optional<Operand> X86ASTGenerator::visit(Parse::AST* ast, BuildContext& ctx){
     switch(ast->type()){
         case Parse::AST::Type::PROGRAM:{
@@ -99,7 +81,7 @@ Optional<Operand> X86ASTGenerator::visit(Parse::BinOpAST* bin_op_ast, BuildConte
 
 Optional<Operand> X86ASTGenerator::visit(Parse::VariableAST* variable_ast, BuildContext& ctx){    
     // first get the encoding
-    OperandEncoding encoding = op_encoding_from_type(variable_ast->var_type());
+    OperandEncoding encoding = OperandEncoding::create(variable_ast->var_type());
     encoding.set_type(OperandEncoding::EncodingType::REG);
 
     // then find a register to put the variable in
@@ -137,7 +119,7 @@ Optional<Operand> X86ASTGenerator::visit(Parse::LiteralAST* literal_ast, BuildCo
     // the 2 is the first paramater and so should be stored in a register
 
     // first get the encoding
-    auto encoding = op_encoding_from_type(literal_ast->lit_type());
+    auto encoding = OperandEncoding::create(literal_ast->lit_type());
     // then create the operand
     auto op = Operand::create(encoding, std::stoi(literal_ast->token().value().data()));
     return Optional<Operand>(op);

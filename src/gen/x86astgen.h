@@ -29,8 +29,6 @@ public:
 
     void emit(const char*);
     
-    OperandEncoding op_encoding_from_type(Frost::Type type);
-
     Optional<Operand> visit(Parse::AST*, BuildContext&);
     Optional<Operand> visit(Parse::ProgramAST*, BuildContext&);
     Optional<Operand> visit(Parse::BinOpAST*, BuildContext&);
