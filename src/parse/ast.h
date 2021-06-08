@@ -262,8 +262,12 @@ public:
         VariableAST l(token);
         return l;
     }
+    Frost::Type& var_type(){
+        return m_type;
+    }
     DEF_VISIT_INHERIT_AST
 private:
+    Frost::Type m_type;
     const Token& m_token;
 };
 

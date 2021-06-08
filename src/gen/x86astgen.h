@@ -111,6 +111,10 @@ public:
     u1 operator==(OperandEncoding other){
         return m_encoding_type==other.m_encoding_type && m_size==other.m_size;
     }
+    OperandEncoding& set_type(EncodingType type){
+        m_encoding_type = type;
+        return *this;
+    }
     EncodingType& type(){
         return m_encoding_type;
     }
@@ -172,7 +176,7 @@ private:
 };
 
 // this represents an x86 instruction operand
-// e.g. 8, RAX, [RDI] etc
+// e.g. 8, RAX, [RDI], [rbp-8] etc
 class Operand : public Debugable{
 public:
     static Operand create(){
@@ -181,7 +185,7 @@ public:
         o.m_value = 0;
         return o;
     }
-    static Operand create(OperandEncoding encoding, std::variant<Register, s32> value){
+    static Operand create(OperandEncoding encoding, std::variant<Register, s32, std::string> value){
         Operand o;
         o.m_encoding = encoding;
         o.m_value = value;
@@ -192,6 +196,8 @@ public:
            return std::get<Register>(m_value).debug();
         }else if(m_encoding.type()==OperandEncoding::EncodingType::IMM){
            return std::to_string(std::get<s32>(m_value));
+        }else if(m_encoding.type()==OperandEncoding::EncodingType::MEM){
+           return std::get<std::string>(m_value);
         }
         return "";
     }
@@ -202,6 +208,8 @@ public:
             ss << std::get<Register>(m_value).debug();
         }else if(m_encoding.type()==OperandEncoding::EncodingType::IMM){
             ss << std::get<s32>(m_value);
+        }else if(m_encoding.type()==OperandEncoding::EncodingType::MEM){
+            ss << std::get<std::string>(m_value);
         }
 
         return ss.str();
@@ -211,7 +219,7 @@ public:
     }
 private:
     OperandEncoding m_encoding;
-    std::variant<Register, s32> m_value;
+    std::variant<Register, s32, std::string> m_value;
 };
 
 
@@ -260,7 +268,24 @@ private:
     Operand m_op2;
 };
 
-
+class Block : public Debugable{
+public:
+    Block(){}
+    Block& push(Instruction instruction){
+        m_instructions.push_back(instruction);
+        return *this;
+    }
+    std::string debug(){
+        std::stringstream ss;
+        ss << "block\n";
+        for(auto& instruction : m_instructions){
+            ss << instruction.debug() << "\n";
+        }
+        return ss.str();
+    }
+private:
+    std::vector<Instruction> m_instructions;
+};
 
 class BuildContext{
 public:
@@ -268,7 +293,15 @@ public:
         BuildContext b;
         return b;
     }
+    Block& block(){
+        return m_block;
+    }
+    u32& stack_ptr(){
+        return m_stack_ptr;
+    }
 private:
+    Block m_block;
+    u32 m_stack_ptr = {0};
 };
 
 //
@@ -318,13 +351,14 @@ public:
 
     void emit(const char*);
     
-    OperandEncoding op_encoding_from_type(Type type);
-    Register alloc_reg(BuildContext);
+    OperandEncoding op_encoding_from_type(Frost::Type type);
+    Register alloc_reg(Frost::Type, BuildContext&);
 
-    Optional<Operand> visit(Parse::AST*, BuildContext);
-    Optional<Operand> visit(Parse::ProgramAST*, BuildContext);
-    Optional<Operand> visit(Parse::BinOpAST*, BuildContext);
-    Optional<Operand> visit(Parse::LiteralAST*, BuildContext);
+    Optional<Operand> visit(Parse::AST*, BuildContext&);
+    Optional<Operand> visit(Parse::ProgramAST*, BuildContext&);
+    Optional<Operand> visit(Parse::BinOpAST*, BuildContext&);
+    Optional<Operand> visit(Parse::VariableAST*, BuildContext&);
+    Optional<Operand> visit(Parse::LiteralAST*, BuildContext&);
 
 private:
     Parse::AST* m_ast;
