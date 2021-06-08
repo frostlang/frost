@@ -32,7 +32,6 @@ InstructionEncoding lookup_instr(
         && instruction_encoding.op0()==op0
         && instruction_encoding.op1()==op1
         && instruction_encoding.op2()==op2){
-            dbg() << "found instruction! " << name << "\n";
             return instruction_encoding;
         }
     }
@@ -118,7 +117,7 @@ Optional<Operand> X86ASTGenerator::visit(Parse::BinOpAST* bin_op_ast, BuildConte
                 ctx.alloc_reg(OperandEncoding::Size::_8)
             );
 
-
+            lhs = visit(bin_op_ast->lhs(), ctx).data();
             Operand rhs = visit(bin_op_ast->rhs(), ctx).data();
            
             auto add = Instruction::create("add", lhs, rhs, Operand::create());

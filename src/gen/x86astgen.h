@@ -317,7 +317,7 @@ public:
         x.m_ast = ast;
 
         #define INSTR(name, op, op0_type, op0_size, op1_type, op1_size) \
-            register_instr(Gen::InstructionEncoding::create(name, 0, \
+            register_instr(Gen::InstructionEncoding::create(name, op, \
                 Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::op0_type, Gen::OperandEncoding::Size::op0_size), \
                 Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::op1_type, Gen::OperandEncoding::Size::op1_size), \
                 Gen::OperandEncoding::create() \
