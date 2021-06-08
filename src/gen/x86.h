@@ -131,6 +131,12 @@ private:
 
 class InstructionEncoding : public Debugable{
 public:
+    enum class Type{
+        LABEL,
+        OP1,
+        OP2,
+        OP3
+    };
     static InstructionEncoding create(std::string name, u8 op, 
         OperandEncoding operand_encoding_0,
         OperandEncoding operand_encoding_1,
@@ -160,6 +166,9 @@ public:
     std::string& name(){
         return m_name;
     }
+    Type& type(){
+        return m_type;
+    }
     u8& op(){
         return m_op;
     }
@@ -174,6 +183,7 @@ public:
     }
 private:
     std::string m_name;
+    Type m_type;
     u8 m_op;
     OperandEncoding m_operand_encoding[3]; // can have 3 operands
 };
@@ -241,6 +251,12 @@ extern InstructionEncoding lookup_instr(
 
 class Instruction : public Debugable{
 public:
+    static Instruction create(std::string label){
+        Instruction i;
+        i.m_encoding.name()=label;
+        i.m_encoding.type()=InstructionEncoding::Type::LABEL;
+        return i;
+    }
     static Instruction create(
         std::string name, 
         Operand op0,
@@ -249,19 +265,23 @@ public:
         ){
         Instruction i;
         i.m_encoding = lookup_instr(name, op0.encoding(), op1.encoding(), op2.encoding());
+        i.m_encoding.type()=InstructionEncoding::Type::OP2;
         i.m_op0 = op0;
         i.m_op1 = op1;
         i.m_op2 = op2;
         return i;
     }
     std::string debug() override{
-        std::stringstream ss;
-        ss << "instruction : " << (u32)m_encoding.op() << " : " << m_encoding.name() << " " << m_op0.debug() << " " << m_op1.debug() << " " << m_op2.debug();
-        return ss.str();
+        return to_asm();
     }
     std::string to_asm(){
         std::stringstream ss;
-        ss << m_encoding.name() << " " << m_op0.to_asm() << " " << m_op1.to_asm() << " " << m_op2.to_asm();
+        switch(m_encoding.type()){
+            case InstructionEncoding::Type::LABEL:
+                ss << m_encoding.name(); break;
+            case InstructionEncoding::Type::OP2: 
+                ss << m_encoding.name() << " " << m_op0.to_asm() << " " << m_op1.to_asm(); break;
+        }
         return ss.str();
     }
 private:
@@ -293,9 +313,18 @@ private:
 
 class BuildContext{
 public:
+    enum class Scope{
+        GLOBAL,
+        FN
+    };
     static BuildContext create(){
         BuildContext b;
+        b.m_scope = Scope::GLOBAL;
+        b.m_stack_ptr=0;
         return b;
+    }
+    Scope& scope(){
+        return m_scope;
     }
     Block& block(){
         return m_block;
@@ -303,8 +332,14 @@ public:
     u32& stack_ptr(){
         return m_stack_ptr;
     }
+    u32 alloc_stack(){
+        auto s = m_stack_ptr;
+        s+=4;
+        return s;
+    }
     Register alloc_reg(OperandEncoding::Size encoding_type);
 private:
+    Scope m_scope;
     u8 m_used_registers = 0;
     Block m_block;
     u32 m_stack_ptr = {0};

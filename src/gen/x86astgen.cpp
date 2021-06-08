@@ -22,6 +22,8 @@ Optional<Operand> X86ASTGenerator::visit(Parse::AST* ast, BuildContext& ctx){
     switch(ast->type()){
         case Parse::AST::Type::PROGRAM:{
             return visit(static_cast<Parse::ProgramAST*>(ast), ctx);
+        }case Parse::AST::Type::DECL:{
+            return visit(static_cast<Parse::DeclAST*>(ast), ctx);
         } case Parse::AST::Type::BIN:{
             return visit(static_cast<Parse::BinOpAST*>(ast), ctx);
         } case Parse::AST::Type::VARIABLE:{
@@ -34,9 +36,23 @@ Optional<Operand> X86ASTGenerator::visit(Parse::AST* ast, BuildContext& ctx){
 }
 
 Optional<Operand> X86ASTGenerator::visit(Parse::ProgramAST* program_ast, BuildContext& ctx){
+    // create the main fn
+    ctx.block().push(Instruction::create("main:"));
     for(auto& ast : program_ast->statements()){
         visit(ast, ctx);
     }
+    return Optional<Operand>();
+}
+
+Optional<Operand> X86ASTGenerator::visit(Parse::DeclAST* decl_ast, BuildContext& ctx){
+
+    if(ctx.scope()==BuildContext::Scope::GLOBAL){
+        //
+    }else if(ctx.scope()==BuildContext::Scope::FN){
+        // get an offset on the stack
+        auto stack_offset = ctx.alloc_stack();
+    }
+
     return Optional<Operand>();
 }
 
