@@ -27,6 +27,22 @@ class LiteralAST;
 class AST {
 
 public:
+
+    enum class Type : u8{
+        ERROR,
+        PROGRAM,
+        IF,
+        FOR,
+        BLOCK,
+        BREAK,
+        CONTINUE,
+        DECL,
+        BIN,
+        VARIABLE,
+        LITERAL
+    };
+
+    virtual Type type() const = 0;
     virtual void* visit(ASTVisitor& visitor) = 0;
 private:
 
@@ -37,6 +53,9 @@ private:
 
 class ErrorAST : public AST {
 public:
+    Type type() const override {
+        return Type::ERROR;
+    }
     static ErrorAST create(){
         return {};
     }
@@ -47,6 +66,9 @@ private:
 
 class ProgramAST : public AST {
 public:
+    Type type() const override {
+        return Type::PROGRAM;
+    }
     static ProgramAST create(std::vector<AST*> statements){
         ProgramAST p;
         p.m_statements = statements;
@@ -65,6 +87,9 @@ private:
 
 class IfAST : public AST{
 public:
+    Type type() const override {
+        return Type::IF;
+    }
     static IfAST create(){
         return {};
     }
@@ -98,6 +123,9 @@ private:
 
 class ForAST : public AST{
 public:
+    Type type() const override {
+        return Type::FOR;
+    }
     static ForAST create(){
         return {};
     }
@@ -108,6 +136,9 @@ private:
 
 class BlockAST : public AST {
 public:
+    Type type() const override {
+        return Type::BLOCK;
+    }
     static BlockAST create(std::vector<AST*> statements){
         BlockAST p;
         p.m_statements = statements;
@@ -125,6 +156,9 @@ private:
 
 class BreakAST : public AST{
 public:
+    Type type() const override {
+        return Type::BREAK;
+    }
     static BreakAST create(){
         return {};
     }
@@ -135,6 +169,9 @@ private:
 
 class ContinueAST : public AST{
 public:
+    Type type() const override {
+        return Type::CONTINUE;
+    }
     static ContinueAST create(){
         return {};
     }
@@ -145,6 +182,9 @@ private:
 
 class DeclAST : public AST{
 public:
+    Type type() const override {
+        return Type::DECL;
+    }
     DeclAST(Token& identifier) : m_identifier(identifier){}
     static DeclAST create(Token& identifier, Type type, AST* value){
         DeclAST d(identifier);
@@ -180,6 +220,9 @@ public:
         DIV
     };
 
+    Type type() const override {
+        return Type::BIN;
+    }
     static BinOpAST create(Op type, AST* lhs, AST* rhs){
         BinOpAST b;
         b.m_type = type;
@@ -209,6 +252,9 @@ private:
 class VariableAST : public AST {
 public:
 
+    Type type() const override {
+        return Type::VARIABLE;
+    }
     
     VariableAST(Token& token) : m_token(token){}
 
@@ -225,11 +271,15 @@ private:
 class LiteralAST : public AST {
 public:
 
+    Type type() const override {
+        return Type::LITERAL;
+    }
     
     LiteralAST(Token& token) : m_token(token){}
 
-    static LiteralAST create(Token& token){
+    static LiteralAST create(Token& token, Frost::Type type){
         LiteralAST l(token);
+        l.m_type = type;
         return l;
     }
     DEF_VISIT_INHERIT_AST
@@ -237,11 +287,11 @@ public:
     const Token& token(){
         return m_token;
     }
-    Type& type(){
+    Frost::Type& lit_type(){
         return m_type;
     }
 private:
-    Type m_type;
+    Frost::Type m_type;
     const Token& m_token;
 };
 

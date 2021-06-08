@@ -39,13 +39,20 @@ InstructionEncoding lookup_instr(
     return {};
 }
 
-void X86ASTGenerator::gen(){}
+void X86ASTGenerator::gen(){
+    dbg() << "gen!\n";
+    visit(m_ast, BuildContext::create());
+}
 
 
 void X86ASTGenerator::emit(const char* instr){
     
 }
 
+
+Register X86ASTGenerator::alloc_reg(BuildContext ctx){
+    return Register(Register::Type::AH);
+}
 
 OperandEncoding X86ASTGenerator::op_encoding_from_type(Type type){
     switch(type.type()){
@@ -65,9 +72,29 @@ OperandEncoding X86ASTGenerator::op_encoding_from_type(Type type){
     return OperandEncoding::create(OperandEncoding::EncodingType::IMM, OperandEncoding::Size::ANY);
 }
 
+Optional<Operand> X86ASTGenerator::visit(Parse::AST* ast, BuildContext ctx){
+    switch(ast->type()){
+        case Parse::AST::Type::PROGRAM:{
+            return visit(static_cast<Parse::ProgramAST*>(ast), ctx);
+        } case Parse::AST::Type::BIN:{
+            return visit(static_cast<Parse::BinOpAST*>(ast), ctx);
+        } case Parse::AST::Type::LITERAL:{
+            return visit(static_cast<Parse::LiteralAST*>(ast), ctx);
+        }
+    }
+    return Optional<Operand>();
+}
+
+Optional<Operand> X86ASTGenerator::visit(Parse::ProgramAST* program_ast, BuildContext ctx){
+    for(auto& ast : program_ast->statements()){
+        visit(ast, ctx);
+    }
+    return Optional<Operand>();
+}
+
 // example of a literal ast
-void X86ASTGenerator::visit(Parse::BinOpAST* bin_op_ast){
-    
+Optional<Operand> X86ASTGenerator::visit(Parse::BinOpAST* bin_op_ast, BuildContext ctx){
+    dbg() << "generating bin op!\n";
     switch(bin_op_ast->op()){
         case Parse::BinOpAST::Op::PLUS: {
 
@@ -82,30 +109,36 @@ void X86ASTGenerator::visit(Parse::BinOpAST* bin_op_ast){
 
             // 1. get the lhs and rhs Operands
 
-            Operand lhs;
-            Operand rhs;
-            Operand nil;
+            Operand lhs = Operand::create(
+                OperandEncoding::create(OperandEncoding::EncodingType::REG, OperandEncoding::Size::_8),
+                Register(Register::Type::AH)
+            );
 
-            Instruction::create("add", lhs, rhs, nil);
 
+            Operand rhs = visit(bin_op_ast->rhs(), ctx).data();
+
+           
+            auto instruction = Instruction::create("add", lhs, rhs, Operand::create());
+
+            dbg() << "instruction = " << instruction.to_asm() << "\n";
 
 
 
             break;
         }
     }
+
+    return Optional<Operand>();
     
 }
 
 // example of a literal ast
-void X86ASTGenerator::visit(Parse::LiteralAST* literal_ast){
-    
+Optional<Operand> X86ASTGenerator::visit(Parse::LiteralAST* literal_ast, BuildContext ctx){    
     // first get the encoding
-    OperandEncoding encoding = op_encoding_from_type(literal_ast->type());
-    
-    // then construct an Operand value
-    //Operand operand = Operand::create(encoding, literal_ast->token().value());
-    
+    auto encoding = op_encoding_from_type(literal_ast->lit_type());
+    // then create the operand
+    auto op = Operand::create(encoding, std::stoi(literal_ast->token().value().data()));
+    return Optional<Operand>(op);
 }
 
 

@@ -187,6 +187,14 @@ public:
         o.m_value = value;
         return o;
     }
+    std::string to_asm(){
+        if(m_encoding.type()==OperandEncoding::EncodingType::REG){
+           return std::get<Register>(m_value).debug();
+        }else if(m_encoding.type()==OperandEncoding::EncodingType::IMM){
+           return std::to_string(std::get<s32>(m_value));
+        }
+        return "";
+    }
     std::string debug(){
         std::stringstream ss;
         
@@ -239,6 +247,11 @@ public:
         ss << "instruction : " << (u32)m_encoding.op() << " : " << m_encoding.name() << " " << m_op0.debug() << " " << m_op1.debug() << " " << m_op2.debug();
         return ss.str();
     }
+    std::string to_asm(){
+        std::stringstream ss;
+        ss << m_encoding.name() << " " << m_op0.to_asm() << " " << m_op1.to_asm() << " " << m_op2.to_asm();
+        return ss.str();
+    }
 private:
     Position m_position;
     InstructionEncoding m_encoding;
@@ -248,6 +261,15 @@ private:
 };
 
 
+
+class BuildContext{
+public:
+    static BuildContext create(){
+        BuildContext b;
+        return b;
+    }
+private:
+};
 
 //
 // NOTE this class takes the AST and generates 
@@ -297,9 +319,12 @@ public:
     void emit(const char*);
     
     OperandEncoding op_encoding_from_type(Type type);
+    Register alloc_reg(BuildContext);
 
-    void visit(Parse::BinOpAST* bin_op_ast);
-    void visit(Parse::LiteralAST* literal_ast);
+    Optional<Operand> visit(Parse::AST*, BuildContext);
+    Optional<Operand> visit(Parse::ProgramAST*, BuildContext);
+    Optional<Operand> visit(Parse::BinOpAST*, BuildContext);
+    Optional<Operand> visit(Parse::LiteralAST*, BuildContext);
 
 private:
     Parse::AST* m_ast;

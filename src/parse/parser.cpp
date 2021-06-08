@@ -282,10 +282,19 @@ AST* Parser::eq(ParseContext){
     return higher_precedence;
 }
 
-AST* Parser::cmp(ParseContext){return single({});}
+AST* Parser::cmp(ParseContext){return mdmr({});}
 AST* Parser::shift(ParseContext){return 0;}
 AST* Parser::pm(ParseContext){return 0;}
-AST* Parser::mdmr(ParseContext){return 0;}
+AST* Parser::mdmr(ParseContext ctx){
+    auto higher_precedence = single(ctx);
+    if(m_tokens->expect(TokenType::PLUS)){
+        auto op = m_tokens->next();
+        auto rhs = mdmr({});
+        auto bin_op_type = BinOpAST::Op::PLUS;
+        return new BinOpAST(BinOpAST::create(bin_op_type, higher_precedence, rhs));
+    }
+    return higher_precedence;
+}
 AST* Parser::un(ParseContext){return 0;}
 AST* Parser::cast(ParseContext){return 0;}
 
@@ -379,7 +388,7 @@ AST* Parser::string(ParseContext){
     if(m_tokens->expect(opening_string.type())){}
     m_tokens->next();
 
-    return new LiteralAST(LiteralAST::create(token));
+    return new LiteralAST(LiteralAST::create(token, Frost::Type(Frost::Type::Storage::POINTER)));
 }
 
 AST* Parser::num(ParseContext){
@@ -388,7 +397,7 @@ AST* Parser::num(ParseContext){
     if(!m_tokens->expect(TokenType::NUMBER)){}
     auto& token = m_tokens->next();
 
-    return new LiteralAST(LiteralAST::create(token));
+    return new LiteralAST(LiteralAST::create(token, Frost::Type(Frost::Type::Storage::U8)));
 }
 
 }

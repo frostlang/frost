@@ -30,20 +30,20 @@ int main(){
     Gen::X86ASTGenerator x = Gen::X86ASTGenerator::create(ast);
 
 
+    x.gen();
+
+
+
     Parse::CleanupVisitor cleanup;
     ast->visit(cleanup);
 
-
-    auto add_encoding = Gen::InstructionEncoding::create("add", 04,
-            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::REG, Gen::OperandEncoding::Size::_8),
-            Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::IMM, Gen::OperandEncoding::Size::_8),
-            Gen::OperandEncoding::create()
-        );
+    /*
     auto op0 = Gen::Operand::create(Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::REG, Gen::OperandEncoding::Size::_8), Gen::Register(Gen::Register::Type::AH));
     auto op1 = Gen::Operand::create(Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::IMM, Gen::OperandEncoding::Size::_8), 4);
     auto op2 = Gen::Operand::create();
 
-    dbg() << Gen::Instruction::create("add", op0, op1, op2);
+    dbg() << Gen::Instruction::create("add", op0, op1, op2).to_asm();
+    */
 
     return 0;
 }

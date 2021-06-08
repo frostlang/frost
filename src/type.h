@@ -61,6 +61,15 @@ public:
         return t;
     }
 
+    Type(){}
+
+    Type(Storage type){
+        m_type = type;
+        m_access_type = AccessType::PRIV;
+        m_mutable_type = MutableType::MUT;
+        m_assignable_type = AssignableType::UNASSIGNABLE;
+    }
+
     std::string debug(){
         std::stringstream ss;
         ss << "type="<<type_debug[(u8)m_type]<<"\n";
