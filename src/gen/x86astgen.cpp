@@ -2,6 +2,43 @@
 
 namespace Frost::Gen{
 
+
+
+
+std::vector<InstructionEncoding> instruction_lookup_table;
+
+
+void register_instr(InstructionEncoding instruction_encoding){
+    instruction_lookup_table.push_back(instruction_encoding);
+}
+
+InstructionEncoding lookup_instr(
+    std::string name,
+    OperandEncoding op0,
+    OperandEncoding op1,
+    OperandEncoding op2
+){
+    dbg() << "name = " <<name<<"\n";
+    dbg() << "op0 = " << op0 << "\n";
+    dbg() << "op1 = " << op1 << "\n";
+    dbg() << "op2 = " << op2 << "\n";
+    for(auto& instruction_encoding : instruction_lookup_table){
+        dbg() << "checking...\n";
+        dbg() << "name = " <<instruction_encoding.name() <<"\n";
+        dbg() << "op0 = " << instruction_encoding.op0() << "\n";
+        dbg() << "op1 = " << instruction_encoding.op1() << "\n";
+        dbg() << "op2 = " << instruction_encoding.op2() << "\n";
+        if(instruction_encoding.name()==name
+        && instruction_encoding.op0()==op0
+        && instruction_encoding.op1()==op1
+        && instruction_encoding.op2()==op2){
+            dbg() << "found instruction! " << name << "\n";
+            return instruction_encoding;
+        }
+    }
+    return {};
+}
+
 void X86ASTGenerator::gen(){}
 
 
@@ -67,17 +104,9 @@ void X86ASTGenerator::visit(Parse::LiteralAST* literal_ast){
     OperandEncoding encoding = op_encoding_from_type(literal_ast->type());
     
     // then construct an Operand value
-    Operand operand = Operand::create(encoding, literal_ast->token().value());
+    //Operand operand = Operand::create(encoding, literal_ast->token().value());
     
 }
 
-InstructionEncoding lookup_instr(
-    std::string name,
-    OperandEncoding op0,
-    OperandEncoding op1,
-    OperandEncoding op2
-){
-    return {};
-}
 
 }
