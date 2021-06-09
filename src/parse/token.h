@@ -179,6 +179,7 @@ u32 size(){
     return m_tokens.size();
 }
 u1 end() const {
+    dbg() << "end? idx="<< (int)m_index << " size=" << (int)m_tokens.size() << "\n";
     return m_index>=m_tokens.size();
 }
 

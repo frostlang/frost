@@ -59,14 +59,27 @@ Optional<X86::Operand> X86ASTGenerator::visit(Parse::IfAST* if_ast, X86::BuildCo
 Optional<X86::Operand> X86ASTGenerator::visit(Parse::DeclAST* decl_ast, X86::BuildContext& ctx){
     dbg() << "generating decl!\n";
 
+    auto stack_offset = ctx.alloc_stack();
+    std::stringstream ss;
+    ss << "[ebp-" << stack_offset << "]";
+    auto operand = Operand::create(
+        OperandEncoding::create(decl_ast->lit_type(), OperandEncoding::EncodingType::MEM),
+        ss.str()
+    );
+
+    dbg() << "decl operand before = " << operand << "\n";
+    
+    m_sym_table.put(s(decl_ast->token().value()), operand);
+
+/*
     if(ctx.scope()==X86::BuildContext::Scope::GLOBAL){
         //
     }else if(ctx.scope()==X86::BuildContext::Scope::FN){
         // get an offset on the stack
         auto stack_offset = ctx.alloc_stack();
     }
-
-    return Optional<X86::Operand>();
+*/
+    return Optional<X86::Operand>(operand);
 }
 
 // example of a literal ast
@@ -109,28 +122,16 @@ Optional<X86::Operand> X86ASTGenerator::visit(Parse::BinOpAST* bin_op_ast, X86::
 }
 
 Optional<X86::Operand> X86ASTGenerator::visit(Parse::VariableAST* variable_ast, X86::BuildContext& ctx){    
-    dbg() << "cock = " << s(variable_ast->token().value()) << "\n";
     // first get the encoding
-    X86::OperandEncoding encoding = X86::OperandEncoding::create(variable_ast->var_type());
-    encoding.set_type(X86::OperandEncoding::EncodingType::REG);
+    X86::OperandEncoding encoding = X86::OperandEncoding::create(variable_ast->var_type(), OperandEncoding::EncodingType::REG);
 
     // then find a register to put the variable in
     X86::Register reg = ctx.alloc_reg(encoding.size());
 
-
-//    auto location = m_sym_table.get(variable_ast->token().value().data());
-
-    // now we move the variable into the register
-    // todo this is wrong we need to find the offset of the variable on the stack...
-    auto stack_ptr = ctx.stack_ptr();
-    std::stringstream ss;
-    ss << "[rbp-" << ctx.stack_ptr() << "]";
+    Operand var_location = m_sym_table.get(s(variable_ast->token().value())).data();
 
     X86::Operand mov_lhs = X86::Operand::create(encoding, reg);
-    X86::Operand mov_rhs = X86::Operand::create(X86::OperandEncoding::create(X86::OperandEncoding::EncodingType::MEM, encoding.size()), ss.str());
-    // create a mov instruction to put the variable in the register
-    // emit("mov")
-    X86::Instruction mov = X86::Instruction::create("mov", mov_lhs, mov_rhs);
+    X86::Instruction mov = X86::Instruction::create("mov", mov_lhs, var_location);
     ctx.block().push(mov);
 
     // finally return the register the variable is now in
@@ -151,7 +152,7 @@ Optional<X86::Operand> X86ASTGenerator::visit(Parse::LiteralAST* literal_ast, X8
     // the 2 is the first paramater and so should be stored in a register
 
     // first get the encoding
-    auto encoding = X86::OperandEncoding::create(literal_ast->lit_type());
+    auto encoding = X86::OperandEncoding::create(literal_ast->lit_type(), OperandEncoding::EncodingType::IMM);
     // then create the operand
     auto op = X86::Operand::create(encoding, std::stoi(literal_ast->token().value().data()));
     return Optional<X86::Operand>(op);

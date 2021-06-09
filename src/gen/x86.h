@@ -100,7 +100,9 @@ public:
         o.m_size = size;
         return o;
     }
-    static OperandEncoding create(Frost::Type type);
+
+    static OperandEncoding create(Frost::Type type, EncodingType encoding_type);
+
     std::string debug(){
         std::stringstream ss;
         const char* type_lookup[] = {"IMM", "REG", "MEM"};
@@ -367,9 +369,8 @@ public:
         return m_stack_ptr;
     }
     u32 alloc_stack(){
-        auto s = m_stack_ptr;
-        s+=4;
-        return s;
+        m_stack_ptr+=4;
+        return m_stack_ptr;
     }
     Register alloc_reg(OperandEncoding::Size encoding_type);
 private:

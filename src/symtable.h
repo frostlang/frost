@@ -53,6 +53,9 @@ namespace Frost{
             m_scopes[m_scope].m_data.insert({key, value});
         }
         
+        // TODO
+        // we really want this to be Optional<T&> (Reference)
+        // but the problem is if the T is null then we can't get a reference to it :(
         Optional<T> get(std::string key){
             for(u32 i=m_scope;i>=0;i--){
                 if(m_scopes[i].data().count(key))

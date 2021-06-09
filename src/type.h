@@ -72,7 +72,7 @@ public:
 
     std::string debug(){
         std::stringstream ss;
-        ss << "type="<<type_debug[(u8)m_type]<<"\n";
+        ss << type_debug[(u8)m_type];
         return ss.str();
     }
 

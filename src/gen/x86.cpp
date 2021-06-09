@@ -31,22 +31,22 @@ Register BuildContext::alloc_reg(OperandEncoding::Size size){
     return Register((Register::Type)m_used_registers++);
 }
 
-OperandEncoding OperandEncoding::create(Type type){
+OperandEncoding OperandEncoding::create(Frost::Type type, OperandEncoding::EncodingType encoding_type){
     switch(type.type()){
         case Type::Storage::U8:
         case Type::Storage::S8:{
-            return OperandEncoding::create(OperandEncoding::EncodingType::IMM, OperandEncoding::Size::_8);
+            return OperandEncoding::create(encoding_type, OperandEncoding::Size::_8);
         }
         case Type::Storage::U16:
         case Type::Storage::S16:{
-             return OperandEncoding::create(OperandEncoding::EncodingType::IMM, OperandEncoding::Size::_16);
+             return OperandEncoding::create(encoding_type, OperandEncoding::Size::_16);
         }
         case Type::Storage::U32:
         case Type::Storage::S32:{
-             return OperandEncoding::create(OperandEncoding::EncodingType::IMM, OperandEncoding::Size::_32);
+             return OperandEncoding::create(encoding_type, OperandEncoding::Size::_32);
         }
     }
-    return OperandEncoding::create(OperandEncoding::EncodingType::IMM, OperandEncoding::Size::ANY);
+    return OperandEncoding::create(encoding_type, OperandEncoding::Size::ANY);
 }
 
 InstructionEncoding lookup_instr(

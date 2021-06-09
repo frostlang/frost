@@ -250,6 +250,14 @@ public:
         return ss.str();
     }
     DEF_VISIT_INHERIT_AST
+
+    const Token& token(){
+        return m_identifier;
+    }
+    Frost::Type& lit_type(){
+        return m_type;
+    }
+
 private:
     const Token& m_identifier;
     Frost::Type m_type;

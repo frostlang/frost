@@ -12,9 +12,10 @@ AST* Parser::parse(){
 
         std::vector<AST*> statements;
 
+        // TODO
+        // for some reason we only parse once...
         while(!m_tokens->end()){
             statements.push_back(statement({}));
-            break;
         }
         
         return new ProgramAST(ProgramAST::create(statements));
@@ -186,7 +187,7 @@ Optional<Type> Parser::type(){
     }
 
 
-    return Optional<Type>();
+    return Optional<Type>(t);
 }
 
 
@@ -203,11 +204,7 @@ Optional<Type> Parser::type(){
 //
 AST* Parser::decl(ParseContext){
     // get the identifier
-    auto& identifier = m_tokens->consume(TokenType::IDENTIFIER).data();
-
-    std::string i = identifier.value().data();
-
-    dbg() << "doing decl! identifier=" << i << "\n";
+    auto& identifier = m_tokens->next();
 
     // now consume the :
     if(!m_tokens->consume(TokenType::COLON).has()){
@@ -215,16 +212,6 @@ AST* Parser::decl(ParseContext){
     }
 
     auto t = type();
-    // now look for the type information
-    if(!t.has()){
-        // has a type
-    }
-
-    if(!m_tokens->consume(TokenType::SEMICOLON).has()){
-        // has a value
-    }
-
-    dbg() << "done decl!\n";
 
     return new DeclAST(DeclAST::create(identifier,t.data(), 0));
 
