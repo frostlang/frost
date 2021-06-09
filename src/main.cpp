@@ -5,50 +5,44 @@
 #include <asserts.h>
 #include <unit.h>
 #include <type.h>
-#include <gen/basicastexecutor.h>
-#include <gen/x86astgen.h>
+#include <gen/x86astgen.h> // crash if we include this for some reason...
 #include <gen/generator.h>
+#include <symtable.h>
 
+#include <map>
+#include <iostream>
+#include <string>
 int main(){
-    using namespace Frost;
-
-    Type t = Type::create(Type::Storage::U8);
-    dbg() << t << "\n";
-
-    Unit u = Unit::create().from_file("c:/frost/test/frost/1.frost");
-
-    dbg() << u << "\n";
-
-    Parse::Lexer l = Parse::Lexer::create(&u);
-    Parse::TokenStream& tokens = l.lex();
-
-    dbg() << tokens << "\n";
-
-    Parse::Parser p = Parse::Parser::create(&u, &tokens);
-    Parse::AST* ast = p.parse();
 
 
-    Gen::X86ASTGenerator x = Gen::X86ASTGenerator::create(ast);
+    Frost::Unit u = Frost::Unit::create().from_file("c:/frost/test/frost/1.frost");
+
+    Frost::dbg() << u << "\n";
+
+    Frost::Parse::Lexer l = Frost::Parse::Lexer::create(&u);
+    Frost::Parse::TokenStream& tokens = l.lex();
+
+    Frost::dbg() << tokens << "\n";
+
+    Frost::Parse::Parser p = Frost::Parse::Parser::create(&u, &tokens);
+    Frost::Parse::AST* ast = p.parse();
 
 
+    Frost::Gen::X86::X86ASTGenerator x = Frost::Gen::X86::X86ASTGenerator::create(ast);
     x.gen();
 
 
 
-    Parse::CleanupVisitor cleanup;
+    Frost::Parse::CleanupVisitor cleanup;
     ast->visit(cleanup);
 
+    Frost::SymTable<std::string> sym = Frost::SymTable<std::string>();
+    sym.put("x", "y");
+    sym.enter_scope();
+    sym.put("x", "z");
+    sym.exit_scope();
+    std::cout << "x=" << sym.get("x").data() << std::endl;
 
-    dbg() << Gen::Target(Gen::Arch(Gen::Arch::Type::X86), Gen::Platform(Gen::Platform::Type::WINDOWS32)).is_supported();
-
-
-    /*
-    auto op0 = Gen::Operand::create(Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::REG, Gen::OperandEncoding::Size::_8), Gen::Register(Gen::Register::Type::AH));
-    auto op1 = Gen::Operand::create(Gen::OperandEncoding::create(Gen::OperandEncoding::EncodingType::IMM, Gen::OperandEncoding::Size::_8), 4);
-    auto op2 = Gen::Operand::create();
-
-    dbg() << Gen::Instruction::create("add", op0, op1, op2).to_asm();
-    */
 
     return 0;
 }

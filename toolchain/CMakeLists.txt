@@ -21,7 +21,6 @@ set(SOURCES
     ../src/gen/generator.cpp
     ../src/gen/x86.cpp
     ../src/gen/x86astgen.cpp
-    ../src/gen/basicastexecutor.cpp
 )
 
 add_executable(Frost ${SOURCES})

@@ -1,23 +1,17 @@
 #include <vector>
 #include <string>
 #include <string_view>
-#include <sstream>
 #include <gen/generator.h>
-#include <gen/frostir.h>
 #include <parse/ast.h>
-#include <variant>
 #include <debug.h>
 #include <gen/x86.h>
 
-namespace Frost::Gen{
+namespace Frost::Gen::X86{
 
-using namespace Parse;
-using namespace X86;
 //
 // NOTE this class takes the AST and generates 
 //
 class X86ASTGenerator{// : ASTGenerator{
-
 public:
     static X86ASTGenerator create(Parse::AST* ast){
         X86ASTGenerator x;
@@ -29,18 +23,19 @@ public:
 
     void emit(const char*);
     
-    Optional<Operand> visit(Parse::AST*, BuildContext&);
-    Optional<Operand> visit(Parse::ProgramAST*, BuildContext&);
-    Optional<Operand> visit(Parse::IfAST* if_ast, BuildContext& ctx);
-    Optional<Operand> visit(Parse::ReturnAST* return_ast, BuildContext& ctx);
-    Optional<Operand> visit(Parse::DeclAST*, BuildContext&);
-    Optional<Operand> visit(Parse::BinOpAST*, BuildContext&);
-    Optional<Operand> visit(Parse::VariableAST*, BuildContext&);
-    Optional<Operand> visit(Parse::LiteralAST*, BuildContext&);
+    Optional<X86::Operand> visit(Parse::AST*, X86::BuildContext&);
+    Optional<X86::Operand> visit(Parse::ProgramAST*, X86::BuildContext&);
+    Optional<X86::Operand> visit(Parse::IfAST* if_ast, X86::BuildContext& ctx);
+    Optional<X86::Operand> visit(Parse::ReturnAST* return_ast, X86::BuildContext& ctx);
+    Optional<X86::Operand> visit(Parse::DeclAST*, X86::BuildContext&);
+    Optional<X86::Operand> visit(Parse::BinOpAST*, X86::BuildContext&);
+    Optional<X86::Operand> visit(Parse::VariableAST*, X86::BuildContext&);
+    Optional<X86::Operand> visit(Parse::LiteralAST*, X86::BuildContext&);
 
 private:
     Parse::AST* m_ast;
 };
 
-extern std::vector<InstructionEncoding> instruction_lookup_table;
+extern std::vector<X86::InstructionEncoding> instruction_lookup_table;
+
 }

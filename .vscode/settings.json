@@ -45,6 +45,10 @@
         "xfacet": "cpp",
         "xiosbase": "cpp",
         "xlocinfo": "cpp",
-        "xstddef": "cpp"
+        "xstddef": "cpp",
+        "map": "cpp",
+        "variant": "cpp",
+        "xtree": "cpp",
+        "string_view": "cpp"
     }
 }

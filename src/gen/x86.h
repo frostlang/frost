@@ -5,14 +5,11 @@
 #include <string_view>
 #include <sstream>
 #include <gen/generator.h>
-#include <gen/frostir.h>
 #include <parse/ast.h>
 #include <variant>
 #include <debug.h>
 
 namespace Frost::Gen::X86{
-
-using namespace Parse;
 
 class Register : public Debugable{
 public:
@@ -322,7 +319,7 @@ public:
         return ss.str();
     }
 private:
-    Position m_position;
+    Parse::Position m_position;
     InstructionEncoding m_encoding;
     Operand m_op0;
     Operand m_op1;

@@ -1,14 +1,13 @@
 #include <gen/x86astgen.h>
 
-namespace Frost::Gen{
+namespace Frost::Gen::X86{
 
 
-using namespace X86;
 
 
 void X86ASTGenerator::gen(){
     dbg() << "gen!\n";
-    BuildContext ctx = BuildContext::create();
+    X86::BuildContext ctx = X86::BuildContext::create();
     visit(m_ast, ctx);
     dbg() << ctx.block();
 }
@@ -18,7 +17,7 @@ void X86ASTGenerator::emit(const char* instr){
     
 }
 
-Optional<Operand> X86ASTGenerator::visit(Parse::AST* ast, BuildContext& ctx){
+Optional<X86::Operand> X86ASTGenerator::visit(Parse::AST* ast, X86::BuildContext& ctx){
     switch(ast->type()){
         case Parse::AST::Type::PROGRAM:{
             return visit(static_cast<Parse::ProgramAST*>(ast), ctx);
@@ -34,43 +33,43 @@ Optional<Operand> X86ASTGenerator::visit(Parse::AST* ast, BuildContext& ctx){
             return visit(static_cast<Parse::LiteralAST*>(ast), ctx);
         }
     }
-    return Optional<Operand>();
+    return Optional<X86::Operand>();
 }
 
-Optional<Operand> X86ASTGenerator::visit(Parse::ProgramAST* program_ast, BuildContext& ctx){
+Optional<X86::Operand> X86ASTGenerator::visit(Parse::ProgramAST* program_ast, X86::BuildContext& ctx){
     // create the main fn
-    ctx.block().push(Instruction::create("main:"));
+    ctx.block().push(X86::Instruction::create("main:"));
     for(auto& ast : program_ast->statements()){
         visit(ast, ctx);
     }
-    return Optional<Operand>();
+    return Optional<X86::Operand>();
 }
 
-Optional<Operand> X86ASTGenerator::visit(Parse::ReturnAST* return_ast, BuildContext& ctx){
-    ctx.block().push(Instruction::create("ret"));
-    return Optional<Operand>();
+Optional<X86::Operand> X86ASTGenerator::visit(Parse::ReturnAST* return_ast, X86::BuildContext& ctx){
+    ctx.block().push(X86::Instruction::create("ret"));
+    return Optional<X86::Operand>();
 }
 
-Optional<Operand> X86ASTGenerator::visit(Parse::IfAST* if_ast, BuildContext& ctx){
-    ctx.block().push(Instruction::create("if_start:"));
-    ctx.block().push(Instruction::create("if_end:"));
-    return Optional<Operand>();
+Optional<X86::Operand> X86ASTGenerator::visit(Parse::IfAST* if_ast, X86::BuildContext& ctx){
+    ctx.block().push(X86::Instruction::create("if_start:"));
+    ctx.block().push(X86::Instruction::create("if_end:"));
+    return Optional<X86::Operand>();
 }
 
-Optional<Operand> X86ASTGenerator::visit(Parse::DeclAST* decl_ast, BuildContext& ctx){
+Optional<X86::Operand> X86ASTGenerator::visit(Parse::DeclAST* decl_ast, X86::BuildContext& ctx){
 
-    if(ctx.scope()==BuildContext::Scope::GLOBAL){
+    if(ctx.scope()==X86::BuildContext::Scope::GLOBAL){
         //
-    }else if(ctx.scope()==BuildContext::Scope::FN){
+    }else if(ctx.scope()==X86::BuildContext::Scope::FN){
         // get an offset on the stack
         auto stack_offset = ctx.alloc_stack();
     }
 
-    return Optional<Operand>();
+    return Optional<X86::Operand>();
 }
 
 // example of a literal ast
-Optional<Operand> X86ASTGenerator::visit(Parse::BinOpAST* bin_op_ast, BuildContext& ctx){
+Optional<X86::Operand> X86ASTGenerator::visit(Parse::BinOpAST* bin_op_ast, X86::BuildContext& ctx){
     dbg() << "generating bin op!\n";
     switch(bin_op_ast->op()){
         case Parse::BinOpAST::Op::PLUS: {
@@ -86,15 +85,15 @@ Optional<Operand> X86ASTGenerator::visit(Parse::BinOpAST* bin_op_ast, BuildConte
 
             // 1. get the lhs and rhs Operands
 
-            Operand lhs = Operand::create(
-                OperandEncoding::create(OperandEncoding::EncodingType::REG, OperandEncoding::Size::_8),
-                ctx.alloc_reg(OperandEncoding::Size::_8)
+            X86::Operand lhs = X86::Operand::create(
+                X86::OperandEncoding::create(X86::OperandEncoding::EncodingType::REG, X86::OperandEncoding::Size::_8),
+                ctx.alloc_reg(X86::OperandEncoding::Size::_8)
             );
 
             lhs = visit(bin_op_ast->lhs(), ctx).data();
-            Operand rhs = visit(bin_op_ast->rhs(), ctx).data();
+            X86::Operand rhs = visit(bin_op_ast->rhs(), ctx).data();
            
-            auto add = Instruction::create("add", lhs, rhs);
+            auto add = X86::Instruction::create("add", lhs, rhs);
 
             ctx.block().push(add);
 
@@ -104,17 +103,17 @@ Optional<Operand> X86ASTGenerator::visit(Parse::BinOpAST* bin_op_ast, BuildConte
         }
     }
 
-    return Optional<Operand>();
+    return Optional<X86::Operand>();
     
 }
 
-Optional<Operand> X86ASTGenerator::visit(Parse::VariableAST* variable_ast, BuildContext& ctx){    
+Optional<X86::Operand> X86ASTGenerator::visit(Parse::VariableAST* variable_ast, X86::BuildContext& ctx){    
     // first get the encoding
-    OperandEncoding encoding = OperandEncoding::create(variable_ast->var_type());
-    encoding.set_type(OperandEncoding::EncodingType::REG);
+    X86::OperandEncoding encoding = X86::OperandEncoding::create(variable_ast->var_type());
+    encoding.set_type(X86::OperandEncoding::EncodingType::REG);
 
     // then find a register to put the variable in
-    Register reg = ctx.alloc_reg(encoding.size());
+    X86::Register reg = ctx.alloc_reg(encoding.size());
 
 
     // now we move the variable into the register
@@ -123,20 +122,20 @@ Optional<Operand> X86ASTGenerator::visit(Parse::VariableAST* variable_ast, Build
     std::stringstream ss;
     ss << "[rbp-" << ctx.stack_ptr() << "]";
 
-    Operand mov_lhs = Operand::create(encoding, reg);
-    Operand mov_rhs = Operand::create(OperandEncoding::create(OperandEncoding::EncodingType::MEM, encoding.size()), ss.str());
+    X86::Operand mov_lhs = X86::Operand::create(encoding, reg);
+    X86::Operand mov_rhs = X86::Operand::create(X86::OperandEncoding::create(X86::OperandEncoding::EncodingType::MEM, encoding.size()), ss.str());
     // create a mov instruction to put the variable in the register
     // emit("mov")
-    Instruction mov = Instruction::create("mov", mov_lhs, mov_rhs);
+    X86::Instruction mov = X86::Instruction::create("mov", mov_lhs, mov_rhs);
     ctx.block().push(mov);
 
     // finally return the register the variable is now in
-    return Optional<Operand>(Operand::create(encoding, reg));
+    return Optional<X86::Operand>(X86::Operand::create(encoding, reg));
 }
 
 
 
-Optional<Operand> X86ASTGenerator::visit(Parse::LiteralAST* literal_ast, BuildContext& ctx){    
+Optional<X86::Operand> X86ASTGenerator::visit(Parse::LiteralAST* literal_ast, X86::BuildContext& ctx){    
 
     // so... the problem with this is that we need to know if we are within a nested operation
     // e.g. 1 + 2 + 3
@@ -148,10 +147,10 @@ Optional<Operand> X86ASTGenerator::visit(Parse::LiteralAST* literal_ast, BuildCo
     // the 2 is the first paramater and so should be stored in a register
 
     // first get the encoding
-    auto encoding = OperandEncoding::create(literal_ast->lit_type());
+    auto encoding = X86::OperandEncoding::create(literal_ast->lit_type());
     // then create the operand
-    auto op = Operand::create(encoding, std::stoi(literal_ast->token().value().data()));
-    return Optional<Operand>(op);
+    auto op = X86::Operand::create(encoding, std::stoi(literal_ast->token().value().data()));
+    return Optional<X86::Operand>(op);
 }
 
 
