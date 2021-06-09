@@ -202,18 +202,21 @@ Optional<Type> Parser::type(){
 //
 //
 AST* Parser::decl(ParseContext){
-
     // get the identifier
     auto& identifier = m_tokens->consume(TokenType::IDENTIFIER).data();
 
+    std::string i = identifier.value().data();
+
+    dbg() << "doing decl! identifier=" << i << "\n";
 
     // now consume the :
     if(!m_tokens->consume(TokenType::COLON).has()){
         return new ErrorAST(ErrorAST::create());
     }
 
+    auto t = type();
     // now look for the type information
-    if(auto t = type(); t.has()){
+    if(!t.has()){
         // has a type
     }
 
@@ -223,7 +226,7 @@ AST* Parser::decl(ParseContext){
 
     dbg() << "done decl!\n";
 
-    return 0;
+    return new DeclAST(DeclAST::create(identifier,t.data(), 0));
 
 }
 
@@ -372,7 +375,10 @@ AST* Parser::single(ParseContext){
 }
 
 AST* Parser::var(ParseContext){
-    auto& token = m_tokens->consume(TokenType::IDENTIFIER).data();
+    // TODO bug
+    // next has to be used here, if we use consume it just dies
+    // basically we can't consume if we need the token value!
+    auto& token = m_tokens->next();
     return new VariableAST(VariableAST::create(token));
 }
 
@@ -393,11 +399,7 @@ AST* Parser::string(ParseContext){
 }
 
 AST* Parser::num(ParseContext){
-
-    // parse a number literal
-    if(!m_tokens->expect(TokenType::NUMBER)){}
     auto& token = m_tokens->next();
-
     return new LiteralAST(LiteralAST::create(token, Frost::Type(Frost::Type::Storage::U8)));
 }
 

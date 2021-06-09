@@ -57,6 +57,7 @@ Optional<X86::Operand> X86ASTGenerator::visit(Parse::IfAST* if_ast, X86::BuildCo
 }
 
 Optional<X86::Operand> X86ASTGenerator::visit(Parse::DeclAST* decl_ast, X86::BuildContext& ctx){
+    dbg() << "generating decl!\n";
 
     if(ctx.scope()==X86::BuildContext::Scope::GLOBAL){
         //
@@ -108,6 +109,7 @@ Optional<X86::Operand> X86ASTGenerator::visit(Parse::BinOpAST* bin_op_ast, X86::
 }
 
 Optional<X86::Operand> X86ASTGenerator::visit(Parse::VariableAST* variable_ast, X86::BuildContext& ctx){    
+    dbg() << "cock = " << s(variable_ast->token().value()) << "\n";
     // first get the encoding
     X86::OperandEncoding encoding = X86::OperandEncoding::create(variable_ast->var_type());
     encoding.set_type(X86::OperandEncoding::EncodingType::REG);
@@ -115,6 +117,8 @@ Optional<X86::Operand> X86ASTGenerator::visit(Parse::VariableAST* variable_ast, 
     // then find a register to put the variable in
     X86::Register reg = ctx.alloc_reg(encoding.size());
 
+
+//    auto location = m_sym_table.get(variable_ast->token().value().data());
 
     // now we move the variable into the register
     // todo this is wrong we need to find the offset of the variable on the stack...

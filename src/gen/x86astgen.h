@@ -5,6 +5,7 @@
 #include <parse/ast.h>
 #include <debug.h>
 #include <gen/x86.h>
+#include <symtable.h>
 
 namespace Frost::Gen::X86{
 
@@ -34,6 +35,8 @@ public:
 
 private:
     Parse::AST* m_ast;
+    SymTable<X86::Operand> m_sym_table;
+
 };
 
 extern std::vector<X86::InstructionEncoding> instruction_lookup_table;

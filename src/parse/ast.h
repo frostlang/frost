@@ -25,7 +25,7 @@ class LiteralAST;
 
 
 
-class AST {
+class AST : public Debugable{
 
 public:
 
@@ -43,7 +43,7 @@ public:
         VARIABLE,
         LITERAL
     };
-
+    virtual std::string debug() {return "AST";}
     virtual Type type() const = 0;
     virtual void* visit(ASTVisitor& visitor) = 0;
 private:
@@ -58,6 +58,9 @@ public:
     Type type() const override {
         return Type::ERROR;
     }
+    std::string debug() override {
+        return "ERROR";
+    }
     static ErrorAST create(){
         return {};
     }
@@ -70,6 +73,13 @@ class ProgramAST : public AST {
 public:
     Type type() const override {
         return Type::PROGRAM;
+    }
+    std::string debug() override {
+        std::stringstream ss;
+        ss << "PROGRAM";
+        for(auto stmt : m_statements)
+            ss << "\n\t" << stmt->debug();
+        return ss.str();
     }
     static ProgramAST create(std::vector<AST*> statements){
         ProgramAST p;
@@ -94,6 +104,9 @@ public:
     }
     static IfAST create(){
         return {};
+    }
+    std::string debug() override {
+        return "IF";
     }
 
     DEF_VISIT_INHERIT_AST
@@ -132,6 +145,10 @@ public:
         return {};
     }
 
+    std::string debug() override {
+        return "FOR";
+    }
+
     DEF_VISIT_INHERIT_AST
 private:
 };
@@ -145,6 +162,14 @@ public:
         BlockAST p;
         p.m_statements = statements;
         return p;
+    }
+
+    std::string debug() override {
+        std::stringstream ss;
+        ss << "BLOCK";
+        for(auto stmt : m_statements)
+            ss << "\n\t" << stmt->debug();
+        return ss.str();
     }
 
     DEF_VISIT_INHERIT_AST
@@ -165,6 +190,10 @@ public:
         return {};
     }
 
+    std::string debug() override {
+        return "RETURN";
+    }
+
     DEF_VISIT_INHERIT_AST
 private:
 };
@@ -176,6 +205,10 @@ public:
     }
     static BreakAST create(){
         return {};
+    }
+
+    std::string debug() override {
+        return "BREAK";
     }
 
     DEF_VISIT_INHERIT_AST
@@ -190,7 +223,9 @@ public:
     static ContinueAST create(){
         return {};
     }
-
+    std::string debug() override {
+        return "CONTINUE";
+    }
     DEF_VISIT_INHERIT_AST
 private:
 };
@@ -201,16 +236,23 @@ public:
         return Type::DECL;
     }
     DeclAST(Token& identifier) : m_identifier(identifier){}
-    static DeclAST create(Token& identifier, Type type, AST* value){
+    static DeclAST create(Token& identifier, Frost::Type type, AST* value){
         DeclAST d(identifier);
         d.m_type = type;
         d.m_value = value;
         return d;
     }
+    std::string debug() override {
+        std::stringstream ss;
+        ss << "DECL";
+        ss << "\n\t" << s(m_identifier.value());
+        ss << "\n\t" << m_type.debug();
+        return ss.str();
+    }
     DEF_VISIT_INHERIT_AST
 private:
     const Token& m_identifier;
-    Type m_type;
+    Frost::Type m_type;
     AST* m_value;
 };
 
@@ -245,7 +287,17 @@ public:
         b.m_rhs = rhs;
         return b;
     }
-
+    std::string debug() override {
+        const char* lookup[] = {
+            "or","and","|","&","==","!=",">",">=","<","<=","+","-","*","/"
+        };
+        std::stringstream ss;
+        ss << "BIN";
+        ss << "\n\t" << m_lhs->debug()
+           << "\n\t" << lookup[(u8)m_type]
+           << "\n\t" << m_rhs->debug();
+        return ss.str();
+    }
     DEF_VISIT_INHERIT_AST
 
     Op& op(){
@@ -272,7 +324,12 @@ public:
     }
     
     VariableAST(Token& token) : m_token(token){}
-
+    std::string debug() override {
+        std::stringstream ss;
+        ss << "VAR";
+        ss << "\n\t" << s(m_token.value());
+        return ss.str();
+    }
     static VariableAST create(Token& token){
         VariableAST l(token);
         l.m_type=Frost::Type(Frost::Type::Storage::U8);
@@ -280,6 +337,9 @@ public:
     }
     Frost::Type& var_type(){
         return m_type;
+    }
+    const Token& token(){
+        return m_token;
     }
     DEF_VISIT_INHERIT_AST
 private:
@@ -296,7 +356,12 @@ public:
     }
     
     LiteralAST(Token& token) : m_token(token){}
-
+    std::string debug() override {
+        std::stringstream ss;
+        ss << "LIT";
+        ss << "\n\t" << s(m_token.value());
+        return ss.str();
+    }
     static LiteralAST create(Token& token, Frost::Type type){
         LiteralAST l(token);
         l.m_type = type;

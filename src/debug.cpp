@@ -20,6 +20,13 @@ DebugStream& operator<<(DebugStream& ds, Debugable&& debugable){
 
 }
 
+DebugStream& operator<<(DebugStream& ds, Debugable* debugable){
+
+    std::cout << debugable->debug();
+    return ds;
+
+}
+
 DebugStream& operator<<(DebugStream& ds, const char* s){
     std::cout << s;
     return ds;

@@ -1,6 +1,8 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
+#include <string_view>
 
 using u1 = bool;
 using u8 = uint8_t;
@@ -9,6 +11,10 @@ using u32 = uint32_t;
 using s32 = int32_t;
 using f32 = float;
 using f64 = double;
+
+inline std::string s(std::string_view view){
+    return {view.data(), view.size()};
+}
 
 template<typename T>
 class Optional{

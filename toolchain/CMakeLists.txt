@@ -14,9 +14,11 @@ set(SOURCES
     ../src/main.cpp
     ../src/debug.cpp
     ../src/type.cpp
+    ../src/types.cpp
     ../src/parse/token.cpp
     ../src/parse/lexer.cpp
     ../src/parse/parser.cpp
+    ../src/parse/analysis.cpp
     ../src/parse/ast.cpp
     ../src/gen/generator.cpp
     ../src/gen/x86.cpp
