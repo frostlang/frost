@@ -20,8 +20,12 @@ Optional<X86_64::Operand> X86ASTGenerator::visit(Parse::AST* ast, X86_64::BuildC
     switch(ast->type()){
         case Parse::AST::Type::PROGRAM:{
             return visit(static_cast<Parse::ProgramAST*>(ast), ctx);
+        }case Parse::AST::Type::EXPR_STMT:{
+            return visit(static_cast<Parse::ExprStmtAST*>(ast), ctx);
         }case Parse::AST::Type::DECL:{
             return visit(static_cast<Parse::DeclAST*>(ast), ctx);
+        }case Parse::AST::Type::ASSIGN:{
+            return visit(static_cast<Parse::AssignAST*>(ast), ctx);
         }case Parse::AST::Type::RETURN:{
             return visit(static_cast<Parse::ReturnAST*>(ast), ctx);
         } case Parse::AST::Type::BIN:{
@@ -85,6 +89,33 @@ Optional<X86_64::Operand> X86ASTGenerator::visit(Parse::DeclAST* decl_ast, X86_6
     return Optional<X86_64::Operand>(operand);
 }
 
+
+
+
+Optional<X86_64::Operand> X86ASTGenerator::visit(Parse::ExprStmtAST* expr_stmt_ast, X86_64::BuildContext& ctx){
+    return visit(expr_stmt_ast->expr(), ctx);
+}
+
+
+Optional<X86_64::Operand> X86ASTGenerator::visit(Parse::AssignAST* assign_ast, X86_64::BuildContext& ctx){
+
+    // TODO
+    // we might want to make the ctx a non reference so we can create new ones when moving on
+    // when getting the lhs, we want it's location not its value
+    ctx.value_type()=BuildContext::ValueType::LOCATION;
+    auto mov_lhs = visit(assign_ast->lhs(), ctx);
+    
+    ctx.value_type()=BuildContext::ValueType::VALUE;
+    ASSERT(mov_lhs.has());
+    auto mov_rhs = visit(assign_ast->rhs(), ctx);
+    ASSERT(mov_rhs.has());
+    X86_64::Instruction mov = X86_64::Instruction::create("mov", mov_lhs.data(), mov_rhs.data());
+    ctx.block().push(mov);
+
+    return Optional<X86_64::Operand>();
+}
+
+
 // example of a literal ast
 Optional<X86_64::Operand> X86ASTGenerator::visit(Parse::BinOpAST* bin_op_ast, X86_64::BuildContext& ctx){
     switch(bin_op_ast->op()){
@@ -124,20 +155,30 @@ Optional<X86_64::Operand> X86ASTGenerator::visit(Parse::BinOpAST* bin_op_ast, X8
 }
 
 Optional<X86_64::Operand> X86ASTGenerator::visit(Parse::VariableAST* variable_ast, X86_64::BuildContext& ctx){    
-    // first get the encoding
-    X86_64::OperandEncoding encoding = X86_64::OperandEncoding::create(variable_ast->var_type(), OperandEncoding::EncodingType::REG);
+    
+    
+    if(ctx.value_type()==BuildContext::ValueType::VALUE){
+        
+        // first get the encoding
+        X86_64::OperandEncoding encoding = X86_64::OperandEncoding::create(variable_ast->var_type(), OperandEncoding::EncodingType::REG);
 
-    // then find a register to put the variable in
-    X86_64::Register reg = ctx.alloc_reg(encoding.size());
+        // then find a register to put the variable in
+        X86_64::Register reg = ctx.alloc_reg(encoding.size());
 
-    Operand var_location = m_sym_table.get(s(variable_ast->token().value())).data();
+        Operand var_location = m_sym_table.get(s(variable_ast->token().value())).data();
 
-    X86_64::Operand mov_lhs = X86_64::Operand::create(encoding, reg);
-    X86_64::Instruction mov = X86_64::Instruction::create("mov", mov_lhs, var_location);
-    ctx.block().push(mov);
+        X86_64::Operand mov_lhs = X86_64::Operand::create(encoding, reg);
+        X86_64::Instruction mov = X86_64::Instruction::create("mov", mov_lhs, var_location);
+        ctx.block().push(mov);
 
-    // finally return the register the variable is now in
-    return Optional<X86_64::Operand>(X86_64::Operand::create(encoding, reg));
+        // finally return the register the variable is now in
+        return Optional<X86_64::Operand>(X86_64::Operand::create(encoding, reg));
+    
+    
+    }else if(ctx.value_type()==BuildContext::ValueType::LOCATION){
+        return m_sym_table.get(s(variable_ast->token().value())).data();
+    }
+    return Optional<X86_64::Operand>();
 }
 
 

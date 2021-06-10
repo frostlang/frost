@@ -17,13 +17,12 @@ class BlockAST;
 class ReturnAST;
 class BreakAST;
 class ContinueAST;
+class ExprStmtAST;
+class AssignAST;
 class DeclAST;
 class BinOpAST;
 class VariableAST;
 class LiteralAST;
-
-
-
 
 class AST : public Debugable{
 
@@ -32,6 +31,7 @@ public:
     enum class Type : u8{
         ERROR,
         PROGRAM,
+        EXPR_STMT,
         IF,
         FOR,
         BLOCK,
@@ -39,19 +39,16 @@ public:
         BREAK,
         CONTINUE,
         DECL,
+        ASSIGN,
         BIN,
         VARIABLE,
         LITERAL
     };
     virtual std::string debug() {return "AST";}
     virtual Type type() const = 0;
-    virtual void* visit(ASTVisitor& visitor) = 0;
 private:
 
 };
-
-
-#define DEF_VISIT_INHERIT_AST void* visit(ASTVisitor& visitor) override;
 
 class ErrorAST : public AST {
 public:
@@ -63,9 +60,7 @@ public:
     }
     static ErrorAST create(){
         return {};
-    }
-    
-    DEF_VISIT_INHERIT_AST
+    }    
 private:
 };
 
@@ -87,7 +82,6 @@ public:
         return p;
     }
 
-    DEF_VISIT_INHERIT_AST
 
     auto statements(){
         return m_statements;
@@ -108,8 +102,6 @@ public:
     std::string debug() override {
         return "IF";
     }
-
-    DEF_VISIT_INHERIT_AST
 
     void set_if_cond(AST* if_cond){
         m_if_cond=if_cond;
@@ -149,7 +141,6 @@ public:
         return "FOR";
     }
 
-    DEF_VISIT_INHERIT_AST
 private:
 };
 
@@ -172,7 +163,6 @@ public:
         return ss.str();
     }
 
-    DEF_VISIT_INHERIT_AST
     
     auto statements(){
         return m_statements;
@@ -194,7 +184,6 @@ public:
         return "RETURN";
     }
 
-    DEF_VISIT_INHERIT_AST
 private:
 };
 
@@ -211,7 +200,6 @@ public:
         return "BREAK";
     }
 
-    DEF_VISIT_INHERIT_AST
 private:
 };
 
@@ -226,8 +214,50 @@ public:
     std::string debug() override {
         return "CONTINUE";
     }
-    DEF_VISIT_INHERIT_AST
 private:
+};
+
+class ExprStmtAST : public AST{
+public:
+    Type type() const override {
+        return Type::EXPR_STMT;
+    }
+    std::string debug() override {
+        std::stringstream ss;
+        ss << "EXPR_STMT";
+        ss << "\n\t" << m_expr->debug();
+        return ss.str();
+    }
+    ExprStmtAST(AST* expr) : m_expr(expr){}
+    AST* expr(){
+        return m_expr;
+    }
+private:
+    AST* m_expr;
+};
+
+class AssignAST : public AST{
+public:
+
+    Type type() const override {
+        return Type::ASSIGN;
+    }
+    std::string debug() override {
+        std::stringstream ss;
+        ss << "ASSIGN";
+        ss << "\n\t" << m_lhs->debug() << "\n\t" << m_rhs->debug();
+        return ss.str();
+    }
+    AssignAST(AST* lhs, AST* rhs) : m_lhs(lhs), m_rhs(rhs){}
+    AST* lhs(){
+        return m_lhs;
+    }
+    AST* rhs(){
+        return m_rhs;
+    }
+private:
+    AST* m_lhs;
+    AST* m_rhs;
 };
 
 class DeclAST : public AST{
@@ -252,7 +282,6 @@ public:
         }
         return ss.str();
     }
-    DEF_VISIT_INHERIT_AST
 
     const Token& token(){
         return m_identifier;
@@ -263,10 +292,14 @@ public:
     AST* value(){
         return m_value;
     }
+    u1& requires_inference(){
+        return m_requires_inference;
+    }
 private:
     const Token& m_identifier;
     Frost::Type m_type;
     AST* m_value;
+    u1 m_requires_inference = {false};
 };
 
 
@@ -311,7 +344,6 @@ public:
            << "\n\t" << m_rhs->debug();
         return ss.str();
     }
-    DEF_VISIT_INHERIT_AST
 
     Op& op(){
         return m_type;
@@ -354,7 +386,6 @@ public:
     const Token& token(){
         return m_token;
     }
-    DEF_VISIT_INHERIT_AST
 private:
     Frost::Type m_type;
     const Token& m_token;
@@ -380,8 +411,6 @@ public:
         l.m_type = type;
         return l;
     }
-    DEF_VISIT_INHERIT_AST
-
     const Token& token(){
         return m_token;
     }
@@ -394,42 +423,4 @@ private:
 };
 
 
-
-#define DEF_VISITOR_VIRTUAL_VISIT_AST(param) virtual void* visit(param) = 0;
-
-class ASTVisitor{
-public:
-    DEF_VISITOR_VIRTUAL_VISIT_AST(ErrorAST*)
-    DEF_VISITOR_VIRTUAL_VISIT_AST(ProgramAST*)
-    DEF_VISITOR_VIRTUAL_VISIT_AST(IfAST*)
-    DEF_VISITOR_VIRTUAL_VISIT_AST(ForAST*)
-    DEF_VISITOR_VIRTUAL_VISIT_AST(BlockAST*)
-    DEF_VISITOR_VIRTUAL_VISIT_AST(ReturnAST*)
-    DEF_VISITOR_VIRTUAL_VISIT_AST(BreakAST*)
-    DEF_VISITOR_VIRTUAL_VISIT_AST(ContinueAST*)
-    DEF_VISITOR_VIRTUAL_VISIT_AST(DeclAST*)
-    DEF_VISITOR_VIRTUAL_VISIT_AST(BinOpAST*)
-    DEF_VISITOR_VIRTUAL_VISIT_AST(VariableAST*)
-    DEF_VISITOR_VIRTUAL_VISIT_AST(LiteralAST*)
-private:
-};
-
-#define DEF_VISITOR_OVERRIDE_VISIT_AST(param) void* visit(param) override;
-
-class CleanupVisitor : public ASTVisitor {
-public:
-    DEF_VISITOR_OVERRIDE_VISIT_AST(ErrorAST*)
-    DEF_VISITOR_OVERRIDE_VISIT_AST(ProgramAST*)
-    DEF_VISITOR_OVERRIDE_VISIT_AST(IfAST*)
-    DEF_VISITOR_OVERRIDE_VISIT_AST(ForAST*)
-    DEF_VISITOR_OVERRIDE_VISIT_AST(BlockAST*)
-    DEF_VISITOR_OVERRIDE_VISIT_AST(ReturnAST*)
-    DEF_VISITOR_OVERRIDE_VISIT_AST(BreakAST*)
-    DEF_VISITOR_OVERRIDE_VISIT_AST(ContinueAST*)
-    DEF_VISITOR_OVERRIDE_VISIT_AST(DeclAST*)
-    DEF_VISITOR_OVERRIDE_VISIT_AST(BinOpAST*)
-    DEF_VISITOR_OVERRIDE_VISIT_AST(VariableAST*)
-    DEF_VISITOR_OVERRIDE_VISIT_AST(LiteralAST*)
-private:
-};
 }

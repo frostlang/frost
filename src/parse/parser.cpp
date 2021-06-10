@@ -56,7 +56,7 @@ AST* Parser::statement(ParseContext){
             dbg() << "unknown token type whils't parsing!\n";
             break;
         }
-        default: return expression({});
+        default: return expression_stmt({});
     }
     return new ErrorAST(ErrorAST::create());
 }
@@ -97,7 +97,7 @@ AST* Parser::identifier(ParseContext ctx){
         return decl(ctx);
     }else{
         // else we are dealing with an expr e.g. x + 33;
-        return expression(ctx);
+        return expression_stmt(ctx);
     }
 }
 
@@ -226,6 +226,21 @@ AST* Parser::decl(ParseContext ctx){
     return new DeclAST(DeclAST::create(identifier,t.data(), initialiser));
 
 }
+
+
+AST* Parser::expression_stmt(ParseContext ctx){
+    return new ExprStmtAST(assign(ctx));
+}
+
+AST* Parser::assign(ParseContext ctx){
+    auto higher_precedence = expression(ctx);
+    if(m_tokens->consume(TokenType::ASSIGN).has()){
+        auto rhs = expression(ctx);
+        return new AssignAST(higher_precedence, rhs);
+    }
+    return higher_precedence;
+}
+
 
 AST* Parser::expression(ParseContext){
     return lor({});

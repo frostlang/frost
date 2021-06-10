@@ -376,6 +376,11 @@ public:
         GLOBAL,
         FN
     };
+    enum class ValueType{
+        VALUE,
+        LOCATION
+    };
+
     static BuildContext create(){
         BuildContext b;
         b.m_scope = Scope::GLOBAL;
@@ -395,12 +400,16 @@ public:
         m_stack_ptr+=4;
         return m_stack_ptr;
     }
+    ValueType& value_type(){
+        return m_value_type;
+    }
     Register alloc_reg(OperandEncoding::Size encoding_type);
 private:
     Scope m_scope;
     u8 m_used_registers = 0;
     Block m_block;
     u32 m_stack_ptr = {0};
+    ValueType m_value_type;
 };
 
 

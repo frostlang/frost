@@ -34,6 +34,16 @@ Optional<Type> Analyser::visit(ProgramAST* program_ast, AnalysisContext ctx){
 }
 
 
+Optional<Type> Analyser::visit(DeclAST* decl_ast, AnalysisContext ctx){
+    //if(decl_ast->requires_inference()){
+    //    auto type = visit(decl_ast->value(), ctx);
+    //    ASSERT(type.has());
+    //    decl_ast->lit_type()=type.data();
+    //}
+    return Optional<Type>();
+}
+
+
 Optional<Type> Analyser::visit(BinOpAST* bin_op_ast, AnalysisContext ctx){
     // we need to be able to cast the types to the higher precedence type
     // todo for now return the type of the lhs

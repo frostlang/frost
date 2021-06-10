@@ -55,9 +55,11 @@ public:
     AST* decl(ParseContext); // decleration
     AST* ifstmt(ParseContext);
     AST* forloop(ParseContext);
+    AST* expression_stmt(ParseContext);
+    AST* assign(ParseContext);
+
     AST* expression(ParseContext);
     AST* identifier(ParseContext);
-
 
     AST* lor(ParseContext);
     AST* land(ParseContext);

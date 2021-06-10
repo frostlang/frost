@@ -20,6 +20,7 @@ public:
     void analyse();
     Optional<Type> visit(AST* ast, AnalysisContext);
     Optional<Type> visit(ProgramAST* program_ast, AnalysisContext);
+    Optional<Type> visit(DeclAST* decl_ast, AnalysisContext);
     Optional<Type> visit(BinOpAST* bin_op_ast, AnalysisContext);
     Optional<Type> visit(VariableAST* variable_ast, AnalysisContext);
     Optional<Type> visit(LiteralAST* literal_ast, AnalysisContext);

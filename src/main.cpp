@@ -39,9 +39,5 @@ int main(){
     x.gen();
 
 
-
-    Frost::Parse::CleanupVisitor cleanup;
-    ast->visit(cleanup);
-
     return 0;
 }
