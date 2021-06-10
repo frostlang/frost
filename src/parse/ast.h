@@ -23,6 +23,7 @@ class DeclAST;
 class BinOpAST;
 class VariableAST;
 class LiteralAST;
+class FnAST;
 
 class AST : public Debugable{
 
@@ -42,7 +43,8 @@ public:
         ASSIGN,
         BIN,
         VARIABLE,
-        LITERAL
+        LITERAL,
+        FN
     };
     virtual std::string debug() {return "AST";}
     virtual Type type() const = 0;
@@ -420,6 +422,29 @@ public:
 private:
     Frost::Type m_type;
     const Token& m_token;
+};
+
+class FnAST : public AST {
+public:
+
+    Type type() const override {
+        return Type::FN;
+    }
+    FnAST(){}
+    
+    FnAST(AST* body) : m_body(body){}
+
+    std::string debug() override {
+        std::stringstream ss;
+        ss << "FN";
+        ss << "\n\t" << m_body->debug();
+        return ss.str();
+    }
+    AST* body(){
+        return m_body;
+    }
+private:
+    AST* m_body;
 };
 
 

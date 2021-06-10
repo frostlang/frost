@@ -20,6 +20,8 @@ Optional<X86_64::Operand> X86ASTGenerator::visit(Parse::AST* ast, X86_64::BuildC
     switch(ast->type()){
         case Parse::AST::Type::PROGRAM:{
             return visit(static_cast<Parse::ProgramAST*>(ast), ctx);
+        }case Parse::AST::Type::BLOCK:{
+            return visit(static_cast<Parse::BlockAST*>(ast), ctx);
         }case Parse::AST::Type::EXPR_STMT:{
             return visit(static_cast<Parse::ExprStmtAST*>(ast), ctx);
         }case Parse::AST::Type::DECL:{
@@ -34,6 +36,8 @@ Optional<X86_64::Operand> X86ASTGenerator::visit(Parse::AST* ast, X86_64::BuildC
             return visit(static_cast<Parse::VariableAST*>(ast), ctx);
         } case Parse::AST::Type::LITERAL:{
             return visit(static_cast<Parse::LiteralAST*>(ast), ctx);
+        } case Parse::AST::Type::FN:{
+            return visit(static_cast<Parse::FnAST*>(ast), ctx);
         }
     }
     return Optional<X86_64::Operand>();
@@ -43,12 +47,19 @@ Optional<X86_64::Operand> X86ASTGenerator::visit(Parse::ProgramAST* program_ast,
     // create the main fn
     ctx.block().push(X86_64::Instruction::create("global main"));
     ctx.block().push(X86_64::Instruction::create("main:"));
+    ctx.block().push(X86_64::Instruction::create("ret"));
     for(auto& ast : program_ast->statements()){
         visit(ast, ctx);
     }
     return Optional<X86_64::Operand>();
 }
-
+Optional<X86_64::Operand> X86ASTGenerator::visit(Parse::BlockAST* block_ast, X86_64::BuildContext& ctx){
+    // create the main fn
+    for(auto& ast : block_ast->statements()){
+        visit(ast, ctx);
+    }
+    return Optional<X86_64::Operand>();
+}
 Optional<X86_64::Operand> X86ASTGenerator::visit(Parse::ReturnAST* return_ast, X86_64::BuildContext& ctx){
     ctx.block().push(X86_64::Instruction::create("ret"));
     return Optional<X86_64::Operand>();
@@ -205,4 +216,10 @@ Optional<X86_64::Operand> X86ASTGenerator::visit(Parse::LiteralAST* literal_ast,
 }
 
 
+Optional<X86_64::Operand> X86ASTGenerator::visit(Parse::FnAST* fn_ast, X86_64::BuildContext& ctx){
+    ctx.block().push(Instruction::create("function:"));
+    visit(fn_ast->body(), ctx);
+    ctx.block().push(Instruction::create("ret"));
+    return Optional<X86_64::Operand>();
+}
 }

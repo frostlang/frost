@@ -332,53 +332,42 @@ AST* Parser::block(ParseContext){
     return new BlockAST(BlockAST::create(statements));
 }
 
-AST* Parser::group(ParseContext){
-
-    if(!m_tokens->consume(TokenType::LPAREN).has())
-        panic("expected ( for opening group expression");
-
-    expression({});
-
-    if(!m_tokens->consume(TokenType::RPAREN).has())
-        panic("expected ) closing for group expression");
-    
-    return 0;
-
-}
-
 //
 // function literals can take the 2 basic forms:
 // (){}
 // {}
 // () u32 {}
 // u32 {}
-AST* Parser::fn(ParseContext){
-
-    // parse paramaters
+AST* Parser::fn(ParseContext ctx){
+dbg() << "fn!\n";
+    m_tokens->consume(TokenType::LPAREN);
+    m_tokens->consume(TokenType::RPAREN);
+    /*// parse paramaters
     std::vector<AST*> param_decls;
     u1 has_params = m_tokens->consume(TokenType::LPAREN).has();
     while(has_params && !m_tokens->consume(TokenType::RPAREN).has()){
         param_decls.push_back(decl({}));
         m_tokens->consume(TokenType::COMMA);
 
-    }
+    }*/
     
     // at this point we may be expecting a return type
 
     // if epect(type) || expect(identifier)... possible return type?
 
     // parse the body
-    AST* body = statement({});
+    AST* body = statement(ctx);
 
 
 
-    return 0;
+    return new FnAST(body);
 
 }
 
-AST* Parser::single(ParseContext){
+AST* Parser::single(ParseContext ctx){
 
     switch(m_tokens->peek().type()){
+        case TokenType::LPAREN: return group(ctx);
         case TokenType::IDENTIFIER: return var({});
         case TokenType::NUMBER: return num({});
         case TokenType::QUOTE: return string({});
@@ -386,6 +375,10 @@ AST* Parser::single(ParseContext){
     return 0;
 }
 
+AST* Parser::group(ParseContext ctx){
+    // TODO for now just do fn's
+    return fn(ctx);
+}
 AST* Parser::var(ParseContext){
     // TODO bug
     // next has to be used here, if we use consume it just dies

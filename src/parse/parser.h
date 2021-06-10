@@ -74,9 +74,9 @@ public:
     AST* cast(ParseContext);
 
     AST* block(ParseContext);
-    AST* group(ParseContext);
     AST* fn(ParseContext);
     AST* single(ParseContext);
+    AST* group(ParseContext);
     AST* var(ParseContext);
     AST* num(ParseContext);
     AST* string(ParseContext);
