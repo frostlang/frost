@@ -1,6 +1,6 @@
-#include <gen/x86.h>
+#include <gen/x86_64.h>
 
-namespace Frost::Gen::X86{
+namespace Frost::Gen::X86_64{
 
 std::vector<InstructionEncoding> instruction_lookup_table = {
     #define INSTR(name, op, op0_type, op0_size, op1_type, op1_size) \

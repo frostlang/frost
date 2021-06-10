@@ -7,16 +7,16 @@ namespace Frost::Gen{
 class Arch : public Debugable{
 public:
     enum class Type{
-        X86
+        X86_64
     };
     Arch(Type type) : m_type(type){}
     constexpr u1 is_supported(){
-        return m_type==Type::X86;
+        return m_type==Type::X86_64;
     }
 
     std::string debug() override {
         const char* lookup[] = {
-            "X86"
+            "X86_64"
         };
         return lookup[(u8)m_type];
     }
@@ -31,17 +31,17 @@ private:
 class Platform : public Debugable{
 public:
     enum class Type{
-        WINDOWS32,
+        WINDOWS,
         LINUX,
         MACOS
     };
     Platform(Type type) : m_type(type){}
     constexpr u1 is_supported(){
-        return m_type==Type::WINDOWS32;
+        return m_type==Type::WINDOWS;
     }
     std::string debug() override {
         const char* lookup[] = {
-            "WIN32",
+            "WINDOWS",
             "LINUX",
             "MACOS"
         };

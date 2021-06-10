@@ -21,7 +21,7 @@ set(SOURCES
     ../src/parse/analysis.cpp
     ../src/parse/ast.cpp
     ../src/gen/generator.cpp
-    ../src/gen/x86.cpp
+    ../src/gen/x86_64.cpp
     ../src/gen/x86astgen.cpp
 )
 

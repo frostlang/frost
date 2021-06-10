@@ -32,7 +32,7 @@ int main(){
     //Frost::Parse::Analyser a = Frost::Parse::Analyser::create(&u, ast);
     //a.analyse();
 
-    Frost::Gen::X86::X86ASTGenerator x = Frost::Gen::X86::X86ASTGenerator::create(ast);
+    Frost::Gen::X86_64::X86ASTGenerator x = Frost::Gen::X86_64::X86ASTGenerator::create(ast);
     x.gen();
 
 

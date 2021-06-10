@@ -9,7 +9,7 @@
 #include <variant>
 #include <debug.h>
 
-namespace Frost::Gen::X86{
+namespace Frost::Gen::X86_64{
 
 class Register : public Debugable{
 public:
@@ -272,9 +272,14 @@ extern InstructionEncoding lookup_instr(
     OperandEncoding op2
 );
 
-
 class Instruction : public Debugable{
 public:
+
+    enum class InstructionType{
+        DIRECTIVE,   // e.g. main:, db 5 100, etc... things that are not actually in the resulting binary
+        INSTRUCTION  // actual x86_64 instructions
+    };
+
     static Instruction create(std::string label){
         Instruction i;
         i.m_encoding.name()=label;
