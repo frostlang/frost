@@ -146,7 +146,9 @@ void Lexer::alpha(){
             break;
         }
         case 'c':{
-            if(match("continue")){
+            if(match("const")){
+                 m_tokens.push(Token::create(TokenType::CONST)); next(strlen("const")); return;
+            }else if(match("continue")){
                 m_tokens.push(Token::create(TokenType::BREAK)); next(strlen("continue")); return;
             }
             break;
@@ -179,7 +181,9 @@ void Lexer::alpha(){
             }
         }
         case 'm':{
-            if(match("match")){
+            if(match("mut")){
+                m_tokens.push(Token::create(TokenType::MUT)); next(strlen("mut")); return;
+            }if(match("match")){
                 m_tokens.push(Token::create(TokenType::MATCH)); next(strlen("match")); return;
             }
             break;
@@ -188,6 +192,14 @@ void Lexer::alpha(){
             if(match("or")){
                 m_tokens.push(Token::create(TokenType::LOR)); next(strlen("or")); return;
             }
+        }
+        case 'p':{
+            if(match("pub")){
+                m_tokens.push(Token::create(TokenType::PUB)); next(strlen("pub")); return;
+            }else if(match("priv")){
+                m_tokens.push(Token::create(TokenType::PRIV)); next(strlen("priv")); return;
+            }
+            break;
         }
         case 'r':{
             if(match("return")){

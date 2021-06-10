@@ -6,7 +6,6 @@ namespace Frost::Gen::X86_64{
 
 
 void X86ASTGenerator::gen(){
-    dbg() << "gen!\n";
     X86_64::BuildContext ctx = X86_64::BuildContext::create();
     visit(m_ast, ctx);
     dbg() << ctx.block();

@@ -8,8 +8,6 @@ namespace Frost::Parse{
 
 AST* Parser::parse(){
     try {
-        dbg() << "parsing...\n";
-
         std::vector<AST*> statements;
 
         // TODO
@@ -131,6 +129,8 @@ Optional<Type> Parser::type(){
         ||m_tokens->expect(TokenType::U64)
         ||m_tokens->expect(TokenType::S64)
         ||m_tokens->expect(TokenType::F64)
+        ||m_tokens->expect(TokenType::PUB)
+        ||m_tokens->expect(TokenType::PRIV)
         ||m_tokens->expect(TokenType::MUT)
         ||m_tokens->expect(TokenType::CONST)
         ||m_tokens->expect(TokenType::LBRACKET)
@@ -141,10 +141,15 @@ Optional<Type> Parser::type(){
 
     Type t = Type::create(Type::Storage::U0);
 
+    if(m_tokens->consume(TokenType::PUB).has()){
+        t.set_access(AccessType::PUB);
+    }else if(m_tokens->consume(TokenType::PRIV).has()){
+        t.set_access(AccessType::PRIV);
+    }
+
     if(m_tokens->consume(TokenType::MUT).has()){
         t.set_mut(MutableType::MUT);
-    }
-    else if(m_tokens->consume(TokenType::CONST).has()){
+    }else if(m_tokens->consume(TokenType::CONST).has()){
         t.set_mut(MutableType::CONST);
     }
 
