@@ -63,11 +63,14 @@ Optional<X86_64::Operand> X86ASTGenerator::visit(Parse::IfAST* if_ast, X86_64::B
 Optional<X86_64::Operand> X86ASTGenerator::visit(Parse::DeclAST* decl_ast, X86_64::BuildContext& ctx){
 
     auto stack_offset = ctx.alloc_stack();
-    std::stringstream ss;
-    ss << "[ebp-" << stack_offset << "]";
+    //std::stringstream ss;
+    //ss << "[rbp-" << stack_offset << "]";
     auto operand = Operand::create(
         OperandEncoding::create(decl_ast->lit_type(), OperandEncoding::EncodingType::MEM),
-        ss.str()
+        MemoryLocation(
+            MemoryLocation::Value(MemoryLocation::Value(Register(Register::Type::RBP))),
+            MemoryLocation::Value(MemoryLocation::Value(stack_offset))
+            )
     );
 
     m_sym_table.put(s(decl_ast->token().value()), operand);
