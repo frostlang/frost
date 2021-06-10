@@ -38,6 +38,7 @@ Optional<X86_64::Operand> X86ASTGenerator::visit(Parse::AST* ast, X86_64::BuildC
 
 Optional<X86_64::Operand> X86ASTGenerator::visit(Parse::ProgramAST* program_ast, X86_64::BuildContext& ctx){
     // create the main fn
+    ctx.block().push(X86_64::Instruction::create("global main"));
     ctx.block().push(X86_64::Instruction::create("main:"));
     for(auto& ast : program_ast->statements()){
         visit(ast, ctx);
@@ -57,7 +58,6 @@ Optional<X86_64::Operand> X86ASTGenerator::visit(Parse::IfAST* if_ast, X86_64::B
 }
 
 Optional<X86_64::Operand> X86ASTGenerator::visit(Parse::DeclAST* decl_ast, X86_64::BuildContext& ctx){
-    dbg() << "generating decl!\n";
 
     auto stack_offset = ctx.alloc_stack();
     std::stringstream ss;
@@ -67,9 +67,13 @@ Optional<X86_64::Operand> X86ASTGenerator::visit(Parse::DeclAST* decl_ast, X86_6
         ss.str()
     );
 
-    dbg() << "decl operand before = " << operand << "\n";
-    
     m_sym_table.put(s(decl_ast->token().value()), operand);
+
+    if(decl_ast->value()){
+        // do a move!
+        auto rhs = visit(decl_ast->value(), ctx).data();
+        ctx.block().push(Instruction::create("mov", operand, rhs));
+    }
 
 /*
     if(ctx.scope()==X86::BuildContext::Scope::GLOBAL){
@@ -84,7 +88,6 @@ Optional<X86_64::Operand> X86ASTGenerator::visit(Parse::DeclAST* decl_ast, X86_6
 
 // example of a literal ast
 Optional<X86_64::Operand> X86ASTGenerator::visit(Parse::BinOpAST* bin_op_ast, X86_64::BuildContext& ctx){
-    dbg() << "generating bin op!\n";
     switch(bin_op_ast->op()){
         case Parse::BinOpAST::Op::PLUS: {
 

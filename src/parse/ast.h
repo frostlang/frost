@@ -247,6 +247,9 @@ public:
         ss << "DECL";
         ss << "\n\t" << s(m_identifier.value());
         ss << "\n\t" << m_type.debug();
+        if(m_value){
+            ss << "\n\t" << m_value->debug();
+        }
         return ss.str();
     }
     DEF_VISIT_INHERIT_AST
@@ -257,7 +260,9 @@ public:
     Frost::Type& lit_type(){
         return m_type;
     }
-
+    AST* value(){
+        return m_value;
+    }
 private:
     const Token& m_identifier;
     Frost::Type m_type;

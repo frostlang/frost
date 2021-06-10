@@ -8,8 +8,19 @@
 #include <parse/ast.h>
 #include <variant>
 #include <debug.h>
+#include <iomanip>
 
 namespace Frost::Gen::X86_64{
+
+
+
+// TODO
+// define a registerable target and platform system
+
+class WindowsPlatform{
+public:
+    // map symbols = {"entry_point" : "_main:"}
+};
 
 class Register : public Debugable{
 public:
@@ -131,7 +142,7 @@ private:
 class InstructionEncoding : public Debugable{
 public:
     enum class Type{
-        LABEL,
+        DIRECTIVE,
         OP1,
         OP2,
         OP3
@@ -183,7 +194,7 @@ public:
 private:
     std::string m_name;
     Type m_type;
-    u8 m_op;
+    u8 m_op = {0};
     OperandEncoding m_operand_encoding[3]; // can have 3 operands
 };
 
@@ -280,13 +291,15 @@ public:
         INSTRUCTION  // actual x86_64 instructions
     };
 
-    static Instruction create(std::string label){
+    static Instruction create(std::string directive){
         Instruction i;
-        i.m_encoding.name()=label;
-        i.m_encoding.type()=InstructionEncoding::Type::LABEL;
+        i.m_encoding=InstructionEncoding();
+        i.m_encoding.name()=directive;
+        i.m_encoding.type()=InstructionEncoding::Type::DIRECTIVE;
         return i;
     }
-        static Instruction create(
+    
+    static Instruction create(
         std::string name, 
         Operand op0,
         Operand op1
@@ -317,11 +330,16 @@ public:
     }
     std::string to_asm(){
         std::stringstream ss;
+        ss << std::setfill('0') << std::setw(3) << (int)m_encoding.op()<<":";
         switch(m_encoding.type()){
-            case InstructionEncoding::Type::LABEL:
+            case InstructionEncoding::Type::DIRECTIVE:
                 ss << m_encoding.name(); break;
+            case InstructionEncoding::Type::OP1: 
+                ss << m_encoding.name() << " " << m_op0.to_asm(); break;
             case InstructionEncoding::Type::OP2: 
-                ss << m_encoding.name() << " " << m_op0.to_asm() << " " << m_op1.to_asm(); break;
+                ss << m_encoding.name() << " " << m_op0.to_asm() << ", " << m_op1.to_asm(); break;
+            case InstructionEncoding::Type::OP3: 
+                ss << m_encoding.name() << " " << m_op0.to_asm() << ", " << m_op1.to_asm() << ", " << m_op2.to_asm(); break;
         }
         return ss.str();
     }

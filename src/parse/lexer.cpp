@@ -25,8 +25,6 @@ void Lexer::skip_whitespace(){
 
 TokenStream& Lexer::lex(){
 
-    dbg() << "lexing...\n";
-
     while(peek()!='\0'){
 
         skip_whitespace();

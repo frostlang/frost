@@ -5,6 +5,7 @@
 #include <sstream>
 #include <fstream>
 #include <iostream>
+#include <target.h>
 #include <debug.h>
 
 namespace Frost{
@@ -14,9 +15,10 @@ namespace Frost{
     */
     class Unit : public Debugable {
     public:
-
-        static Unit create(){
+        Unit(){}
+        static Unit create(Target target){
             Unit u;
+            u.m_target = target;
             return u;
         }
         
@@ -42,7 +44,7 @@ namespace Frost{
 
         std::string debug() override {
             std::stringstream ss;
-            ss << "file="<<file()<<"\nsource="<<source()<<"\n";
+            ss << "target="<<m_target.debug()<< "\nfile="<<file()<<"\nsource="<<source()<<"\n";
             return ss.str();
         }
 
@@ -53,8 +55,12 @@ namespace Frost{
             return m_source;
         }
 
+        Target& target(){
+            return m_target;
+        }
     private:
         std::string m_file;
         std::string m_source;
+        Target m_target;
     };
 }

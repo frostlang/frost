@@ -20,7 +20,8 @@ std::vector<InstructionEncoding> instruction_lookup_table = {
         INSTR("add", 5, REG, _32, IMM, _32),
         INSTR("mov", 88, REG, _8, MEM, _8),
         INSTR("mov", 88, REG, _8, MEM, _16),
-        INSTR("mov", 88, REG, _8, MEM, _32)
+        INSTR("mov", 88, REG, _8, MEM, _32),
+        INSTR("mov", 0xC6, MEM, _8, IMM, _8)
 };
 
 void register_instruction(InstructionEncoding instruction_encoding){

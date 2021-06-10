@@ -202,7 +202,7 @@ Optional<Type> Parser::type(){
 //
 //
 //
-AST* Parser::decl(ParseContext){
+AST* Parser::decl(ParseContext ctx){
     // get the identifier
     auto& identifier = m_tokens->next();
 
@@ -213,7 +213,12 @@ AST* Parser::decl(ParseContext){
 
     auto t = type();
 
-    return new DeclAST(DeclAST::create(identifier,t.data(), 0));
+    AST* initialiser = 0;
+    if(m_tokens->consume(TokenType::ASSIGN).has()){
+        initialiser=expression(ctx);
+    }
+
+    return new DeclAST(DeclAST::create(identifier,t.data(), initialiser));
 
 }
 
