@@ -32,8 +32,12 @@ public:
 };
 
 extern DebugStream default_dbg_stream;
+extern DebugStream default_info_stream;
 inline DebugStream& dbg(){
     return default_dbg_stream;
+}
+inline DebugStream& info(){
+    return default_info_stream;
 }
 extern DebugStream& operator<<(DebugStream& ds, Debugable& debugable);
 extern DebugStream& operator<<(DebugStream& ds, Debugable&& debugable);

@@ -5,6 +5,7 @@
 namespace Frost{
 
 DebugStream default_dbg_stream;
+DebugStream default_info_stream;
 
 DebugStream& operator<<(DebugStream& ds, Debugable& debugable){
 
