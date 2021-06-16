@@ -5,7 +5,7 @@
 #include <asserts.h>
 #include <unit.h>
 #include <type.h>
-#include <gen/x86astgen.h> // crash if we include this for some reason...
+#include <gen/x86_64astgen.h> // crash if we include this for some reason...
 #include <gen/generator.h>
 #include <symtable.h>
 #include <parse/analysis.h>
@@ -13,6 +13,7 @@
 #include <iostream>
 #include <string>
 #include <target.h>
+#include <gen/castgen.h>
 
 void repl(){
     while(1){
@@ -53,7 +54,7 @@ void help(){
 }
 
 int main(){
-    repl();
+    //repl();
     Frost::Target target = Frost::Target(
         Frost::Arch(Frost::Arch::Type::X86_64),
         Frost::Platform(Frost::Platform::Type::WINDOWS)
@@ -74,9 +75,10 @@ int main(){
     //Frost::Parse::Analyser a = Frost::Parse::Analyser::create(&u, ast);
     //a.analyse();
 
-    Frost::Gen::X86_64::X86ASTGenerator x = Frost::Gen::X86_64::X86ASTGenerator::create(ast);
+    //Frost::Gen::X86_64::X86ASTGenerator x = Frost::Gen::X86_64::X86ASTGenerator::create(ast);
+    //x.gen();
+
+    Frost::Gen::C::CASTGen x = Frost::Gen::C::CASTGen::create(ast);
     x.gen();
-
-
     return 0;
 }

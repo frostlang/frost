@@ -26,7 +26,6 @@ void Lexer::skip_whitespace(){
 TokenStream& Lexer::lex(){
 
     while(peek()!='\0'){
-
         skip_whitespace();
         char c = peek();
 
@@ -62,7 +61,12 @@ TokenStream& Lexer::lex(){
             }
             case '/': {
                 switch(peek(1)){
-                    case '/': m_tokens.push(Token::create(TokenType::REMAINDER)); next(); break;
+                    case '/': {
+                        while(peek()!='\n'){
+                            next();
+                        }
+                        break;
+                    }
                     default: m_tokens.push(Token::create(TokenType::DIV)); break;
                 }
                 next(); 

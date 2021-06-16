@@ -32,7 +32,15 @@ public:
         FN,
         BLOCK
     };
+    Scope& scope(){
+        return m_scope;
+    }
+    Frost::Type& lhs_type(){
+        return m_lhs_type;
+    }
 private:
+    Scope m_scope;
+    Frost::Type m_lhs_type; // used for type inference
 };
 
 class Parser{

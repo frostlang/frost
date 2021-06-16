@@ -1,4 +1,4 @@
-#include <gen/x86astgen.h>
+#include <gen/x86_64astgen.h>
 
 namespace Frost::Gen::X86_64{
 

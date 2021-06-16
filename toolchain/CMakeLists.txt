@@ -22,7 +22,8 @@ set(SOURCES
     ../src/parse/ast.cpp
     ../src/gen/generator.cpp
     ../src/gen/x86_64.cpp
-    ../src/gen/x86astgen.cpp
+    ../src/gen/x86_64astgen.cpp
+    ../src/gen/castgen.cpp
 )
 
 add_executable(Frost ${SOURCES})

@@ -268,9 +268,10 @@ public:
         return Type::DECL;
     }
     DeclAST(Token& identifier) : m_identifier(identifier){}
-    static DeclAST create(Token& identifier, Frost::Type type, AST* value){
+    static DeclAST create(Token& identifier, Frost::Type type, u1 initialised, AST* value){
         DeclAST d(identifier);
         d.m_type = type;
+        d.m_initialised = initialised;
         d.m_value = value;
         return d;
     }
@@ -291,6 +292,9 @@ public:
     Frost::Type& lit_type(){
         return m_type;
     }
+    u1 initialised(){
+        return m_initialised;
+    }
     AST* value(){
         return m_value;
     }
@@ -300,6 +304,7 @@ public:
 private:
     const Token& m_identifier;
     Frost::Type m_type;
+    u1 m_initialised = false;
     AST* m_value;
     u1 m_requires_inference = {false};
 };
@@ -396,7 +401,6 @@ private:
 
 class LiteralAST : public AST {
 public:
-
     Type type() const override {
         return Type::LITERAL;
     }
@@ -443,7 +447,13 @@ public:
     AST* body(){
         return m_body;
     }
+
+    std::string& mangled_identifier(){
+        return m_mangled_identifier;
+    }
 private:
+    // the fully mangled identifier ready to be emitted
+    std::string m_mangled_identifier;
     AST* m_body;
 };
 
