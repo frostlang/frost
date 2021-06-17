@@ -48,6 +48,12 @@ namespace Frost::Gen::C{
             case Parse::AST::Type::BIN:{
                 return visit(static_cast<Parse::BinOpAST*>(ast), ctx);
             }
+            case Parse::AST::Type::CALL:{
+                return visit(static_cast<Parse::CallAST*>(ast), ctx);
+            }
+            case Parse::AST::Type::VARIABLE:{
+                return visit(static_cast<Parse::VariableAST*>(ast), ctx);
+            }
             case Parse::AST::Type::FN:{
                 return visit(static_cast<Parse::FnAST*>(ast), ctx);
             }
@@ -107,11 +113,7 @@ namespace Frost::Gen::C{
         ctx.emit(";\n");
         return Optional<std::string>();
     }
-
-    Optional<std::string> CASTGen::visit(Parse::LiteralAST* ast, BuildContext& ctx){
-        return s(ast->token().value());
-    }
-
+    
     Optional<std::string> CASTGen::visit(Parse::BinOpAST* ast, BuildContext& ctx){
         const char* ops[]={
             "||",
@@ -135,6 +137,20 @@ namespace Frost::Gen::C{
         ss << visit(ast->rhs(), ctx).data();
         return ss.str();
     }
+
+    Optional<std::string> CASTGen::visit(Parse::CallAST* ast, BuildContext& ctx){
+        std::stringstream ss;
+        ss << visit(ast->callee(), ctx).data() << "()";
+        return ss.str();
+    }
+    
+    Optional<std::string> CASTGen::visit(Parse::VariableAST* ast, BuildContext& ctx){
+        return s(ast->token().value());
+    }
+
+    Optional<std::string> CASTGen::visit(Parse::LiteralAST* ast, BuildContext& ctx){
+        return s(ast->token().value());
+    }
     
     Optional<std::string> CASTGen::visit(Parse::FnAST* ast, BuildContext& ctx){
 
@@ -145,9 +161,10 @@ namespace Frost::Gen::C{
         ctx.emit(ast->mangled_identifier());
         ctx.emit("()");
         ctx.emit("{\n");
+        
         visit(ast->body(), ctx);
         ctx.emit("}\n");
-        
+
         ctx.set_block(active_block);
 
         // return a pointer to this function

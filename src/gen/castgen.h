@@ -23,6 +23,8 @@ public:
     Optional<std::string> visit(Parse::IfAST* ast, BuildContext& ctx);
     Optional<std::string> visit(Parse::DeclAST* ast, BuildContext& ctx);
     Optional<std::string> visit(Parse::BinOpAST* ast, BuildContext& ctx);
+    Optional<std::string> visit(Parse::CallAST* ast, BuildContext& ctx);
+    Optional<std::string> visit(Parse::VariableAST* ast, BuildContext& ctx);
     Optional<std::string> visit(Parse::LiteralAST* ast, BuildContext& ctx);
     Optional<std::string> visit(Parse::FnAST* ast, BuildContext& ctx);
 private:

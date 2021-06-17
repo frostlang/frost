@@ -325,7 +325,7 @@ AST* Parser::cmp(ParseContext){return mdmr({});}
 AST* Parser::shift(ParseContext){return 0;}
 AST* Parser::pm(ParseContext){return 0;}
 AST* Parser::mdmr(ParseContext ctx){
-    auto higher_precedence = single(ctx);
+    auto higher_precedence = un(ctx);
     if(m_tokens->expect(TokenType::PLUS)){
         auto op = m_tokens->next();
         auto rhs = mdmr({});
@@ -334,8 +334,17 @@ AST* Parser::mdmr(ParseContext ctx){
     }
     return higher_precedence;
 }
-AST* Parser::un(ParseContext){return 0;}
-AST* Parser::cast(ParseContext){return 0;}
+AST* Parser::un(ParseContext ctx){return cast(ctx);}
+AST* Parser::cast(ParseContext ctx){return call(ctx);}
+AST* Parser::call(ParseContext ctx){
+    auto higher_precedence = single(ctx);
+    if(m_tokens->consume(TokenType::LPAREN).has()){
+        // call ast
+        m_tokens->consume(TokenType::RPAREN);
+        return new CallAST(higher_precedence, {});
+    }
+    return higher_precedence;
+}
 
 
 AST* Parser::block(ParseContext ctx){

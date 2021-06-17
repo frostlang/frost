@@ -80,6 +80,7 @@ public:
     AST* mdmr(ParseContext); // * / % /%
     AST* un(ParseContext);
     AST* cast(ParseContext);
+    AST* call(ParseContext);
 
     AST* block(ParseContext);
     AST* fn(ParseContext);

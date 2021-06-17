@@ -21,6 +21,7 @@ class ExprStmtAST;
 class AssignAST;
 class DeclAST;
 class BinOpAST;
+class Call;
 class VariableAST;
 class LiteralAST;
 class FnAST;
@@ -42,6 +43,7 @@ public:
         DECL,
         ASSIGN,
         BIN,
+        CALL,
         VARIABLE,
         LITERAL,
         FN,
@@ -368,6 +370,34 @@ private:
     AST* m_lhs;
     AST* m_rhs;
     Op m_type;
+};
+
+class CallAST : public AST {
+public:
+    
+    CallAST(){}
+    CallAST(AST* callee,std::vector<AST*> args) : m_callee(callee), m_args(args){}
+
+    std::string debug() override {
+        std::stringstream ss;
+        ss << "CALL";
+        ss << "\n\t" << m_callee->debug();
+        for(auto& arg : m_args)
+           ss << "\n\t" << arg->debug();
+        return ss.str();
+    }
+    Type type() const override {
+        return Type::CALL;
+    }
+    AST* callee(){
+        return m_callee;
+    }
+    std::vector<AST*>& args(){
+        return m_args;
+    }
+private:
+    AST* m_callee;
+    std::vector<AST*> m_args;
 };
 
 class VariableAST : public AST {
