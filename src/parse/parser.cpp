@@ -338,7 +338,7 @@ AST* Parser::un(ParseContext){return 0;}
 AST* Parser::cast(ParseContext){return 0;}
 
 
-AST* Parser::block(ParseContext){
+AST* Parser::block(ParseContext ctx){
 
     std::vector<AST*> statements;
 

@@ -35,12 +35,12 @@ public:
     Scope& scope(){
         return m_scope;
     }
-    Frost::Type& lhs_type(){
-        return m_lhs_type;
+    Frost::Type& expecting_type(){
+        return m_expecting_type;
     }
 private:
     Scope m_scope;
-    Frost::Type m_lhs_type; // used for type inference
+    Frost::Type m_expecting_type; // used for type inference
 };
 
 class Parser{

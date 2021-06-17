@@ -44,7 +44,9 @@ public:
         BIN,
         VARIABLE,
         LITERAL,
-        FN
+        FN,
+        LIST,
+        INITIALISER_LIST
     };
     virtual std::string debug() {return "AST";}
     virtual Type type() const = 0;

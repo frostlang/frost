@@ -67,6 +67,13 @@ TokenStream& Lexer::lex(){
                         }
                         break;
                     }
+                    case '*': {
+                        while(!(peek()=='*' && peek(1)=='/')){
+                            next();
+                        }
+                        next();
+                        break;
+                    }
                     default: m_tokens.push(Token::create(TokenType::DIV)); break;
                 }
                 next(); 

@@ -49,6 +49,9 @@
         "map": "cpp",
         "variant": "cpp",
         "xtree": "cpp",
-        "string_view": "cpp"
+        "string_view": "cpp",
+        "iomanip": "cpp",
+        "xlocmon": "cpp",
+        "xloctime": "cpp"
     }
 }

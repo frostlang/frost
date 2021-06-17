@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string_view>
 #include <map>
 #include <vector>
 #include <types.h>
@@ -36,12 +37,12 @@ namespace Frost{
         class Scope{
         public:
             Scope(){
-                m_data = std::map<std::string, T>();
+                m_data = std::map<std::string_view, T>();
             }
-            std::map<std::string, T>& data(){
+            std::map<std::string_view, T>& data(){
                 return m_data;
             }
-            std::map<std::string, T> m_data;
+            std::map<std::string_view, T> m_data;
         };
 
         SymTable(){
@@ -49,14 +50,14 @@ namespace Frost{
             m_scopes.push_back(Scope());
         }
 
-        void put(std::string key, T value){
+        void put(std::string_view key, T value){
             m_scopes[m_scope].m_data.insert({key, value});
         }
         
         // TODO
         // we really want this to be Optional<T&> (Reference)
         // but the problem is if the T is null then we can't get a reference to it :(
-        Optional<T> get(std::string key){
+        Optional<T> get(std::string_view key){
             for(u32 i=m_scope;i>=0;i--){
                 if(m_scopes[i].data().count(key))
                     return m_scopes[i].data()[key];

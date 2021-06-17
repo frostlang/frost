@@ -33,6 +33,12 @@ namespace Frost::Gen::C{
             case Parse::AST::Type::PROGRAM:{
                 return visit(static_cast<Parse::ProgramAST*>(ast), ctx);
             }
+            case Parse::AST::Type::BLOCK:{
+                return visit(static_cast<Parse::BlockAST*>(ast), ctx);
+            }
+            case Parse::AST::Type::EXPR_STMT: {
+                return visit(static_cast<Parse::ExprStmtAST*>(ast)->expr(), ctx);
+            }
             case Parse::AST::Type::IF:{
                 return visit(static_cast<Parse::IfAST*>(ast), ctx);
             }
@@ -54,6 +60,13 @@ namespace Frost::Gen::C{
             visit(stmt, ctx);
         return Optional<Expression>();
     }
+
+    Optional<Expression> CASTGen::visit(Parse::BlockAST* ast, BuildContext ctx){
+        for(auto& stmt : ast->statements())
+            visit(stmt, ctx);
+        return Optional<Expression>();
+    }
+    
     
     Optional<Expression> CASTGen::visit(Parse::IfAST* ast, BuildContext ctx){
         emit("if(");
@@ -87,6 +100,7 @@ namespace Frost::Gen::C{
         emit(ast->mangled_identifier());
         emit("()");
         emit("{\n");
+        visit(ast->body(), ctx);
         emit("}\n");
         return Optional<Expression>();
     }

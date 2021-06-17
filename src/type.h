@@ -32,6 +32,8 @@ enum class AssignableType{
 class Type : public Debugable{
 public:
     enum class Storage{
+        UNKNOWN,
+
         ANY,
 
         U0,

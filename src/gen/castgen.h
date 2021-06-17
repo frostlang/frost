@@ -20,6 +20,7 @@ public:
     void emit(std::string_view code);
     Optional<C::Expression> visit(Parse::AST* ast, C::BuildContext ctx);
     Optional<Expression> visit(Parse::ProgramAST* ast, BuildContext ctx);
+    Optional<Expression> visit(Parse::BlockAST* ast, BuildContext ctx);
     Optional<Expression> visit(Parse::IfAST* ast, BuildContext ctx);
     Optional<Expression> visit(Parse::DeclAST* ast, BuildContext ctx);
     Optional<Expression> visit(Parse::LiteralAST* ast, BuildContext ctx);

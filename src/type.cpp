@@ -3,6 +3,8 @@
 namespace Frost{
 
 const char* type_debug[] = {
+    "UNKNOWN",
+
     "ANY",
     
     "U0",

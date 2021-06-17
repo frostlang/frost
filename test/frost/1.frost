@@ -1,2 +1,9 @@
-// meme
-x : s8
+/* 
+
+
+multiline comment */
+
+
+
+
+x : s8 = 1
