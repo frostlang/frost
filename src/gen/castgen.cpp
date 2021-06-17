@@ -45,6 +45,9 @@ namespace Frost::Gen::C{
             case Parse::AST::Type::DECL:{
                 return visit(static_cast<Parse::DeclAST*>(ast), ctx);
             }
+            case Parse::AST::Type::BIN:{
+                return visit(static_cast<Parse::BinOpAST*>(ast), ctx);
+            }
             case Parse::AST::Type::FN:{
                 return visit(static_cast<Parse::FnAST*>(ast), ctx);
             }
@@ -70,9 +73,9 @@ namespace Frost::Gen::C{
     
     Optional<std::string> CASTGen::visit(Parse::IfAST* ast, BuildContext& ctx){
         ctx.emit("if(");
-        visit(ast->if_cond(), ctx);
+        ctx.emit(visit(ast->if_cond(), ctx).data());
         ctx.emit(")");
-        visit(ast->if_body(), ctx);
+        ctx.emit(visit(ast->if_body(), ctx).data());
         ctx.emit("\n");
         return Optional<std::string>();
     }
@@ -106,10 +109,32 @@ namespace Frost::Gen::C{
     }
 
     Optional<std::string> CASTGen::visit(Parse::LiteralAST* ast, BuildContext& ctx){
-        ctx.emit(s(ast->token().value()));
-        return Optional<std::string>();
+        return s(ast->token().value());
     }
 
+    Optional<std::string> CASTGen::visit(Parse::BinOpAST* ast, BuildContext& ctx){
+        const char* ops[]={
+            "||",
+            "&&",
+            "|",
+            "&",
+            "==",
+            "!=",
+            ">",
+            ">=",
+            "<",
+            "<=",
+            "+",
+            "-",
+            "*",
+            "/"
+        };
+        std::stringstream ss;
+        ss << visit(ast->lhs(), ctx).data();
+        ss << ops[(u32)ast->op()];
+        ss << visit(ast->rhs(), ctx).data();
+        return ss.str();
+    }
     
     Optional<std::string> CASTGen::visit(Parse::FnAST* ast, BuildContext& ctx){
 

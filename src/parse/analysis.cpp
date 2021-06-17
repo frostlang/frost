@@ -23,16 +23,17 @@ Optional<Type> Analyser::visit(AST* ast, AnalysisCtx ctx){
             return visit(static_cast<Parse::VariableAST*>(ast), ctx);
         } case Parse::AST::Type::LITERAL:{
             return visit(static_cast<Parse::LiteralAST*>(ast), ctx);
+        } case Parse::AST::Type::FN:{
+            return visit(static_cast<Parse::FnAST*>(ast), ctx);
         }
     }
     return Optional<Type>();
 }
 
 Optional<Type> Analyser::visit(ProgramAST* program_ast, AnalysisCtx ctx){
-    return Optional<Type>();   
-    //for(auto& statement : program_ast->statements())
-    //    visit(statement, ctx);
-    //return Optional<Type>();
+    for(auto& statement : program_ast->statements())
+        visit(statement, ctx);
+    return Optional<Type>();
 }
 Optional<Type> Analyser::visit(BlockAST* ast, AnalysisCtx ctx){
 
@@ -43,8 +44,6 @@ Optional<Type> Analyser::visit(BlockAST* ast, AnalysisCtx ctx){
 }
 
 Optional<Type> Analyser::visit(DeclAST* decl_ast, AnalysisCtx ctx){
-
-
     // if we have a const fn then we need to essentially remove this decl...
     if(
         decl_ast->lit_type().type()==Frost::Type::Storage::FN 

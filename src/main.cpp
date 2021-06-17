@@ -71,6 +71,10 @@ int main(){
     Frost::Parse::Parser p = Frost::Parse::Parser::create(&u, &tokens);
     Frost::Parse::AST* ast = p.parse();
 
+
+    Frost::Parse::Analyser a = Frost::Parse::Analyser::create(&u, ast);
+    a.analyse();
+
     Frost::dbg() << "ast=" << ast << "\n";
     //Frost::Parse::Analyser a = Frost::Parse::Analyser::create(&u, ast);
     //a.analyse();
