@@ -17,14 +17,13 @@ public:
     
     std::string type_to_c(Frost::Type type);
     void gen();
-    void emit(std::string_view code);
-    Optional<C::Expression> visit(Parse::AST* ast, C::BuildContext ctx);
-    Optional<Expression> visit(Parse::ProgramAST* ast, BuildContext ctx);
-    Optional<Expression> visit(Parse::BlockAST* ast, BuildContext ctx);
-    Optional<Expression> visit(Parse::IfAST* ast, BuildContext ctx);
-    Optional<Expression> visit(Parse::DeclAST* ast, BuildContext ctx);
-    Optional<Expression> visit(Parse::LiteralAST* ast, BuildContext ctx);
-    Optional<Expression> visit(Parse::FnAST* ast, BuildContext ctx);
+    Optional<std::string> visit(Parse::AST* ast, C::BuildContext& ctx);
+    Optional<std::string> visit(Parse::ProgramAST* ast, BuildContext& ctx);
+    Optional<std::string> visit(Parse::BlockAST* ast, BuildContext& ctx);
+    Optional<std::string> visit(Parse::IfAST* ast, BuildContext& ctx);
+    Optional<std::string> visit(Parse::DeclAST* ast, BuildContext& ctx);
+    Optional<std::string> visit(Parse::LiteralAST* ast, BuildContext& ctx);
+    Optional<std::string> visit(Parse::FnAST* ast, BuildContext& ctx);
 private:
     Parse::AST* m_ast;
 };

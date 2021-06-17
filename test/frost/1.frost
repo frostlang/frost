@@ -1,9 +1,22 @@
-/* 
+/*
+
+working towards compiling this:
+
+main : const fn = {
+    x : s8
+}
+
+which compiles to...
+
+void main(){
+    int x;
+}
+
+*/
 
 
-multiline comment */
+main : const fn = (){
 
+    var : s8 = 9999
 
-
-
-x : s8 = 1
+}

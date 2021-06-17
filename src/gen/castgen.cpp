@@ -21,14 +21,14 @@ namespace Frost::Gen::C{
 
 
     void CASTGen::gen(){
-        visit(m_ast, {});
+        BuildContext ctx = {};
+        visit(m_ast, ctx);
+
+        for(auto& block : ctx.blocks())
+            block.dump();
     }
 
-    void CASTGen::emit(std::string_view code){
-        dbg() << s(code.data());
-    }
-
-    Optional<C::Expression> CASTGen::visit(Parse::AST* ast, C::BuildContext ctx){
+    Optional<std::string> CASTGen::visit(Parse::AST* ast, C::BuildContext& ctx){
         switch(ast->type()){
             case Parse::AST::Type::PROGRAM:{
                 return visit(static_cast<Parse::ProgramAST*>(ast), ctx);
@@ -52,56 +52,83 @@ namespace Frost::Gen::C{
                 return visit(static_cast<Parse::LiteralAST*>(ast), ctx);
             }
         }
-        return Optional<Expression>();
+        return Optional<std::string>();
     }
 
-    Optional<Expression> CASTGen::visit(Parse::ProgramAST* ast, BuildContext ctx){
+    Optional<std::string> CASTGen::visit(Parse::ProgramAST* ast, BuildContext& ctx){
         for(auto& stmt : ast->statements())
             visit(stmt, ctx);
-        return Optional<Expression>();
+        return Optional<std::string>();
     }
 
-    Optional<Expression> CASTGen::visit(Parse::BlockAST* ast, BuildContext ctx){
+    Optional<std::string> CASTGen::visit(Parse::BlockAST* ast, BuildContext& ctx){
         for(auto& stmt : ast->statements())
             visit(stmt, ctx);
-        return Optional<Expression>();
+        return Optional<std::string>();
     }
     
     
-    Optional<Expression> CASTGen::visit(Parse::IfAST* ast, BuildContext ctx){
-        emit("if(");
+    Optional<std::string> CASTGen::visit(Parse::IfAST* ast, BuildContext& ctx){
+        ctx.emit("if(");
         visit(ast->if_cond(), ctx);
-        emit(")");
+        ctx.emit(")");
         visit(ast->if_body(), ctx);
-        emit("\n");
-        return Optional<Expression>();
+        ctx.emit("\n");
+        return Optional<std::string>();
     }
 
-    Optional<Expression> CASTGen::visit(Parse::DeclAST* ast, BuildContext ctx){
-        emit(type_to_c(ast->lit_type()));
-        emit(" ");
-        emit(s(ast->token().value()));
+    Optional<std::string> CASTGen::visit(Parse::DeclAST* ast, BuildContext& ctx){
+
+        // if we have a const fn then we essentially ignore the decl
+        // and just generate the function!
+        if(
+            ast->lit_type().type()==Frost::Type::Storage::FN 
+            && ast->lit_type().mut()==Frost::MutableType::CONST
+            ){
+                // if the decleration is initialised to a function,
+                // update the functions mangled name
+                if(ast->initialised()){
+                    Parse::FnAST* fn = static_cast<Parse::FnAST*>(ast->value());
+                    return visit(fn, ctx);
+                }
+            }
+
+        // if we are not a const fn then just generate the decl :)
+        ctx.emit(type_to_c(ast->lit_type()));
+        ctx.emit(" ");
+        ctx.emit(s(ast->token().value()));
         if(ast->initialised()){
-            emit(" = ");
-            visit(ast->value(), ctx);
+            ctx.emit(" = ");
+            ctx.emit(visit(ast->value(), ctx).data());
         }
-        emit(";\n");
-        return Optional<Expression>();
+        ctx.emit(";\n");
+        return Optional<std::string>();
     }
 
-    Optional<Expression> CASTGen::visit(Parse::LiteralAST* ast, BuildContext ctx){
-        emit(s(ast->token().value()));
-        return Optional<Expression>();
+    Optional<std::string> CASTGen::visit(Parse::LiteralAST* ast, BuildContext& ctx){
+        ctx.emit(s(ast->token().value()));
+        return Optional<std::string>();
     }
 
     
-    Optional<Expression> CASTGen::visit(Parse::FnAST* ast, BuildContext ctx){
-        emit("void ");
-        emit(ast->mangled_identifier());
-        emit("()");
-        emit("{\n");
+    Optional<std::string> CASTGen::visit(Parse::FnAST* ast, BuildContext& ctx){
+
+        auto* active_block = ctx.active();
+        ctx.set_block(ctx.global_block());
+
+        ctx.emit("void ");
+        ctx.emit(ast->mangled_identifier());
+        ctx.emit("()");
+        ctx.emit("{\n");
         visit(ast->body(), ctx);
-        emit("}\n");
-        return Optional<Expression>();
+        ctx.emit("}\n");
+        
+        ctx.set_block(active_block);
+
+        // return a pointer to this function
+        std::stringstream ss;
+        ss << "&" << ast->mangled_identifier();
+
+        return ss.str();
     }
 }

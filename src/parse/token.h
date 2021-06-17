@@ -200,7 +200,7 @@ u1 expect(TokenType type){
 
 Optional<Token> consume(TokenType type){
     if(peek().type()==type){
-        return Optional(next());
+        return Optional<Token>(next());
     }
     return Optional<Token>();
 }

@@ -19,12 +19,16 @@ inline std::string s(std::string_view view){
 template<typename T>
 class Optional{
 public:
-    Optional(T data){
-        m_has = true;
-        m_data = data;
-    }
     Optional(){
         m_has = false;
+    }
+    Optional(T& t){
+        m_has = true;
+        m_data = t;
+    }
+    Optional(T&& t){
+        m_has = true;
+        m_data = t;
     }
     T& data(){
         return m_data;
