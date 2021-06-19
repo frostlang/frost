@@ -11,6 +11,7 @@ class ASTVisitor;
 
 class ErrorAST;
 class ProgramAST;
+class ASMAST;
 class IfAST;
 class ForAST;
 class BlockAST;
@@ -33,6 +34,7 @@ public:
     enum class Type : u8{
         ERROR,
         PROGRAM,
+        ASM,
         EXPR_STMT,
         IF,
         FOR,
@@ -97,6 +99,13 @@ private:
     std::vector<AST*> m_statements;
 };
 
+class ASMAST : public AST{
+public:
+    Type type() const override {
+        return Type::ASM;
+    }
+private:
+};
 
 class IfAST : public AST{
 public:
@@ -183,15 +192,23 @@ public:
     Type type() const override {
         return Type::RETURN;
     }
-    static ReturnAST create(){
-        return {};
-    }
+
+    ReturnAST(u1 has_value, AST* value) : m_has_value(has_value), m_value(value){}
 
     std::string debug() override {
         return "RETURN";
     }
 
+    u1& has_value(){
+        return m_has_value;
+    }
+
+    AST* value(){
+        return m_value;
+    }
 private:
+    u1 m_has_value;
+    AST* m_value;
 };
 
 class BreakAST : public AST{

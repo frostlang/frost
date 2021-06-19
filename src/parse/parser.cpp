@@ -26,17 +26,16 @@ AST* Parser::parse(){
     
 }
 
-AST* Parser::statement(ParseContext){
+AST* Parser::statement(ParseContext ctx){
     switch(m_tokens->peek().type()){
         case TokenType::BREAK:{
-            return new BreakAST(BreakAST::create());
+            return brk(ctx);
         }
         case TokenType::CONTINUE:{
-            return new ContinueAST(ContinueAST::create());
+            return ctn(ctx);
         }
         case TokenType::RETURN:{
-            return new ReturnAST(ReturnAST::create());
-            break;
+            return ret(ctx);
         }
         case TokenType::FOR:{
             return forloop({});
@@ -60,6 +59,22 @@ AST* Parser::statement(ParseContext){
     }
     return new ErrorAST(ErrorAST::create());
 }
+
+
+AST* Parser::ret(ParseContext){
+    m_tokens->consume(TokenType::RETURN);
+
+    AST* expr = 0;
+    // todo check if we are expecting a value
+    return new ReturnAST(false, expr);
+}
+AST* Parser::brk(ParseContext){
+    return 0;
+}
+AST* Parser::ctn(ParseContext){
+    return 0;
+}
+
 AST* Parser::ifstmt(ParseContext){
     m_tokens->consume(TokenType::IF);
     IfAST if_ast = IfAST::create();

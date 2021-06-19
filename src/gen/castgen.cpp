@@ -39,6 +39,9 @@ namespace Frost::Gen::C{
             case Parse::AST::Type::EXPR_STMT: {
                 return visit(static_cast<Parse::ExprStmtAST*>(ast), ctx);
             }
+            case Parse::AST::Type::RETURN:{
+                return visit(static_cast<Parse::ReturnAST*>(ast), ctx);
+            }
             case Parse::AST::Type::IF:{
                 return visit(static_cast<Parse::IfAST*>(ast), ctx);
             }
@@ -79,7 +82,18 @@ namespace Frost::Gen::C{
         return Optional<std::string>();
     }
     
-    
+    Optional<std::string> CASTGen::visit(Parse::ReturnAST* ast, BuildContext& ctx){
+        ctx.emit("return");
+        if(ast->has_value()){
+            ctx.emit(" ");
+            auto value = visit(ast->value(), ctx);
+            ASSERT(value.has());
+            ctx.emit(value.data());
+        }
+        ctx.emit(";\n");
+        return Optional<std::string>();
+    }
+
     Optional<std::string> CASTGen::visit(Parse::IfAST* ast, BuildContext& ctx){
         ctx.emit("if(");
         ctx.emit(visit(ast->if_cond(), ctx).data());

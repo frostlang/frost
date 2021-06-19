@@ -144,7 +144,9 @@ void Lexer::alpha(){
     // first check for keywords
     switch(peek()){
         case 'a':{
-            if(match("and")){
+            if(match("asm")){
+                m_tokens.push(Token::create(TokenType::ASM)); next(strlen("asm")); return;
+            }else if(match("and")){
                 m_tokens.push(Token::create(TokenType::LAND)); next(strlen("and")); return;
             }else if(match("any")){
                 m_tokens.push(Token::create(TokenType::ANY)); next(strlen("any")); return;
@@ -213,8 +215,8 @@ void Lexer::alpha(){
             break;
         }
         case 'r':{
-            if(match("return")){
-                m_tokens.push(Token::create(TokenType::RETURN)); next(strlen("return")); return;
+            if(match("ret")){
+                m_tokens.push(Token::create(TokenType::RETURN)); next(strlen("ret")); return;
             }
             break;
         }

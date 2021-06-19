@@ -14,6 +14,8 @@ enum class TokenType : u8 {
     UNDERSCORE,
     IDENTIFIER,
 
+    ASM,
+
     COLON,
     SEMICOLON,
     COMMA,

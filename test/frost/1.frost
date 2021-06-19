@@ -1,26 +1,14 @@
-/*
-
-working towards compiling this:
-
-main : const fn = {
-    x : s8
-}
-
-which compiles to...
-
-void main(){
-    int x;
-}
-
-*/
+// the below program should compile successfully
 
 
-global : s8
+
+global : u8
 
 main : const fn = (){
 
     var : s8 = 9999 + 2 + 888
 
-    printf("222")
+    printf("one")
 
+    ret 
 }

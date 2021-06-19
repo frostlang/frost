@@ -58,8 +58,12 @@ public:
     }
 
     Optional<Type> type();
+    u1 expecting_expr();
     AST* parse();
     AST* statement(ParseContext);
+    AST* ret(ParseContext);
+    AST* brk(ParseContext);
+    AST* ctn(ParseContext);
     AST* decl(ParseContext); // decleration
     AST* ifstmt(ParseContext);
     AST* forloop(ParseContext);

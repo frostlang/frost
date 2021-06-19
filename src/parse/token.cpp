@@ -7,6 +7,8 @@ const char* token_debug[]={
     "UNDERSCORE",
     "IDENTIFIER",
 
+    "ASM",
+
     "COLON",
     "SEMICOLON",
     "COMMA",
