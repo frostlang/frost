@@ -29,8 +29,7 @@ namespace Frost::Gen::C{
     public:
         BuildContext(){
             m_blocks.push_back(Block("global"));
-            m_blocks.push_back(Block("um..."));
-            m_active = &m_blocks[1];
+            m_active = &m_blocks[0];
         }
         void emit(std::string src){
             m_active->emit(src);

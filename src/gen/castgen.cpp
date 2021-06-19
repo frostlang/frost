@@ -22,8 +22,8 @@ namespace Frost::Gen::C{
 
     void CASTGen::gen(){
         BuildContext ctx = {};
+        ctx.emit("#include <stdio.h>\n");
         visit(m_ast, ctx);
-
         for(auto& block : ctx.blocks())
             block.dump();
     }
@@ -37,7 +37,7 @@ namespace Frost::Gen::C{
                 return visit(static_cast<Parse::BlockAST*>(ast), ctx);
             }
             case Parse::AST::Type::EXPR_STMT: {
-                return visit(static_cast<Parse::ExprStmtAST*>(ast)->expr(), ctx);
+                return visit(static_cast<Parse::ExprStmtAST*>(ast), ctx);
             }
             case Parse::AST::Type::IF:{
                 return visit(static_cast<Parse::IfAST*>(ast), ctx);
@@ -56,6 +56,9 @@ namespace Frost::Gen::C{
             }
             case Parse::AST::Type::FN:{
                 return visit(static_cast<Parse::FnAST*>(ast), ctx);
+            }
+            case Parse::AST::Type::STRING:{
+                return visit(static_cast<Parse::StringAST*>(ast), ctx);
             }
             case Parse::AST::Type::LITERAL:{
                 return visit(static_cast<Parse::LiteralAST*>(ast), ctx);
@@ -114,6 +117,15 @@ namespace Frost::Gen::C{
         return Optional<std::string>();
     }
     
+    Optional<std::string> CASTGen::visit(Parse::ExprStmtAST* ast, BuildContext& ctx){
+        dbg() << "doing exprstmt!\n";
+        auto expr = visit(ast->expr(), ctx);
+        ASSERT(expr.has());
+        ctx.emit(expr.data());
+        ctx.emit(";\n");
+        return Optional<std::string>();
+    }
+
     Optional<std::string> CASTGen::visit(Parse::BinOpAST* ast, BuildContext& ctx){
         const char* ops[]={
             "||",
@@ -140,12 +152,28 @@ namespace Frost::Gen::C{
 
     Optional<std::string> CASTGen::visit(Parse::CallAST* ast, BuildContext& ctx){
         std::stringstream ss;
-        ss << visit(ast->callee(), ctx).data() << "()";
+        ss << visit(ast->callee(), ctx).data() << "(";
+        u32 i = 0;
+        for(auto& arg : ast->args()){
+            auto a = visit(arg, ctx);
+            ASSERT(a.has());
+            ss << a.data();
+            if(i<ast->args().size()-1)
+                ss << ",";
+            i++;
+        }
+        ss << ")";
         return ss.str();
     }
     
     Optional<std::string> CASTGen::visit(Parse::VariableAST* ast, BuildContext& ctx){
         return s(ast->token().value());
+    }
+
+    Optional<std::string> CASTGen::visit(Parse::StringAST* ast, BuildContext& ctx){
+        std::stringstream ss;
+        ss << "\"" << s(ast->token().value()) << "\"";
+        return ss.str();
     }
 
     Optional<std::string> CASTGen::visit(Parse::LiteralAST* ast, BuildContext& ctx){

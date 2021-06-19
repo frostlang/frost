@@ -45,6 +45,7 @@ public:
         BIN,
         CALL,
         VARIABLE,
+        STRING,
         LITERAL,
         FN,
         LIST,
@@ -430,6 +431,30 @@ private:
     const Token& m_token;
 };
 
+
+class StringAST : public AST {
+public:
+    Type type() const override {
+        return Type::STRING;
+    }
+    
+    StringAST(Token& token) : m_token(token){}
+    std::string debug() override {
+        std::stringstream ss;
+        ss << "STR";
+        ss << "\n\t" << s(m_token.value());
+        return ss.str();
+    }
+    static StringAST create(Token& token){
+        StringAST s(token);
+        return s;
+    }
+    const Token& token(){
+        return m_token;
+    }
+private:
+    const Token& m_token;
+};
 
 class LiteralAST : public AST {
 public:

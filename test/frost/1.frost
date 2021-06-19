@@ -15,8 +15,12 @@ void main(){
 */
 
 
+global : s8
+
 main : const fn = (){
 
     var : s8 = 9999 + 2 + 888
-    var : s8 = x()
+
+    printf("222")
+
 }

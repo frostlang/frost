@@ -339,9 +339,22 @@ AST* Parser::cast(ParseContext ctx){return call(ctx);}
 AST* Parser::call(ParseContext ctx){
     auto higher_precedence = single(ctx);
     if(m_tokens->consume(TokenType::LPAREN).has()){
-        // call ast
-        m_tokens->consume(TokenType::RPAREN);
-        return new CallAST(higher_precedence, {});
+        
+        dbg() << "doing call...\n";
+        std::vector<AST*> args;
+        if(!m_tokens->consume(TokenType::RPAREN).has()){
+            // call ast
+            while(true){
+                auto next_arg = expression(ctx);
+                args.push_back(next_arg);
+                if(m_tokens->consume(TokenType::RPAREN).has())
+                    break;
+                m_tokens->consume(TokenType::COMMA);
+            }
+            m_tokens->consume(TokenType::RPAREN);
+        }
+        dbg() << "done call...\n";
+        return new CallAST(higher_precedence, args);
     }
     return higher_precedence;
 }
@@ -432,7 +445,7 @@ AST* Parser::string(ParseContext){
     if(m_tokens->expect(opening_string.type())){}
     m_tokens->next();
 
-    return new LiteralAST(LiteralAST::create(token, Frost::Type(Frost::Type::Storage::POINTER)));
+    return new StringAST(token);
 }
 
 AST* Parser::num(ParseContext){
