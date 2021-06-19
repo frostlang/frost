@@ -29,7 +29,7 @@ namespace Frost::Gen::C{
 
     void CASTGen::gen(){
         BuildContext ctx = {};
-        ctx.emit("#include <stdio.h>\n#include <stdint.h>\n");
+        ctx.emit("#include <stdio.h>\n#include <stdint.h>\n#include <stdlib.h>\n");
         visit(m_ast, ctx);
         for(auto& block : ctx.blocks())
             block.dump();
@@ -69,6 +69,9 @@ namespace Frost::Gen::C{
             }
             case Parse::AST::Type::DECL:{
                 return visit(static_cast<Parse::DeclAST*>(ast), ctx);
+            }
+            case Parse::AST::Type::ASSIGN:{
+                return visit(static_cast<Parse::AssignAST*>(ast), ctx);
             }
             case Parse::AST::Type::BIN:{
                 return visit(static_cast<Parse::BinOpAST*>(ast), ctx);
@@ -167,9 +170,20 @@ namespace Frost::Gen::C{
         ctx.emit(";\n");
         return Optional<std::string>();
     }
+
+    Optional<std::string> CASTGen::visit(Parse::AssignAST* ast, BuildContext& ctx){
+        auto lhs = visit(ast->lhs(), ctx);
+        ASSERT(lhs.has());
+        auto rhs = visit(ast->rhs(), ctx);
+        ASSERT(rhs.has());
+        ctx.emit(lhs.data());
+        ctx.emit(" = ");
+        ctx.emit(rhs.data());
+        ctx.emit(";\n");
+        return Optional<std::string>();
+    }
     
     Optional<std::string> CASTGen::visit(Parse::ExprStmtAST* ast, BuildContext& ctx){
-        dbg() << "doing exprstmt!\n";
         auto expr = visit(ast->expr(), ctx);
         ASSERT(expr.has());
         ctx.emit(expr.data());

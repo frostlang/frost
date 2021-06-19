@@ -110,6 +110,8 @@ AST* Parser::identifier(ParseContext ctx){
     // dealing with a decleration here!
     if(m_tokens->peek(1).type()==TokenType::COLON){
         return decl(ctx);
+    }if(m_tokens->peek(1).type()==TokenType::ASSIGN){
+        return assign(ctx);
     }else{
         // else we are dealing with an expr e.g. x + 33;
         return expression_stmt(ctx);
@@ -346,15 +348,34 @@ AST* Parser::eq(ParseContext){
     return higher_precedence;
 }
 
-AST* Parser::cmp(ParseContext){return mdmr({});}
+AST* Parser::cmp(ParseContext){return pm({});}
 AST* Parser::shift(ParseContext){return 0;}
-AST* Parser::pm(ParseContext){return 0;}
-AST* Parser::mdmr(ParseContext ctx){
-    auto higher_precedence = un(ctx);
+AST* Parser::pm(ParseContext ctx){
+    auto higher_precedence = mdmr(ctx);
     if(m_tokens->expect(TokenType::PLUS)){
         auto op = m_tokens->next();
-        auto rhs = mdmr({});
+        auto rhs = pm({});
         auto bin_op_type = BinOpAST::Op::PLUS;
+        return new BinOpAST(BinOpAST::create(bin_op_type, higher_precedence, rhs));
+    }else if(m_tokens->expect(TokenType::MINUS)){
+        auto op = m_tokens->next();
+        auto rhs = pm({});
+        auto bin_op_type = BinOpAST::Op::MINUS;
+        return new BinOpAST(BinOpAST::create(bin_op_type, higher_precedence, rhs));
+    }
+    return higher_precedence;
+}
+AST* Parser::mdmr(ParseContext ctx){
+    auto higher_precedence = un(ctx);
+    if(m_tokens->expect(TokenType::STAR)){
+        auto op = m_tokens->next();
+        auto rhs = mdmr({});
+        auto bin_op_type = BinOpAST::Op::MUL;
+        return new BinOpAST(BinOpAST::create(bin_op_type, higher_precedence, rhs));
+    }else if(m_tokens->expect(TokenType::DIV)){
+        auto op = m_tokens->next();
+        auto rhs = mdmr({});
+        auto bin_op_type = BinOpAST::Op::DIV;
         return new BinOpAST(BinOpAST::create(bin_op_type, higher_precedence, rhs));
     }
     return higher_precedence;

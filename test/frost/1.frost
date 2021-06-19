@@ -1,9 +1,18 @@
 
 vec : const type = struct {
-    x : u32
-    y : u32
+    x : mut u32
+    y : const u32
 }
 
-main : const fn = (){
-    printf("hello world %d", 99)
+test : const fn = (){
+    printf("hello world!\n")
+}
+
+main : pub const fn = (){
+
+    x : u32 = 1
+    x = 99
+    x = x * 43
+
+    printf("x = %d", x)
 }
