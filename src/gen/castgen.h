@@ -30,6 +30,7 @@ public:
     Optional<std::string> visit(Parse::StringAST* ast, BuildContext& ctx);
     Optional<std::string> visit(Parse::LiteralAST* ast, BuildContext& ctx);
     Optional<std::string> visit(Parse::FnAST* ast, BuildContext& ctx);
+    Optional<std::string> visit(Parse::StructAST* ast, BuildContext& ctx);
 private:
     Parse::AST* m_ast;
 };

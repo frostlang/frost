@@ -83,6 +83,9 @@ namespace Frost::Gen::C{
             case Parse::AST::Type::LITERAL:{
                 return visit(static_cast<Parse::LiteralAST*>(ast), ctx);
             }
+            case Parse::AST::Type::STRUCT:{
+                return visit(static_cast<Parse::StructAST*>(ast), ctx);
+            }
         }
         return Optional<std::string>();
     }
@@ -133,6 +136,18 @@ namespace Frost::Gen::C{
                 if(ast->initialised()){
                     Parse::FnAST* fn = static_cast<Parse::FnAST*>(ast->value());
                     return visit(fn, ctx);
+                }
+            }
+        else if(
+            ast->lit_type().type()==Frost::Type::Storage::TYPE 
+            && ast->lit_type().mut()==Frost::MutableType::CONST
+            ){
+                // if the decleration is initialised to a function,
+                // update the functions mangled name
+                if(ast->initialised()){
+                    // todo this is a hack
+                    Parse::StructAST* strct = static_cast<Parse::StructAST*>(ast->value());
+                    return visit(strct, ctx);
                 }
             }
 
@@ -231,5 +246,16 @@ namespace Frost::Gen::C{
         ss << "&" << ast->mangled_identifier();
 
         return ss.str();
+    }
+
+    Optional<std::string> CASTGen::visit(Parse::StructAST* ast, BuildContext& ctx){
+        ctx.emit("typedef struct {\n");
+        for(auto& decl : ast->decls()){
+            visit(decl, ctx);
+        }
+        ctx.emit("} ");
+        ctx.emit(ast->mangled_identifier());
+        ctx.emit(";\n");
+        return Optional<std::string>();
     }
 }

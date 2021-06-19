@@ -51,7 +51,9 @@ public:
         LITERAL,
         FN,
         LIST,
-        INITIALISER_LIST
+        INITIALISER_LIST,
+        STRUCT,
+        INTERFACE
     };
     virtual std::string debug() {return "AST";}
     virtual Type type() const = 0;
@@ -459,7 +461,7 @@ public:
     std::string debug() override {
         std::stringstream ss;
         ss << "STR";
-        ss << "\n\t" << s(m_token.value());
+        //ss << "\n\t" << s(m_token.value());
         return ss.str();
     }
     static StringAST create(Token& token){
@@ -531,5 +533,35 @@ private:
     AST* m_body;
 };
 
+class StructAST : public AST {
+public:
+
+    Type type() const override {
+        return Type::STRUCT;
+    }
+    StructAST(){}
+    
+    StructAST(std::vector<AST*> decls) : m_decls(decls), m_mangled_identifier("struct_mangled_identifier"){}
+
+    std::string debug() override {
+        std::stringstream ss;
+        ss << "STRUCT";
+        ss << "\n\t" << m_mangled_identifier;
+        for(auto& decl : m_decls)
+            ss << "\n\t" << decl->debug();
+        return ss.str();
+    }
+    std::vector<AST*>& decls(){
+        return m_decls;
+    }
+
+    std::string& mangled_identifier(){
+        return m_mangled_identifier;
+    }
+private:
+    // the fully mangled identifier ready to be emitted
+    std::string m_mangled_identifier;
+    std::vector<AST*> m_decls;
+};
 
 }

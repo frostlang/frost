@@ -130,6 +130,7 @@ Optional<Type> Parser::type(){
     //
     if(!(
         m_tokens->expect(TokenType::TYPE)
+        ||m_tokens->expect(TokenType::STRUCT)
         ||m_tokens->expect(TokenType::ANY)
         ||m_tokens->expect(TokenType::U0)
         ||m_tokens->expect(TokenType::U1)
@@ -204,6 +205,10 @@ Optional<Type> Parser::type(){
         t.set_type(Type::Storage::U8);
     }else if(auto n = m_tokens->consume(TokenType::S8); n.has()){
         t.set_type(Type::Storage::S8);
+    }else if(auto n = m_tokens->consume(TokenType::TYPE); n.has()){
+        t.set_type(Type::Storage::TYPE);
+    }else if(auto n = m_tokens->consume(TokenType::STRUCT); n.has()){
+        t.set_type(Type::Storage::STRUCT);
     }else if(auto n = m_tokens->consume(TokenType::FN); n.has()){
         t.set_type(Type::Storage::FN);
         std::vector<Type> params;
@@ -354,8 +359,6 @@ AST* Parser::cast(ParseContext ctx){return call(ctx);}
 AST* Parser::call(ParseContext ctx){
     auto higher_precedence = single(ctx);
     if(m_tokens->consume(TokenType::LPAREN).has()){
-        
-        dbg() << "doing call...\n";
         std::vector<AST*> args;
         if(!m_tokens->consume(TokenType::RPAREN).has()){
             // call ast
@@ -368,7 +371,6 @@ AST* Parser::call(ParseContext ctx){
             }
             m_tokens->consume(TokenType::RPAREN);
         }
-        dbg() << "done call...\n";
         return new CallAST(higher_precedence, args);
     }
     return higher_precedence;
@@ -425,14 +427,38 @@ dbg() << "fn!\n";
 }
 
 AST* Parser::single(ParseContext ctx){
-
     switch(m_tokens->peek().type()){
         case TokenType::LPAREN: return group(ctx);
         case TokenType::IDENTIFIER: return var({});
         case TokenType::NUMBER: return num({});
-        case TokenType::QUOTE: return string({});
+        case TokenType::STRING: return string({});
+        case TokenType::STRUCT: return strct({});
     }
     return 0;
+}
+
+
+AST* Parser::strct(ParseContext ctx){
+
+    dbg() << "parsing struct\n";
+
+    m_tokens->consume(TokenType::STRUCT);
+    m_tokens->consume(TokenType::LCURLY);
+
+    std::vector<AST*> decls;
+    // a struct is simply a list of definitions
+    if(!m_tokens->consume(TokenType::RCURLY).has()){
+        // call ast
+        while(true){
+            auto next_decl = decl(ctx);
+            decls.push_back(next_decl);
+            if(m_tokens->consume(TokenType::RCURLY).has())
+                break;
+        }
+        m_tokens->consume(TokenType::RPAREN);
+    }
+
+    return new StructAST(decls);
 }
 
 AST* Parser::group(ParseContext ctx){
@@ -448,19 +474,8 @@ AST* Parser::var(ParseContext){
 }
 
 AST* Parser::string(ParseContext){
-    // parse an identifier (variable)
-    if(!m_tokens->expect(TokenType::QUOTE)){}
-    auto& opening_string = m_tokens->next();
-
-    // expect an identifier
-    if(!m_tokens->expect(TokenType::IDENTIFIER)){}
-    auto& token = m_tokens->next();
-
-    // ensure we have the closing string (")
-    if(m_tokens->expect(opening_string.type())){}
-    m_tokens->next();
-
-    return new StringAST(token);
+    auto& string_token = m_tokens->next();
+    return new StringAST(string_token);
 }
 
 AST* Parser::num(ParseContext){

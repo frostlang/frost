@@ -19,6 +19,7 @@ const char* type_debug[] = {
 
     "POINTER",
     "STRUCT",
+    "TYPE",
     "INTERFACE",
     "TUPLE",
     "SLICE",

@@ -67,6 +67,7 @@ int main(){
 
     Frost::Parse::Lexer l = Frost::Parse::Lexer::create(&u);
     Frost::Parse::TokenStream& tokens = l.lex();
+    Frost::dbg()<<tokens.debug();
 
     Frost::Parse::Parser p = Frost::Parse::Parser::create(&u, &tokens);
     Frost::Parse::AST* ast = p.parse();

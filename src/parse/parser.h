@@ -89,6 +89,7 @@ public:
     AST* block(ParseContext);
     AST* fn(ParseContext);
     AST* single(ParseContext);
+    AST* strct(ParseContext);
     AST* group(ParseContext);
     AST* var(ParseContext);
     AST* num(ParseContext);

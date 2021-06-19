@@ -48,6 +48,7 @@ public:
 
         POINTER,
         STRUCT,
+        TYPE,
         INTERFACE,
         TUPLE,
         SLICE,

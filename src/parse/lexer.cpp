@@ -24,11 +24,9 @@ void Lexer::skip_whitespace(){
 }
 
 TokenStream& Lexer::lex(){
-
     while(peek()!='\0'){
         skip_whitespace();
         char c = peek();
-
         switch(c){
             case '{': m_tokens.push(Token::create(TokenType::LCURLY)); next(); break;
             case '}': m_tokens.push(Token::create(TokenType::RCURLY)); next(); break;
@@ -37,12 +35,13 @@ TokenStream& Lexer::lex(){
             case ']': m_tokens.push(Token::create(TokenType::LBRACKET)); next(); break;
             case '[': m_tokens.push(Token::create(TokenType::RBRACKET)); next(); break;
             case '|': m_tokens.push(Token::create(TokenType::BOR)); next(); break;
-            case '"': m_tokens.push(Token::create(TokenType::QUOTE)); next(); break;
+            case '"': string(); break;
             case '\'': m_tokens.push(Token::create(TokenType::APOSTROPHE)); next(); break;
             case '^': m_tokens.push(Token::create(TokenType::ARROW)); next(); break;
             case '*': m_tokens.push(Token::create(TokenType::STAR)); next(); break;
             case ':': m_tokens.push(Token::create(TokenType::COLON)); next(); break;
             case ';': m_tokens.push(Token::create(TokenType::SEMICOLON)); next(); break;
+            case ',': m_tokens.push(Token::create(TokenType::COMMA)); next(); break;
             case '+': {
                 switch(peek(1)){
                     case '+': m_tokens.push(Token::create(TokenType::INCREMENT)); next(); break;
@@ -118,6 +117,19 @@ TokenStream& Lexer::lex(){
     return m_tokens;
 }
 
+void Lexer::string(){
+    auto enclosing = next();
+    u32 start = m_index;
+    u32 offset = 0;
+    while(peek()!=enclosing){
+        next();
+        offset++;
+    }
+    next();
+    auto string_value = std::string_view(m_unit->source()).substr(start, offset);
+    m_tokens.push(Token::create(TokenType::STRING, string_value));
+}
+
 void Lexer::number(){
     u32 start = m_index;
     u32 offset = 1;
@@ -140,7 +152,6 @@ u1 Lexer::match(const char* keyword){
 }
 
 void Lexer::alpha(){
-
     // first check for keywords
     switch(peek()){
         case 'a':{
@@ -235,6 +246,8 @@ void Lexer::alpha(){
         case 't':{
             if(match("true")){
                 m_tokens.push(Token::create(TokenType::TRUE)); next(strlen("true")); return;
+            }else if(match("type")){
+                m_tokens.push(Token::create(TokenType::TYPE)); next(strlen("type")); return;
             }
             break;
         }

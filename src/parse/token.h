@@ -14,6 +14,9 @@ enum class TokenType : u8 {
     UNDERSCORE,
     IDENTIFIER,
 
+    STRING,
+    MULTILINE_STRING,
+
     ASM,
 
     COLON,
@@ -135,7 +138,7 @@ public:
     std::string debug() override {
         std::stringstream ss;
         ss << "Token type="<<token_debug[(u8)m_type];
-        if(m_type==TokenType::IDENTIFIER || m_type==TokenType::NUMBER)
+        if(m_type==TokenType::IDENTIFIER || m_type==TokenType::NUMBER || m_type==TokenType::STRING)
             ss << " value=" << m_value;
         ss <<"\n";
         return ss.str();

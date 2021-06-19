@@ -1,14 +1,3 @@
-// the below program should compile successfully
-
-
-
-global : u8
-
 main : const fn = (){
-
-    var : s8 = 9999 + 2 + 888
-
-    
-
-    ret 
+    printf("hello world %d", 99)
 }
