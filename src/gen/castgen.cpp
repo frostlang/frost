@@ -11,12 +11,17 @@ namespace Frost::Gen::C{
             case Type::Storage::FN:
                 return "void(*)()";
             case Type::Storage::U8:
+                return "uint8_t";
             case Type::Storage::S8:
+                return "int8_t";
             case Type::Storage::U16:
+                return "uint16_t";
             case Type::Storage::S16:
+                return "int16_t";
             case Type::Storage::U32:
+                return "uint32_t";
             case Type::Storage::S32:
-                return "int";
+                return "int32_t";
         }
         return "unknown";
     }
@@ -24,7 +29,7 @@ namespace Frost::Gen::C{
 
     void CASTGen::gen(){
         BuildContext ctx = {};
-        ctx.emit("#include <stdio.h>\n");
+        ctx.emit("#include <stdio.h>\n#include <stdint.h>\n");
         visit(m_ast, ctx);
         for(auto& block : ctx.blocks())
             block.dump();

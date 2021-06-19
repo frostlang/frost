@@ -1,3 +1,9 @@
+
+vec : const type = struct {
+    x : u32
+    y : u32
+}
+
 main : const fn = (){
     printf("hello world %d", 99)
 }

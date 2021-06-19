@@ -58,6 +58,18 @@ Optional<Type> Analyser::visit(DeclAST* decl_ast, AnalysisCtx ctx){
             }
         }
 
+    else if(
+        decl_ast->lit_type().type()==Frost::Type::Storage::TYPE 
+        && decl_ast->lit_type().mut()==Frost::MutableType::CONST
+        ){
+            // if the decleration is initialised to a function,
+            // update the functions mangled name
+            if(decl_ast->initialised()){
+                StructAST* strct = static_cast<StructAST*>(decl_ast->value());
+                strct->mangled_identifier() = s(decl_ast->token().value());
+            }
+        }
+
     //if(decl_ast->requires_inference()){
     //    auto type = visit(decl_ast->value(), ctx);
     //    ASSERT(type.has());

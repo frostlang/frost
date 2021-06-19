@@ -197,41 +197,46 @@ Optional<Type> Parser::type(){
         }
     }
 
-    if(auto n = m_tokens->consume(TokenType::U0); n.has()){
-        t.set_type(Type::Storage::U0);
-    }else if(auto n = m_tokens->consume(TokenType::U1); n.has()){
-        t.set_type(Type::Storage::U1);
-    }else if(auto n = m_tokens->consume(TokenType::U8); n.has()){
-        t.set_type(Type::Storage::U8);
-    }else if(auto n = m_tokens->consume(TokenType::S8); n.has()){
-        t.set_type(Type::Storage::S8);
-    }else if(auto n = m_tokens->consume(TokenType::TYPE); n.has()){
-        t.set_type(Type::Storage::TYPE);
-    }else if(auto n = m_tokens->consume(TokenType::STRUCT); n.has()){
-        t.set_type(Type::Storage::STRUCT);
-    }else if(auto n = m_tokens->consume(TokenType::FN); n.has()){
-        t.set_type(Type::Storage::FN);
-        std::vector<Type> params;
-        dbg() << "fn!\n";
-        // now parse the fn params and return type
-        if(m_tokens->consume(TokenType::LPAREN).has()){
-            while(true){
-                auto next_param = type();
-                ASSERT(next_param.has());
-                t.inner_types().push_back(next_param.data());
-                if(m_tokens->consume(TokenType::RPAREN).has())
-                    break;
-                m_tokens->consume(TokenType::COMMA);
+    auto& next_type = m_tokens->next();
+    switch(next_type.type()){
+        case TokenType::U0: t.set_type(Type::Storage::U0); break;
+        case TokenType::U1: t.set_type(Type::Storage::U1); break;
+        case TokenType::U8: t.set_type(Type::Storage::U8); break;
+        case TokenType::S8: t.set_type(Type::Storage::S8); break;
+        case TokenType::U16: t.set_type(Type::Storage::U16); break;
+        case TokenType::S16: t.set_type(Type::Storage::S16); break;
+        case TokenType::U32: t.set_type(Type::Storage::U32); break;
+        case TokenType::S32: t.set_type(Type::Storage::S32); break;
+        case TokenType::TYPE: {
+            t.set_type(Type::Storage::TYPE);
+            break;
+        }case TokenType::FN:{
+            t.set_type(Type::Storage::FN);
+            std::vector<Type> params;
+            dbg() << "fn!\n";
+            // now parse the fn params and return type
+            if(m_tokens->consume(TokenType::LPAREN).has()){
+                while(true){
+                    auto next_param = type();
+                    ASSERT(next_param.has());
+                    t.inner_types().push_back(next_param.data());
+                    if(m_tokens->consume(TokenType::RPAREN).has())
+                        break;
+                    m_tokens->consume(TokenType::COMMA);
+                }
             }
+            auto return_type = type();
+            if(return_type.has()){
+                t.inner_types().push_back(return_type.data());
+            }
+            for(auto& param : params)
+                t.inner_types().push_back(param);
+            break;
         }
-        auto return_type = type();
-        if(return_type.has()){
-            t.inner_types().push_back(return_type.data());
-        }
-        for(auto& param : params)
-            t.inner_types().push_back(param);
+        default:
+            dbg() << "unknown type :(\n";
+            break;
     }
-
 
     return Optional<Type>(t);
 }
