@@ -15,6 +15,9 @@ namespace Frost::Gen::C{
         void emit(std::string src){
             m_src << src;
         }
+        std::string src(){
+            return m_src.str();
+        }
         void dump(){
             dbg() << m_src.str();
         }

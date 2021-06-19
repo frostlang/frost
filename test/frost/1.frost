@@ -8,7 +8,7 @@ main : const fn = (){
 
     var : s8 = 9999 + 2 + 888
 
-    printf("one")
+    
 
     ret 
 }

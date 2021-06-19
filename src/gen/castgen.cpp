@@ -1,5 +1,7 @@
 #include <gen/castgen.h>
 #include <gen/c.h>
+#include <iostream>
+#include <fstream>
 
 namespace Frost::Gen::C{
 
@@ -26,6 +28,21 @@ namespace Frost::Gen::C{
         visit(m_ast, ctx);
         for(auto& block : ctx.blocks())
             block.dump();
+
+
+
+        std::ofstream c_src ("/frost/test/generated/c_src.c");
+        if (c_src.is_open())
+        {
+            for(auto& block : ctx.blocks())
+            c_src << block.src();
+            c_src.close();
+            system("gcc /frost/test/generated/c_src.c -o /frost/test/executables/c");
+            dbg() << "---RUNNING EXECUTABLE---\n\n\n";
+            system("/frost/test/executables/c.exe");
+            dbg() << "\n\n\n---DONE RUNNING---";
+        }
+        else dbg() << "Unable to open file";
     }
 
     Optional<std::string> CASTGen::visit(Parse::AST* ast, C::BuildContext& ctx){
