@@ -76,6 +76,7 @@ public:
     std::string debug(){
         std::stringstream ss;
         ss << type_debug[(u8)m_type];
+        ss << " token=" << s(m_token);
         return ss.str();
     }
 
@@ -114,11 +115,20 @@ public:
     std::vector<Type>& inner_types(){
         return m_inner_types;
     }
+    Type& set_token(std::string_view token){
+        m_token = token;
+        return *this;
+    }
+    std::string_view& token(){
+        return m_token;
+    }
 private:
     Storage m_type;
     AccessType m_access_type;
     MutableType m_mutable_type;
     AssignableType m_assignable_type;
     std::vector<Type> m_inner_types;
+    // todo this is used for custom user types
+    std::string_view m_token;    
 };
 }

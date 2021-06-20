@@ -25,6 +25,8 @@ Optional<Type> Analyser::visit(AST* ast, AnalysisCtx ctx){
             return visit(static_cast<Parse::LiteralAST*>(ast), ctx);
         } case Parse::AST::Type::FN:{
             return visit(static_cast<Parse::FnAST*>(ast), ctx);
+        } case Parse::AST::Type::STRUCT:{
+            return visit(static_cast<Parse::StructAST*>(ast), ctx);
         }
     }
     return Optional<Type>();
@@ -36,11 +38,9 @@ Optional<Type> Analyser::visit(ProgramAST* program_ast, AnalysisCtx ctx){
     return Optional<Type>();
 }
 Optional<Type> Analyser::visit(BlockAST* ast, AnalysisCtx ctx){
-
-    return Optional<Type>();   
-    //for(auto& statement : program_ast->statements())
-    //    visit(statement, ctx);
-    //return Optional<Type>();
+    for(auto& statement : ast->statements())
+       visit(statement, ctx);
+    return Optional<Type>();
 }
 
 Optional<Type> Analyser::visit(DeclAST* decl_ast, AnalysisCtx ctx){
@@ -63,19 +63,37 @@ Optional<Type> Analyser::visit(DeclAST* decl_ast, AnalysisCtx ctx){
         && decl_ast->lit_type().mut()==Frost::MutableType::CONST
         ){
             // if the decleration is initialised to a function,
-            // update the functions mangled name
+            // update the structs mangled name
             if(decl_ast->initialised()){
                 StructAST* strct = static_cast<StructAST*>(decl_ast->value());
                 strct->mangled_identifier() = s(decl_ast->token().value());
             }
         }
 
+    else if(decl_ast->lit_type().type()==Frost::Type::Storage::UNKNOWN){
+        // check if we are dealing with a struct
+        auto type = m_sym_table.get(decl_ast->lit_type().token());
+        if(!type.has()){
+            dbg() << "unknown type!\n";
+
+
+            return Optional<Type>();
+        }
+        
+
+        decl_ast->lit_type()=type.data();
+
+    }
+
+
+
     //if(decl_ast->requires_inference()){
     //    auto type = visit(decl_ast->value(), ctx);
     //    ASSERT(type.has());
     //    decl_ast->lit_type()=type.data();
     //}
-
+    if(decl_ast->initialised())
+        visit(decl_ast->value(), ctx);
     
 
     return Optional<Type>();
@@ -97,8 +115,18 @@ Optional<Type> Analyser::visit(LiteralAST* literal_ast, AnalysisCtx){
      return Optional<Type>();
     //return literal_ast->lit_type();
 }
-Optional<Type> Analyser::visit(FnAST* ast, AnalysisCtx){
-     return Optional<Type>();
+Optional<Type> Analyser::visit(FnAST* ast, AnalysisCtx ctx){
+    visit(ast->body(), ctx);
+    return Optional<Type>();
+    //return literal_ast->lit_type();
+}
+Optional<Type> Analyser::visit(StructAST* ast, AnalysisCtx ctx){
+
+    auto type = Frost::Type(Frost::Type::Storage::STRUCT);
+    type.set_token(ast->mangled_identifier());
+    m_sym_table.put(ast->mangled_identifier(), type);
+
+    return Optional<Type>();
     //return literal_ast->lit_type();
 }
 

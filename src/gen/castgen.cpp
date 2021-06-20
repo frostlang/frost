@@ -8,6 +8,11 @@ namespace Frost::Gen::C{
 
     std::string CASTGen::type_to_c(Frost::Type type){
         switch(type.type()){
+            case Type::Storage::STRUCT:{
+                std::stringstream ss;
+                ss << "struct " << type.token();
+                return ss.str();
+            }
             case Type::Storage::FN:
                 return "void(*)()";
             case Type::Storage::U8:
@@ -252,8 +257,15 @@ namespace Frost::Gen::C{
 
         ctx.emit("void ");
         ctx.emit(ast->mangled_identifier());
-        ctx.emit("()");
-        ctx.emit("{\n");
+        ctx.emit("(");
+        u32 counter = 0;
+        for(auto& param : ast->params()){
+            visit(param, ctx);
+            if(counter<ast->params().size()-1)
+                ctx.emit(", ");
+            counter++;
+        }
+        ctx.emit("){\n");
         
         visit(ast->body(), ctx);
         ctx.emit("}\n");
@@ -268,13 +280,13 @@ namespace Frost::Gen::C{
     }
 
     Optional<std::string> CASTGen::visit(Parse::StructAST* ast, BuildContext& ctx){
-        ctx.emit("typedef struct {\n");
+        ctx.emit("struct ");
+        ctx.emit(ast->mangled_identifier());
+        ctx.emit("{\n");
         for(auto& decl : ast->decls()){
             visit(decl, ctx);
         }
-        ctx.emit("} ");
-        ctx.emit(ast->mangled_identifier());
-        ctx.emit(";\n");
+        ctx.emit("};\n");
         return Optional<std::string>();
     }
 }

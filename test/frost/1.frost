@@ -1,18 +1,25 @@
+/*
+
+vec : const type = struct {
+}
+
+v : vec
+
+should compile to 
+
+struct vec {};
+
+struct vec v;
+
+*/
+
 
 vec : const type = struct {
     x : mut u32
     y : const u32
 }
-
-test : const fn = (){
-    printf("hello world!\n")
-}
-
-main : pub const fn = (){
-
-    x : u32 = 1
-    x = 99
-    x = x * 43
-
-    printf("x = %d", x)
+main : pub const fn = (){    
+    a : vec
+    b : vec
+    c : vec
 }

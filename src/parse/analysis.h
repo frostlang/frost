@@ -44,6 +44,7 @@ public:
     Optional<Type> visit(VariableAST*, AnalysisCtx);
     Optional<Type> visit(LiteralAST*, AnalysisCtx);
     Optional<Type> visit(FnAST*, AnalysisCtx);
+    Optional<Type> visit(StructAST*, AnalysisCtx);
 private:
     Unit* m_unit;
     AST* m_ast;

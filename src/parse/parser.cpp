@@ -132,6 +132,7 @@ Optional<Type> Parser::type(){
     //
     if(!(
         m_tokens->expect(TokenType::TYPE)
+        ||m_tokens->expect(TokenType::IDENTIFIER)
         ||m_tokens->expect(TokenType::STRUCT)
         ||m_tokens->expect(TokenType::ANY)
         ||m_tokens->expect(TokenType::U0)
@@ -201,6 +202,12 @@ Optional<Type> Parser::type(){
 
     auto& next_type = m_tokens->next();
     switch(next_type.type()){
+        // todo this may not just be a struct... it may be an interface etc...
+        // for now set it to unknown so it can be resolved at analysis stage
+        case TokenType::IDENTIFIER: 
+            t.set_type(Type::Storage::UNKNOWN); 
+            t.set_token(next_type.value());
+            break;
         case TokenType::U0: t.set_type(Type::Storage::U0); break;
         case TokenType::U1: t.set_type(Type::Storage::U1); break;
         case TokenType::U8: t.set_type(Type::Storage::U8); break;
@@ -427,26 +434,29 @@ AST* Parser::block(ParseContext ctx){
 // () u32 {}
 // u32 {}
 AST* Parser::fn(ParseContext ctx){
-dbg() << "fn!\n";
-    m_tokens->consume(TokenType::LPAREN);
-    m_tokens->consume(TokenType::RPAREN);
-    /*// parse paramaters
-    std::vector<AST*> param_decls;
-    u1 has_params = m_tokens->consume(TokenType::LPAREN).has();
-    while(has_params && !m_tokens->consume(TokenType::RPAREN).has()){
-        param_decls.push_back(decl({}));
-        m_tokens->consume(TokenType::COMMA);
+    std::vector<AST*> params;
 
-    }*/
-    
+    dbg() << "fn\n";
+    m_tokens->consume(TokenType::LPAREN);
+    if(!m_tokens->consume(TokenType::RPAREN).has()){
+        while(true){
+            auto next_param = decl(ctx);
+            params.push_back(next_param);
+            if(m_tokens->consume(TokenType::RPAREN).has())
+                break;
+            m_tokens->consume(TokenType::COMMA);
+        }
+        m_tokens->consume(TokenType::RPAREN);
+    }
     // at this point we may be expecting a return type
 
     // if epect(type) || expect(identifier)... possible return type?
-
+    AST* ret = 0;
+    
     // parse the body
     AST* body = statement(ctx);
 
-    auto fn = FnAST(body);
+    auto fn = FnAST(params, ret, body);
     fn.mangled_identifier()="test_mangled_identifier";
     return new FnAST(fn);
 

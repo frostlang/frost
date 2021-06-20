@@ -512,16 +512,26 @@ public:
     }
     FnAST(){}
     
-    FnAST(AST* body) : m_body(body){}
+    FnAST(std::vector<AST*> params, AST* ret, AST* body) : m_params(params), m_ret(ret), m_body(body){}
 
     std::string debug() override {
         std::stringstream ss;
         ss << "FN";
+        for(auto& param : m_params)
+            ss << "\n\t" << param->debug();
         ss << "\n\t" << m_body->debug();
         return ss.str();
     }
+    AST* ret(){
+        return m_ret;
+    }
     AST* body(){
         return m_body;
+    }
+
+
+    std::vector<AST*>& params(){
+        return m_params;
     }
 
     std::string& mangled_identifier(){
@@ -531,6 +541,8 @@ private:
     // the fully mangled identifier ready to be emitted
     std::string m_mangled_identifier;
     AST* m_body;
+    std::vector<AST*> m_params;
+    AST* m_ret;
 };
 
 class StructAST : public AST {

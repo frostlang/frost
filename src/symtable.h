@@ -5,6 +5,7 @@
 #include <vector>
 #include <types.h>
 #include <debug.h>
+#include <type.h>
 
 /*
 
@@ -52,6 +53,8 @@ namespace Frost{
 
         void put(std::string_view key, T value){
             m_scopes[m_scope].m_data.insert({key, value});
+            dbg() << "put... " << s(key) << "\n";
+            dbg() << value << "\n";
         }
         
         // TODO
