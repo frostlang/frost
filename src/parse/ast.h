@@ -543,7 +543,7 @@ public:
     }
     FnAST(){}
     
-    FnAST(std::vector<AST*> params, AST* ret, AST* body) : m_params(params), m_ret(ret), m_body(body){}
+    FnAST(std::vector<AST*> params, AST* ret, AST* body) : m_params(params), m_ret(ret), m_body(body), m_fn_type(FnType::CONST_FN){}
 
     std::string debug() override {
         std::stringstream ss;
@@ -560,6 +560,9 @@ public:
         return m_body;
     }
 
+    FnType& fn_type(){
+        return m_fn_type;
+    }
 
     std::vector<AST*>& params(){
         return m_params;
@@ -574,6 +577,7 @@ private:
     AST* m_body;
     std::vector<AST*> m_params;
     AST* m_ret;
+    FnType m_fn_type;
 };
 
 class StructAST : public AST {

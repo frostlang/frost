@@ -35,9 +35,6 @@ namespace Frost::Gen::C{
     void CASTGen::gen(){
         BuildContext ctx = {};
         ctx.emit("#include <stdio.h>\n#include <stdint.h>\n#include <stdlib.h>\n");
-
-        ctx.set_block(ctx.find("decls").data());
-
         //ctx.emit("struct type {\nconst char* name;\n};\n");
         //ctx.emit("struct type vec_type = {\"vec\"};\n");
         visit(m_ast, ctx);
@@ -145,7 +142,6 @@ namespace Frost::Gen::C{
     }
 
     Optional<std::string> CASTGen::visit(Parse::DeclAST* ast, BuildContext& ctx){
-
         // if we have a const fn then we essentially ignore the decl
         // and just generate the function!
         if(
@@ -272,12 +268,18 @@ namespace Frost::Gen::C{
     
     Optional<std::string> CASTGen::visit(Parse::FnAST* ast, BuildContext& ctx){
 
-        auto* active_block = ctx.active();
 
-        auto fn_block = ctx.find("globals");
-        ASSERT(fn_block.has());
-        ctx.set_block(fn_block.data());
 
+        // when we visit a function, we have to emit it in the previous block
+        auto active = ctx.active();
+
+        if(ast->fn_type()==Parse::FnAST::FnType::CONST_FN){
+            ctx.new_block();
+        }else if (ast->fn_type()==Parse::FnAST::FnType::LAMBDA){
+            dbg() << "before main..."<<(s32)active<<"\n";
+            ctx.insert_block(-1);
+            active++; // todo this is nasty as we have to keep track of this offset
+        }
         ctx.emit("void ");
         ctx.emit(ast->mangled_identifier());
         ctx.emit("(");
@@ -293,12 +295,15 @@ namespace Frost::Gen::C{
         visit(ast->body(), ctx);
         ctx.emit("}\n");
 
-        ctx.set_block(active_block);
 
         // return a pointer to this function
         std::stringstream ss;
         ss << "&" << ast->mangled_identifier();
 
+        if (ast->fn_type()==Parse::FnAST::FnType::LAMBDA){
+            ctx.set_active(active);
+            dbg() << "after main..."<<(s32)ctx.active()<<"\n";
+        }
         return ss.str();
     }
 

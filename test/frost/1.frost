@@ -1,21 +1,11 @@
 
-x : pub fn = (){
+x : u8
+main : const fn = (){
+    y : fn = (){
+        printf("hello world!\n")
+    }
 
+
+
+    test_mangled_identifier()
 }
-
-main : const fn = (){}
-
-
-
-
-/*
-
-void lambda_x(){}
-void lambda_0(){}
-void (*x)() = &lambda_x;
-
-int main(){
-    x = &lambda_0;
-}
-
-*/

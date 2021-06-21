@@ -47,14 +47,20 @@ Optional<Type> Analyser::visit(DeclAST* decl_ast, AnalysisCtx ctx){
     // if we have a const fn then we need to essentially remove this decl...
     if(
         decl_ast->lit_type().type()==Frost::Type::Storage::FN 
-        && decl_ast->lit_type().mut()==Frost::MutableType::CONST
         ){
-            // if the decleration is initialised to a function,
-            // update the functions mangled name
-            if(decl_ast->initialised()){
-                FnAST* fn = static_cast<FnAST*>(decl_ast->value());
-            
-                fn->mangled_identifier() = s(decl_ast->token().value());
+            if(decl_ast->lit_type().mut()==Frost::MutableType::CONST){
+                // if the decleration is initialised to a function,
+                // update the functions mangled name
+                if(decl_ast->initialised()){
+                    FnAST* fn = static_cast<FnAST*>(decl_ast->value());
+                    fn->fn_type()=Parse::FnAST::FnType::CONST_FN;
+                    fn->mangled_identifier() = s(decl_ast->token().value());
+                }
+            }else{
+                if(decl_ast->initialised()){
+                    FnAST* fn = static_cast<FnAST*>(decl_ast->value());
+                    fn->fn_type()=Parse::FnAST::FnType::LAMBDA;
+                }
             }
         }
 
