@@ -1,33 +1,15 @@
-/*
-
-vec : type = struct {
-}
-
-should compile to
-
-struct type {
-    const char* name;
-}
-
-struct type vec_type = {
-    "vec",
-}
-
-*/
-
-
 vec : const type = struct {
     x : mut u32
     y : const u32
 }
-
-
 
 main : pub const fn = (){    
     a : vec
     b : vec
     c : vec
 
-
-    a.x = 3
+    a.x = 3*9999
+    
+    printf("a.x=%d\n", a.x)
+    printf("vec name = %s\n", vec_type.name)
 }

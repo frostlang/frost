@@ -35,6 +35,8 @@ namespace Frost::Gen::C{
     void CASTGen::gen(){
         BuildContext ctx = {};
         ctx.emit("#include <stdio.h>\n#include <stdint.h>\n#include <stdlib.h>\n");
+        ctx.emit("struct type {\nconst char* name;\n};\n");
+        ctx.emit("struct type vec_type = {\"vec\"};\n");
         visit(m_ast, ctx);
         for(auto& block : ctx.blocks())
             block.dump();
@@ -293,6 +295,7 @@ namespace Frost::Gen::C{
     }
 
     Optional<std::string> CASTGen::visit(Parse::StructAST* ast, BuildContext& ctx){
+        // first emit the actual struct decleration
         ctx.emit("struct ");
         ctx.emit(ast->mangled_identifier());
         ctx.emit("{\n");
@@ -300,6 +303,9 @@ namespace Frost::Gen::C{
             visit(decl, ctx);
         }
         ctx.emit("};\n");
+        // then emit the type information
+        std::stringstream ss;
+        ss << "struct type " << ast->mangled_identifier() << "_type = {" << ast->mangled_identifier() << "};\n";
         return Optional<std::string>();
     }
 }

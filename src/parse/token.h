@@ -37,6 +37,8 @@ enum class TokenType : u8 {
     TRUE,
     FALSE,
 
+    THIS,
+    
     ANY,
     U0,
     U1,

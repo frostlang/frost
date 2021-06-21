@@ -30,6 +30,8 @@ const char* token_debug[]={
     "TRUE",
     "FALSE",
 
+    "THIS",
+
     "ANY",
     "U0",
     "U1",

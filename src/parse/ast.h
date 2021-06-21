@@ -532,6 +532,12 @@ private:
 class FnAST : public AST {
 public:
 
+    enum class FnType{
+        CONST_FN,   // e.g. main : const {}
+        LAMBDA,     // e.g. do_something((){})
+        METHOD,     // e.g. vec.debug : (this){}
+    };
+
     Type type() const override {
         return Type::FN;
     }

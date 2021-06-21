@@ -9,7 +9,7 @@ u1 is_num(char c){
 }
 
 u1 is_alpha(char c){
-    return c>='a' && c <= 'z';
+    return (c>='a' && c <= 'z') || c=='_';
 }
 
 void Lexer::skip_whitespace(){
@@ -245,7 +245,9 @@ void Lexer::alpha(){
             break;
         }
         case 't':{
-            if(match("true")){
+            if(match("this")){
+                m_tokens.push(Token::create(TokenType::THIS)); next(strlen("this")); return;
+            }else if(match("true")){
                 m_tokens.push(Token::create(TokenType::TRUE)); next(strlen("true")); return;
             }else if(match("type")){
                 m_tokens.push(Token::create(TokenType::TYPE)); next(strlen("type")); return;
