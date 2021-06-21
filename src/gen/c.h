@@ -31,7 +31,8 @@ namespace Frost::Gen::C{
     class BuildContext{
     public:
         BuildContext(){
-            m_blocks.push_back(Block("global"));
+            m_blocks.push_back(Block("globals"));
+            m_blocks.push_back(Block("decls"));
             m_active = &m_blocks[0];
         }
         void emit(std::string src){

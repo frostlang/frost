@@ -216,6 +216,10 @@ Optional<Type> Parser::type(){
         case TokenType::S16: t.set_type(Type::Storage::S16); break;
         case TokenType::U32: t.set_type(Type::Storage::U32); break;
         case TokenType::S32: t.set_type(Type::Storage::S32); break;
+        case TokenType::STRUCT:{
+            // todo parse struct type
+            break;
+        }
         case TokenType::TYPE: {
             t.set_type(Type::Storage::TYPE);
             break;

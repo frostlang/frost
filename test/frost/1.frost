@@ -1,15 +1,21 @@
-vec : const type = struct {
-    x : mut u32
-    y : const u32
+
+x : pub fn = (){
+
 }
 
-main : pub const fn = (){    
-    a : vec
-    b : vec
-    c : vec
+main : const fn = (){}
 
-    a.x = 3*9999
-    
-    printf("a.x=%d\n", a.x)
-    printf("vec name = %s\n", vec_type.name)
+
+
+
+/*
+
+void lambda_x(){}
+void lambda_0(){}
+void (*x)() = &lambda_x;
+
+int main(){
+    x = &lambda_0;
 }
+
+*/

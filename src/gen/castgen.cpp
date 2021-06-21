@@ -14,7 +14,7 @@ namespace Frost::Gen::C{
                 return ss.str();
             }
             case Type::Storage::FN:
-                return "void(*)()";
+                return "void(*x)()";
             case Type::Storage::U8:
                 return "uint8_t";
             case Type::Storage::S8:
@@ -35,8 +35,11 @@ namespace Frost::Gen::C{
     void CASTGen::gen(){
         BuildContext ctx = {};
         ctx.emit("#include <stdio.h>\n#include <stdint.h>\n#include <stdlib.h>\n");
-        ctx.emit("struct type {\nconst char* name;\n};\n");
-        ctx.emit("struct type vec_type = {\"vec\"};\n");
+
+        ctx.set_block(ctx.find("decls").data());
+
+        //ctx.emit("struct type {\nconst char* name;\n};\n");
+        //ctx.emit("struct type vec_type = {\"vec\"};\n");
         visit(m_ast, ctx);
         for(auto& block : ctx.blocks())
             block.dump();
@@ -172,7 +175,9 @@ namespace Frost::Gen::C{
         // if we are not a const fn then just generate the decl :)
         ctx.emit(type_to_c(ast->lit_type()));
         ctx.emit(" ");
-        ctx.emit(s(ast->token().value()));
+        // for function pointers, the variable name is inside the type decleration
+        if(ast->lit_type().type()!=Frost::Type::Storage::FN)
+            ctx.emit(s(ast->token().value()));
         if(ast->initialised()){
             ctx.emit(" = ");
             ctx.emit(visit(ast->value(), ctx).data());
@@ -268,7 +273,10 @@ namespace Frost::Gen::C{
     Optional<std::string> CASTGen::visit(Parse::FnAST* ast, BuildContext& ctx){
 
         auto* active_block = ctx.active();
-        ctx.set_block(ctx.global_block());
+
+        auto fn_block = ctx.find("globals");
+        ASSERT(fn_block.has());
+        ctx.set_block(fn_block.data());
 
         ctx.emit("void ");
         ctx.emit(ast->mangled_identifier());
