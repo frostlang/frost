@@ -85,6 +85,7 @@ public:
     AST* un(ParseContext);
     AST* cast(ParseContext);
     AST* call(ParseContext);
+    AST* get(ParseContext);
 
     AST* block(ParseContext);
     AST* fn(ParseContext);

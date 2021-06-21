@@ -46,6 +46,7 @@ public:
         ASSIGN,
         BIN,
         CALL,
+        GET,
         VARIABLE,
         STRING,
         LITERAL,
@@ -418,6 +419,30 @@ public:
 private:
     AST* m_callee;
     std::vector<AST*> m_args;
+};
+
+class GetAST : public AST {
+public: 
+    Type type() const override {
+        return Type::GET;
+    }
+    GetAST(AST* lhs, AST* rhs) : m_lhs(lhs), m_rhs(rhs){}
+    std::string debug() override {
+        std::stringstream ss;
+        ss << "GET";
+        ss << "\n\t" << m_lhs->debug();
+        ss << "\n\t" << m_rhs->debug();
+        return ss.str();
+    }
+    AST*& lhs(){
+        return m_lhs;
+    }
+    AST*& rhs(){
+        return m_rhs;
+    }
+private:
+    AST* m_lhs;
+    AST* m_rhs;
 };
 
 class VariableAST : public AST {

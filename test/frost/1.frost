@@ -1,15 +1,17 @@
 /*
 
-vec : const type = struct {
+vec : type = struct {
 }
 
-v : vec
+should compile to
 
-should compile to 
+struct type {
+    const char* name;
+}
 
-struct vec {};
-
-struct vec v;
+struct type vec_type = {
+    "vec",
+}
 
 */
 
@@ -18,8 +20,14 @@ vec : const type = struct {
     x : mut u32
     y : const u32
 }
+
+
+
 main : pub const fn = (){    
     a : vec
     b : vec
     c : vec
+
+
+    a.x = 3
 }

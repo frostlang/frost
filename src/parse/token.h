@@ -22,6 +22,7 @@ enum class TokenType : u8 {
     COLON,
     SEMICOLON,
     COMMA,
+    DOT,
 
     LCURLY,
     RCURLY,

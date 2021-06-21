@@ -9,4 +9,5 @@ void main(){
 struct vec a;
 struct vec b;
 struct vec c;
+a.x = 3;
 }

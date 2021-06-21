@@ -84,6 +84,9 @@ namespace Frost::Gen::C{
             case Parse::AST::Type::CALL:{
                 return visit(static_cast<Parse::CallAST*>(ast), ctx);
             }
+            case Parse::AST::Type::GET:{
+                return visit(static_cast<Parse::GetAST*>(ast), ctx);
+            }
             case Parse::AST::Type::VARIABLE:{
                 return visit(static_cast<Parse::VariableAST*>(ast), ctx);
             }
@@ -233,6 +236,16 @@ namespace Frost::Gen::C{
             i++;
         }
         ss << ")";
+        return ss.str();
+    }
+
+    Optional<std::string> CASTGen::visit(Parse::GetAST* ast, BuildContext& ctx){
+        std::stringstream ss;
+        auto lhs = visit(ast->lhs(), ctx);
+        ASSERT(lhs.has());
+        auto rhs = visit(ast->rhs(), ctx);
+        ASSERT(rhs.has());
+        ss << lhs.data() << "." << rhs.data();
         return ss.str();
     }
     

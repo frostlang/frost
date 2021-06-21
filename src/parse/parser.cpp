@@ -107,14 +107,14 @@ AST* Parser::forloop(ParseContext){
 // it could be a decl or a variable
 AST* Parser::identifier(ParseContext ctx){
     
+
+
+
     // dealing with a decleration here!
     if(m_tokens->peek(1).type()==TokenType::COLON){
         return decl(ctx);
-    }if(m_tokens->peek(1).type()==TokenType::ASSIGN){
-        return assign(ctx);
     }else{
-        // else we are dealing with an expr e.g. x + 33;
-        return expression_stmt(ctx);
+        return assign(ctx);
     }
 }
 
@@ -295,7 +295,8 @@ AST* Parser::assign(ParseContext ctx){
         auto rhs = expression(ctx);
         return new AssignAST(higher_precedence, rhs);
     }
-    return higher_precedence;
+    // if we reach this point we are dealing with an expression statement
+    return new ExprStmtAST(higher_precedence);
 }
 
 
@@ -390,7 +391,7 @@ AST* Parser::mdmr(ParseContext ctx){
 AST* Parser::un(ParseContext ctx){return cast(ctx);}
 AST* Parser::cast(ParseContext ctx){return call(ctx);}
 AST* Parser::call(ParseContext ctx){
-    auto higher_precedence = single(ctx);
+    auto higher_precedence = get(ctx);
     if(m_tokens->consume(TokenType::LPAREN).has()){
         std::vector<AST*> args;
         if(!m_tokens->consume(TokenType::RPAREN).has()){
@@ -409,6 +410,22 @@ AST* Parser::call(ParseContext ctx){
     return higher_precedence;
 }
 
+/*
+
+e.g. 
+
+v : vector
+v.size
+
+*/
+AST* Parser::get(ParseContext ctx){
+    auto higher_precedence = single(ctx);
+    if(m_tokens->consume(TokenType::DOT).has()){
+        auto rhs = single(ctx);
+        return new GetAST(higher_precedence, rhs);
+    }
+    return higher_precedence;
+}
 
 AST* Parser::block(ParseContext ctx){
 

@@ -42,6 +42,7 @@ TokenStream& Lexer::lex(){
             case ':': m_tokens.push(Token::create(TokenType::COLON)); next(); break;
             case ';': m_tokens.push(Token::create(TokenType::SEMICOLON)); next(); break;
             case ',': m_tokens.push(Token::create(TokenType::COMMA)); next(); break;
+            case '.': m_tokens.push(Token::create(TokenType::DOT)); next(); break;
             case '+': {
                 switch(peek(1)){
                     case '+': m_tokens.push(Token::create(TokenType::INCREMENT)); next(); break;

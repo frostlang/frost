@@ -15,6 +15,7 @@ const char* token_debug[]={
     "COLON",
     "SEMICOLON",
     "COMMA",
+    "DOT",
 
     "LCURLY",
     "RCURLY",
