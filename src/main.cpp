@@ -77,13 +77,11 @@ int main(){
     a.analyse();
 
     Frost::dbg() << "ast=" << ast << "\n";
-    //Frost::Parse::Analyser a = Frost::Parse::Analyser::create(&u, ast);
-    //a.analyse();
 
-    //Frost::Gen::X86_64::X86ASTGenerator x = Frost::Gen::X86_64::X86ASTGenerator::create(ast);
-    //x.gen();
+//    Frost::Gen::X86_64::X86ASTGenerator x = Frost::Gen::X86_64::X86ASTGenerator::create(ast);
+//    x.gen();
 
-    Frost::Gen::C::CASTGen x = Frost::Gen::C::CASTGen::create(ast);
-    x.gen();
+    Frost::Gen::C::CASTGen c = Frost::Gen::C::CASTGen::create(ast);
+    c.gen();
     return 0;
 }

@@ -14,8 +14,9 @@ AST* Parser::parse(){
         std::vector<AST*> statements;
 
         //while(!m_tokens->consume(TokenType::END).has()){
-        while(!m_tokens->end()) statements.push_back(statement({}));
-        
+        while(!m_tokens->end()) {
+            statements.push_back(statement({}));
+        }   
         return new ProgramAST(ProgramAST::create(statements));
     
     }catch(ParseException& e){
@@ -52,12 +53,13 @@ AST* Parser::statement(ParseContext ctx){
             break;
         }
         case TokenType::LCURLY: {
-            ast = block({});
+            ast = block(ctx);
             break;
         }
         case TokenType::IDENTIFIER:{
             // this could potentially be a decl, or a variable
             ast = identifier({});
+            dbg() << "done identifier... "<<m_tokens->peek().debug()<<"\n";
             break;
         }
         case TokenType::UNKNOWN: {
@@ -69,8 +71,11 @@ AST* Parser::statement(ParseContext ctx){
             break;
         }
     }
+    if(m_tokens->consume(TokenType::END).has()){
+        return ast;
+    }
     if(ctx.skip_whitespace()){
-        if(!(m_tokens->consume(TokenType::NEWLINE).has() || m_tokens->consume(TokenType::END).has())){
+        if(!(m_tokens->consume(TokenType::NEWLINE).has())){
             dbg() << "um expecting newline but got "<<m_tokens->peek().debug()<<"\n";
             return new ErrorAST(ErrorAST::create());
         }
@@ -244,7 +249,6 @@ Optional<Type> Parser::type(){
         }case TokenType::FN:{
             t.set_type(Type::Storage::FN);
             std::vector<Type> params;
-            dbg() << "fn!\n";
             // now parse the fn params and return type
             if(m_tokens->consume(TokenType::LPAREN).has()){
                 if(!m_tokens->consume(TokenType::RPAREN).has()){
@@ -300,9 +304,9 @@ AST* Parser::decl(ParseContext ctx){
     u1 initialised = false;
     AST* initialiser = 0;
 
-    if(!(m_tokens->consume(TokenType::NEWLINE).has()
-    &&m_tokens->consume(TokenType::SEMICOLON).has())){
-        dbg() << "const!\n";
+    if(!(m_tokens->expect(TokenType::NEWLINE)
+    || m_tokens->expect(TokenType::SEMICOLON)
+    || m_tokens->expect(TokenType::END))){
         // dealing with a constant
         t.data().mut()==Frost::MutableType::CONST;
         initialised = true;
@@ -462,16 +466,20 @@ AST* Parser::get(ParseContext ctx){
 }
 
 AST* Parser::block(ParseContext ctx){
-
+    dbg() << "block 0\n";
     std::vector<AST*> statements;
 
     if(!m_tokens->consume(TokenType::LCURLY).has())
         panic("expected { for opening block expression");
-    while(!m_tokens->expect(TokenType::RCURLY)){
-        //statements.push_back(statement({}));
+    // todo this is bad
+    //skip_whitespace();
+    dbg() << "block 1\n";
+    ctx.skip_whitespace()=true;
+    while(!m_tokens->consume(TokenType::RCURLY).has()){
+        statements.push_back(statement(ctx));
+        dbg() << "um... " << m_tokens->peek().debug() << "\n";
     }
-    if(!m_tokens->consume(TokenType::RCURLY).has())
-        panic("expected } for closing block expression");
+    dbg() << "block 2 "<<m_tokens->peek().debug()<<"\n";
     return new BlockAST(BlockAST::create(statements));
 }
 
@@ -484,7 +492,7 @@ AST* Parser::block(ParseContext ctx){
 AST* Parser::fn(ParseContext ctx){
     std::vector<AST*> params;
 
-    dbg() << "fn\n";
+    dbg() << "debug 0\n";
     m_tokens->consume(TokenType::LPAREN);
     if(!m_tokens->consume(TokenType::RPAREN).has()){
         while(true){
@@ -496,6 +504,7 @@ AST* Parser::fn(ParseContext ctx){
         }
         m_tokens->consume(TokenType::RPAREN);
     }
+    dbg() << "debug 1\n";
     // at this point we may be expecting a return type
 
     // if epect(type) || expect(identifier)... possible return type?
@@ -506,7 +515,8 @@ AST* Parser::fn(ParseContext ctx){
     // todo the problem here is that we shouldn't skip whitespace after statement but we do!
     ctx.skip_whitespace()=false;
     AST* body = statement(ctx);
-
+    
+    dbg() << "debug 2\n";
     auto fn = FnAST(params, ret, body);
     fn.mangled_identifier()="test_mangled_identifier";
     return new FnAST(fn);
