@@ -2,10 +2,14 @@
 #include <stdint.h>
 #include <stdlib.h>
 uint8_t x;
-void test_mangled_identifier(){
-printf("hello world!\n");
+void lambda_0(){
+printf("hello y\n");
+}
+void lambda_1(){
+printf("hello z\n");
 }
 void main(){
-void(*x)()  = &test_mangled_identifier;
-test_mangled_identifier();
+void(*y)()  = &lambda_0;
+void(*z)()  = &lambda_1;
+y();
 }

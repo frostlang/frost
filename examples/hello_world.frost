@@ -1,5 +1,5 @@
-import("io");
+std : import("std")
 
-main : pub fn {
-    io.println("hello, world!");
+main : {
+    std.debug.println("hello world!")
 }

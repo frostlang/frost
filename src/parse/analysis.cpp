@@ -60,6 +60,13 @@ Optional<Type> Analyser::visit(DeclAST* decl_ast, AnalysisCtx ctx){
                 if(decl_ast->initialised()){
                     FnAST* fn = static_cast<FnAST*>(decl_ast->value());
                     fn->fn_type()=Parse::FnAST::FnType::LAMBDA;
+                    std::stringstream ss;
+                    ss << "lambda_" << m_lambda_counter++;
+                    fn->mangled_identifier() = ss.str();
+
+                    // todo we shouldn't have to do this...
+                    //decl_ast->lit_type().token()=decl_ast->;
+
                 }
             }
         }
@@ -75,7 +82,6 @@ Optional<Type> Analyser::visit(DeclAST* decl_ast, AnalysisCtx ctx){
                 strct->mangled_identifier() = s(decl_ast->token().value());
             }
         }
-
     else if(decl_ast->lit_type().type()==Frost::Type::Storage::UNKNOWN){
         // check if we are dealing with a struct
         auto type = m_sym_table.get(decl_ast->lit_type().token());

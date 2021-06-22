@@ -2,10 +2,10 @@
 x : u8
 main : const fn = (){
     y : fn = (){
-        printf("hello world!\n")
+        printf("hello y\n")
     }
-
-
-
-    test_mangled_identifier()
+    z : fn = (){
+        printf("hello z\n")
+    }
+    y()
 }

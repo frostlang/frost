@@ -49,6 +49,7 @@ private:
     Unit* m_unit;
     AST* m_ast;
     SymTable<Type> m_sym_table;
+    u32 m_lambda_counter = 0;
 };
 
 }

@@ -13,8 +13,11 @@ namespace Frost::Gen::C{
                 ss << "struct " << type.token();
                 return ss.str();
             }
-            case Type::Storage::FN:
-                return "void(*x)()";
+            case Type::Storage::FN:{
+                std::stringstream ss;
+                ss << "void(*" << type.token() << ")()";
+                return ss.str();
+            }
             case Type::Storage::U8:
                 return "uint8_t";
             case Type::Storage::S8:
@@ -142,8 +145,11 @@ namespace Frost::Gen::C{
     }
 
     Optional<std::string> CASTGen::visit(Parse::DeclAST* ast, BuildContext& ctx){
-        // if we have a const fn then we essentially ignore the decl
-        // and just generate the function!
+        
+        // todo this should be done by the parser...
+        ast->lit_type().token()=ast->token().value();
+
+
         if(
             ast->lit_type().type()==Frost::Type::Storage::FN 
             && ast->lit_type().mut()==Frost::MutableType::CONST
