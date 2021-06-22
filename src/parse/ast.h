@@ -571,6 +571,9 @@ public:
     std::string& mangled_identifier(){
         return m_mangled_identifier;
     }
+    Frost::Type& lit_type(){
+        return m_lit_type;
+    }
 private:
     // the fully mangled identifier ready to be emitted
     std::string m_mangled_identifier;
@@ -578,6 +581,7 @@ private:
     std::vector<AST*> m_params;
     AST* m_ret;
     FnType m_fn_type;
+    Frost::Type m_lit_type;
 };
 
 class StructAST : public AST {

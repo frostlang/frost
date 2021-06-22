@@ -1,5 +1,5 @@
 x : 99
 
-main : fn {
+main : {
     printf("x=%d\n", x)
 }

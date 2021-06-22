@@ -45,6 +45,13 @@ Optional<Type> Analyser::visit(BlockAST* ast, AnalysisCtx ctx){
 }
 
 Optional<Type> Analyser::visit(DeclAST* decl_ast, AnalysisCtx ctx){
+    if(decl_ast->requires_inference()){
+        dbg() << "infering type...\n";
+        auto rhs = visit(decl_ast->value(), ctx);
+        ASSERT(rhs.has());
+        decl_ast->lit_type()=rhs.data();
+    }
+    
     // if we have a const fn then we need to essentially remove this decl...
     if(
         decl_ast->lit_type().type()==Frost::Type::Storage::FN 
@@ -83,12 +90,6 @@ Optional<Type> Analyser::visit(DeclAST* decl_ast, AnalysisCtx ctx){
                 strct->mangled_identifier() = s(decl_ast->token().value());
             }
         }
-    else if(decl_ast->requires_inference()){
-        dbg() << "infering type...\n";
-        auto rhs = visit(decl_ast->value(), ctx);
-        ASSERT(rhs.has());
-        decl_ast->lit_type()=rhs.data();
-    }
     else if(decl_ast->lit_type().type()==Frost::Type::Storage::UNKNOWN){
         // check if we are dealing with a struct
         auto type = m_sym_table.get(decl_ast->lit_type().token());
@@ -135,8 +136,8 @@ Optional<Type> Analyser::visit(LiteralAST* literal_ast, AnalysisCtx){
 }
 Optional<Type> Analyser::visit(FnAST* ast, AnalysisCtx ctx){
     visit(ast->body(), ctx);
-    return Optional<Type>();
-    //return literal_ast->lit_type();
+    // right... do we return the function return type or the function type
+    return ast->lit_type();
 }
 Optional<Type> Analyser::visit(StructAST* ast, AnalysisCtx ctx){
 

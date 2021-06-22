@@ -66,11 +66,13 @@ public:
 
     Type(){}
 
-    Type(Storage type){
-        m_type = type;
-        m_access_type = AccessType::PRIV;
-        m_mutable_type = MutableType::MUT;
-        m_assignable_type = AssignableType::UNASSIGNABLE;
+    Type(
+        Storage type,
+        AccessType access = AccessType::PRIV,
+        MutableType mut = MutableType::MUT,
+        AssignableType assignable_type = AssignableType::UNASSIGNABLE
+    ) : m_type(type), m_access_type(access), m_mutable_type(mut), m_assignable_type(assignable_type){
+      
     }
 
     std::string debug(){

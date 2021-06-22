@@ -521,6 +521,7 @@ AST* Parser::fn(ParseContext ctx){
     dbg() << "debug 2 "<<m_tokens->peek().debug()<<"\n";
     auto fn = FnAST(params, ret, body);
     fn.mangled_identifier()="test_mangled_identifier";
+    fn.lit_type()=Frost::Type(Frost::Type::Storage::FN, AccessType::PRIV, MutableType::CONST);
     return new FnAST(fn);
 
 }
