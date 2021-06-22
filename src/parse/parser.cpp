@@ -58,8 +58,9 @@ AST* Parser::statement(ParseContext ctx){
         }
         case TokenType::IDENTIFIER:{
             // this could potentially be a decl, or a variable
+            dbg() << "identifier 0\n";
             ast = identifier({});
-            dbg() << "done identifier... "<<m_tokens->peek().debug()<<"\n";
+            dbg() << "identifier 1... "<<m_tokens->peek().debug()<<"\n";
             break;
         }
         case TokenType::UNKNOWN: {
@@ -129,10 +130,6 @@ AST* Parser::forloop(ParseContext){
 // this means we have seen an identifier...
 // it could be a decl or a variable
 AST* Parser::identifier(ParseContext ctx){
-    
-
-
-
     // dealing with a decleration here!
     if(m_tokens->peek(1).type()==TokenType::COLON){
         return decl(ctx);
@@ -317,7 +314,6 @@ AST* Parser::decl(ParseContext ctx){
         initialised = true;
         initialiser=expression(ctx);
     }
-
     return new DeclAST(DeclAST::create(identifier,t.data(), initialised, initialiser));
 
 }
@@ -511,12 +507,11 @@ AST* Parser::fn(ParseContext ctx){
     AST* ret = 0;
     
     // parse the body
+    // todo this statement should actually be a expression bc a
+    // {} is an expression
+    AST* body = block(ctx);
     
-    // todo the problem here is that we shouldn't skip whitespace after statement but we do!
-    ctx.skip_whitespace()=false;
-    AST* body = statement(ctx);
-    
-    dbg() << "debug 2\n";
+    dbg() << "debug 2 "<<m_tokens->peek().debug()<<"\n";
     auto fn = FnAST(params, ret, body);
     fn.mangled_identifier()="test_mangled_identifier";
     return new FnAST(fn);
