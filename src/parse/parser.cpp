@@ -304,7 +304,6 @@ AST* Parser::decl(ParseContext ctx){
     if(!(m_tokens->expect(TokenType::NEWLINE)
     || m_tokens->expect(TokenType::SEMICOLON)
     || m_tokens->expect(TokenType::END))){
-        dbg() << "const initialised! "<<m_tokens->peek().debug()<<"\n";
         // dealing with a constant
         t.data().mut()=Frost::MutableType::CONST;
         initialised = true;
@@ -314,8 +313,13 @@ AST* Parser::decl(ParseContext ctx){
     if(m_tokens->consume(TokenType::ASSIGN).has()){
         initialised = true;
         initialiser=expression(ctx);
+        t.data().mut()=Frost::MutableType::MUT;
     }
-    return new DeclAST(DeclAST::create(identifier,t.data(), initialised, initialiser));
+    auto d = DeclAST::create(identifier, t.data(), initialised, initialiser);
+
+    if(!t.has())
+        d.requires_inference()=true;
+    return new DeclAST(d);
 
 }
 
@@ -576,7 +580,7 @@ AST* Parser::string(ParseContext){
 
 AST* Parser::num(ParseContext){
     auto& token = m_tokens->next();
-    return new LiteralAST(LiteralAST::create(token, Frost::Type(Frost::Type::Storage::U8)));
+    return new LiteralAST(LiteralAST::create(token, Frost::Type(Frost::Type::Storage::S32)));
 }
 
 }

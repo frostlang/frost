@@ -1,3 +1,5 @@
+x : 99
+
 main : fn {
-    printf("meme\n")
+    printf("x=%d\n", x)
 }
