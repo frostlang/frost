@@ -1,3 +1,1 @@
-main : const fn = (){}
-
-x : u8
+main : u8 8123

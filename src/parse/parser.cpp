@@ -247,13 +247,15 @@ Optional<Type> Parser::type(){
             dbg() << "fn!\n";
             // now parse the fn params and return type
             if(m_tokens->consume(TokenType::LPAREN).has()){
-                while(true){
-                    auto next_param = type();
-                    ASSERT(next_param.has());
-                    t.inner_types().push_back(next_param.data());
-                    if(m_tokens->consume(TokenType::RPAREN).has())
-                        break;
-                    m_tokens->consume(TokenType::COMMA);
+                if(!m_tokens->consume(TokenType::RPAREN).has()){
+                    while(true){
+                        auto next_param = type();
+                        ASSERT(next_param.has());
+                        t.inner_types().push_back(next_param.data());
+                        if(m_tokens->consume(TokenType::RPAREN).has())
+                            break;
+                        m_tokens->consume(TokenType::COMMA);
+                    }
                 }
             }
             auto return_type = type();
@@ -298,8 +300,8 @@ AST* Parser::decl(ParseContext ctx){
     u1 initialised = false;
     AST* initialiser = 0;
 
-    if(m_tokens->consume(TokenType::NEWLINE).has()
-    ||m_tokens->consume(TokenType::SEMICOLON).has()){
+    if(!(m_tokens->consume(TokenType::NEWLINE).has()
+    &&m_tokens->consume(TokenType::SEMICOLON).has())){
         dbg() << "const!\n";
         // dealing with a constant
         t.data().mut()==Frost::MutableType::CONST;
