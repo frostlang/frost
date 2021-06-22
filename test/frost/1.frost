@@ -1,11 +1,3 @@
+main : const fn = (){}
 
 x : u8
-main : const fn = (){
-    y : fn = (){
-        printf("hello y\n")
-    }
-    z : fn = (){
-        printf("hello z\n")
-    }
-    y()
-}

@@ -3,12 +3,15 @@
 namespace Frost::Parse{
 
 const char* token_debug[]={
+    "END",
     "UNKNOWN",
     "UNDERSCORE",
     "IDENTIFIER",
 
     "STRING",
     "MULTILINE_STRING",
+
+    "NEWLINE",
 
     "ASM",
 

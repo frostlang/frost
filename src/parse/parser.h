@@ -38,7 +38,11 @@ public:
     Frost::Type& expecting_type(){
         return m_expecting_type;
     }
+    u1& skip_whitespace(){
+        return m_skip_whitespace;
+    }
 private:
+    u1 m_skip_whitespace = true;
     Scope m_scope;
     Frost::Type m_expecting_type; // used for type inference
 };
@@ -59,6 +63,7 @@ public:
 
     Optional<Type> type();
     u1 expecting_expr();
+    void skip_whitespace();
     AST* parse();
     AST* statement(ParseContext);
     AST* ret(ParseContext);

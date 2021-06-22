@@ -33,8 +33,9 @@ Optional<Type> Analyser::visit(AST* ast, AnalysisCtx ctx){
 }
 
 Optional<Type> Analyser::visit(ProgramAST* program_ast, AnalysisCtx ctx){
-    for(auto& statement : program_ast->statements())
+    for(auto& statement : program_ast->statements()){
         visit(statement, ctx);
+    }
     return Optional<Type>();
 }
 Optional<Type> Analyser::visit(BlockAST* ast, AnalysisCtx ctx){

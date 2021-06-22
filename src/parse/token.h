@@ -10,12 +10,15 @@
 namespace Frost::Parse{
 
 enum class TokenType : u8 {
+    END,
     UNKNOWN,
     UNDERSCORE,
     IDENTIFIER,
 
     STRING,
     MULTILINE_STRING,
+
+    NEWLINE,
 
     ASM,
 

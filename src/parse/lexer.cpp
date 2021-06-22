@@ -16,7 +16,7 @@ void Lexer::skip_whitespace(){
     char c;
     while(true){
         c = peek();
-        if(c==' '||c=='\t'||c=='\n'||c=='\r')
+        if(c==' '||c=='\t')//||c=='\n'||c=='\r')
             next();
         else
             return;
@@ -28,6 +28,8 @@ TokenStream& Lexer::lex(){
         skip_whitespace();
         char c = peek();
         switch(c){
+            case '\n':
+            case '\r': m_tokens.push(Token::create(TokenType::NEWLINE)); next(); break;
             case '{': m_tokens.push(Token::create(TokenType::LCURLY)); next(); break;
             case '}': m_tokens.push(Token::create(TokenType::RCURLY)); next(); break;
             case '(': m_tokens.push(Token::create(TokenType::LPAREN)); next(); break;
@@ -115,6 +117,7 @@ TokenStream& Lexer::lex(){
         }
 
     }
+    m_tokens.push(Token::create(TokenType::END));
     return m_tokens;
 }
 

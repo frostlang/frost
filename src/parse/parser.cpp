@@ -5,16 +5,16 @@
 
 namespace Frost::Parse{
 
+void Parser::skip_whitespace(){
+    while(m_tokens->consume(TokenType::NEWLINE).has()){}
+}
 
 AST* Parser::parse(){
     try {
         std::vector<AST*> statements;
 
-        // TODO
-        // for some reason we only parse once...
-        while(!m_tokens->end()){
-            statements.push_back(statement({}));
-        }
+        //while(!m_tokens->consume(TokenType::END).has()){
+        while(!m_tokens->end()) statements.push_back(statement({}));
         
         return new ProgramAST(ProgramAST::create(statements));
     
@@ -27,37 +27,55 @@ AST* Parser::parse(){
 }
 
 AST* Parser::statement(ParseContext ctx){
+    // skip newlines
+    skip_whitespace();
+    AST* ast = 0;
     switch(m_tokens->peek().type()){
         case TokenType::BREAK:{
-            return brk(ctx);
+            ast = brk(ctx);
+            break;
         }
         case TokenType::CONTINUE:{
-            return ctn(ctx);
+            ast = ctn(ctx);
+            break;
         }
         case TokenType::RETURN:{
-            return ret(ctx);
+            ast = ret(ctx);
+            break;
         }
         case TokenType::FOR:{
-            return forloop({});
+            ast = forloop({});
+            break;
         }
         case TokenType::IF:{
-            return ifstmt({});
+            ast = ifstmt({});
+            break;
         }
         case TokenType::LCURLY: {
-            return block({});
+            ast = block({});
             break;
         }
         case TokenType::IDENTIFIER:{
             // this could potentially be a decl, or a variable
-            return identifier({});
+            ast = identifier({});
+            break;
         }
         case TokenType::UNKNOWN: {
             dbg() << "unknown token type whils't parsing!\n";
+            return new ErrorAST(ErrorAST::create());
+        }
+        default: {
+            ast = expression_stmt({});
             break;
         }
-        default: return expression_stmt({});
     }
-    return new ErrorAST(ErrorAST::create());
+    if(ctx.skip_whitespace()){
+        if(!(m_tokens->consume(TokenType::NEWLINE).has() || m_tokens->consume(TokenType::END).has())){
+            dbg() << "um expecting newline but got "<<m_tokens->peek().debug()<<"\n";
+            return new ErrorAST(ErrorAST::create());
+        }
+    }
+    return ast;
 }
 
 
@@ -279,6 +297,16 @@ AST* Parser::decl(ParseContext ctx){
 
     u1 initialised = false;
     AST* initialiser = 0;
+
+    if(m_tokens->consume(TokenType::NEWLINE).has()
+    ||m_tokens->consume(TokenType::SEMICOLON).has()){
+        dbg() << "const!\n";
+        // dealing with a constant
+        t.data().mut()==Frost::MutableType::CONST;
+        initialised = true;
+        initialiser = expression(ctx);
+    }
+
     if(m_tokens->consume(TokenType::ASSIGN).has()){
         initialised = true;
         initialiser=expression(ctx);
@@ -437,14 +465,11 @@ AST* Parser::block(ParseContext ctx){
 
     if(!m_tokens->consume(TokenType::LCURLY).has())
         panic("expected { for opening block expression");
-    
     while(!m_tokens->expect(TokenType::RCURLY)){
-        statements.push_back(statement({}));
+        //statements.push_back(statement({}));
     }
-
     if(!m_tokens->consume(TokenType::RCURLY).has())
         panic("expected } for closing block expression");
-
     return new BlockAST(BlockAST::create(statements));
 }
 
@@ -475,6 +500,9 @@ AST* Parser::fn(ParseContext ctx){
     AST* ret = 0;
     
     // parse the body
+    
+    // todo the problem here is that we shouldn't skip whitespace after statement but we do!
+    ctx.skip_whitespace()=false;
     AST* body = statement(ctx);
 
     auto fn = FnAST(params, ret, body);
