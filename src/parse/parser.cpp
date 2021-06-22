@@ -171,7 +171,7 @@ Optional<Type> Parser::type(){
         ||m_tokens->expect(TokenType::PRIV)
         ||m_tokens->expect(TokenType::MUT)
         ||m_tokens->expect(TokenType::CONST)
-        ||m_tokens->expect(TokenType::LBRACKET)
+        //||m_tokens->expect(TokenType::LBRACKET)
         ||m_tokens->expect(TokenType::ARROW)
         ||m_tokens->expect(TokenType::LPAREN)
         ||m_tokens->expect(TokenType::FN)
@@ -193,7 +193,7 @@ Optional<Type> Parser::type(){
     }
 
     // tuple :)
-    if(m_tokens->consume(TokenType::LPAREN).has()){
+    /*if(m_tokens->consume(TokenType::LPAREN).has()){
         while(!m_tokens->consume(TokenType::RPAREN).has()){
             auto inner = type();
             if(inner.has())
@@ -201,7 +201,7 @@ Optional<Type> Parser::type(){
             else
                 dbg() << "um... this is an error?\n";
         }
-    }
+    }*/
 
     // array
     if(m_tokens->consume(TokenType::LBRACKET).has()){
@@ -304,8 +304,9 @@ AST* Parser::decl(ParseContext ctx){
     if(!(m_tokens->expect(TokenType::NEWLINE)
     || m_tokens->expect(TokenType::SEMICOLON)
     || m_tokens->expect(TokenType::END))){
+        dbg() << "const initialised! "<<m_tokens->peek().debug()<<"\n";
         // dealing with a constant
-        t.data().mut()==Frost::MutableType::CONST;
+        t.data().mut()=Frost::MutableType::CONST;
         initialised = true;
         initialiser = expression(ctx);
     }
@@ -486,19 +487,21 @@ AST* Parser::block(ParseContext ctx){
 // () u32 {}
 // u32 {}
 AST* Parser::fn(ParseContext ctx){
+    dbg()<<"doing function:)\n";
     std::vector<AST*> params;
 
     dbg() << "debug 0\n";
-    m_tokens->consume(TokenType::LPAREN);
-    if(!m_tokens->consume(TokenType::RPAREN).has()){
-        while(true){
-            auto next_param = decl(ctx);
-            params.push_back(next_param);
-            if(m_tokens->consume(TokenType::RPAREN).has())
-                break;
-            m_tokens->consume(TokenType::COMMA);
+    if(m_tokens->consume(TokenType::LPAREN).has()){
+        if(!m_tokens->consume(TokenType::RPAREN).has()){
+            while(true){
+                auto next_param = decl(ctx);
+                params.push_back(next_param);
+                if(m_tokens->consume(TokenType::RPAREN).has())
+                    break;
+                m_tokens->consume(TokenType::COMMA);
+            }
+            m_tokens->consume(TokenType::RPAREN);
         }
-        m_tokens->consume(TokenType::RPAREN);
     }
     dbg() << "debug 1\n";
     // at this point we may be expecting a return type
@@ -520,6 +523,7 @@ AST* Parser::fn(ParseContext ctx){
 
 AST* Parser::single(ParseContext ctx){
     switch(m_tokens->peek().type()){
+        case TokenType::LCURLY: return fn(ctx);
         case TokenType::LPAREN: return group(ctx);
         case TokenType::IDENTIFIER: return var({});
         case TokenType::NUMBER: return num({});
