@@ -76,8 +76,10 @@ AST* Parser::statement(ParseContext ctx){
         return ast;
     }
     if(ctx.skip_whitespace()){
-        if(!(m_tokens->consume(TokenType::NEWLINE).has())){
-            dbg() << "um expecting newline but got "<<m_tokens->peek().debug()<<"\n";
+        if(!(
+            m_tokens->consume(TokenType::NEWLINE).has()
+            || m_tokens->consume(TokenType::SEMICOLON).has())){
+            dbg() << "um expecting newline or ; but got "<<m_tokens->peek().debug()<<"\n";
             return new ErrorAST(ErrorAST::create());
         }
     }
@@ -476,20 +478,22 @@ AST* Parser::get(ParseContext ctx){
 }
 
 AST* Parser::block(ParseContext ctx){
-    dbg() << "block 0\n";
     std::vector<AST*> statements;
-
-    if(!m_tokens->consume(TokenType::LCURLY).has())
-        panic("expected { for opening block expression");
-    // todo this is bad
+    m_tokens->consume(TokenType::LCURLY);
     //skip_whitespace();
-    dbg() << "block 1\n";
     ctx.skip_whitespace()=true;
+    // WORKS
+    //   printf
+    //   \n
+    //   \n
+    //   RCURLY
+    // BREAKS
+    //   printf
+    //   \n
+    //   RCURLY
     while(!m_tokens->consume(TokenType::RCURLY).has()){
         statements.push_back(statement(ctx));
-        dbg() << "um... " << m_tokens->peek().debug() << "\n";
     }
-    dbg() << "block 2 "<<m_tokens->peek().debug()<<"\n";
     return new BlockAST(BlockAST::create(statements));
 }
 

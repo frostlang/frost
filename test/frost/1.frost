@@ -1,23 +1,6 @@
-x : 99
-
-
-
-vec : type struct {
-    x : u32
-    y : u32
-    z : u32
-}
-
 
 main : {
-    x=1+3*3
-    printf("x=%d\n", x)
+x : u32
 
-    v : vec
-    v.x = 99
-
-    printf("v.x=%d\n", v.x) 
-
-
-    s : [_]u32
+printf(":)\n")
 }

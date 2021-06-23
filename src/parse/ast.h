@@ -584,6 +584,8 @@ private:
     Frost::Type m_lit_type;
 };
 
+class InitialiserListAST : public AST {};
+
 class StructAST : public AST {
 public:
 
