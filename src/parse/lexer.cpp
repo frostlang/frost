@@ -30,12 +30,13 @@ TokenStream& Lexer::lex(){
         switch(c){
             case '\n':
             case '\r': m_tokens.push(Token::create(TokenType::NEWLINE)); next(); break;
+            case '_': m_tokens.push(Token::create(TokenType::UNDERSCORE)); next(); break;
             case '{': m_tokens.push(Token::create(TokenType::LCURLY)); next(); break;
             case '}': m_tokens.push(Token::create(TokenType::RCURLY)); next(); break;
             case '(': m_tokens.push(Token::create(TokenType::LPAREN)); next(); break;
             case ')': m_tokens.push(Token::create(TokenType::RPAREN)); next(); break;
-            case ']': m_tokens.push(Token::create(TokenType::LBRACKET)); next(); break;
-            case '[': m_tokens.push(Token::create(TokenType::RBRACKET)); next(); break;
+            case '[': m_tokens.push(Token::create(TokenType::LBRACKET)); next(); break;
+            case ']': m_tokens.push(Token::create(TokenType::RBRACKET)); next(); break;
             case '|': m_tokens.push(Token::create(TokenType::BOR)); next(); break;
             case '"': string(); break;
             case '\'': m_tokens.push(Token::create(TokenType::APOSTROPHE)); next(); break;

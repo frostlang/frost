@@ -171,7 +171,7 @@ Optional<Type> Parser::type(){
         ||m_tokens->expect(TokenType::PRIV)
         ||m_tokens->expect(TokenType::MUT)
         ||m_tokens->expect(TokenType::CONST)
-        //||m_tokens->expect(TokenType::LBRACKET)
+        ||m_tokens->expect(TokenType::LBRACKET)
         ||m_tokens->expect(TokenType::ARROW)
         ||m_tokens->expect(TokenType::LPAREN)
         ||m_tokens->expect(TokenType::FN)
@@ -205,18 +205,27 @@ Optional<Type> Parser::type(){
 
     // array
     if(m_tokens->consume(TokenType::LBRACKET).has()){
-        if(m_tokens->consume(TokenType::RBRACKET).has()){
+        if(m_tokens->consume(TokenType::UNDERSCORE).has()){
+            dbg()<<"slice!\n";
+            m_tokens->consume(TokenType::RBRACKET);
             t.set_type(Type::Storage::SLICE);
             auto inner = type();
             if(inner.has())
                 t.inner_types().push_back(inner.data());  
             else
                 dbg() << "um... this is an error?\n";
+            return t;
         }else{
             // sized array
             auto size = m_tokens->consume(TokenType::NUMBER);
             t.set_type(Type::Storage::ARRAY);
             m_tokens->consume(TokenType::RBRACKET);
+            auto inner = type();
+            if(inner.has())
+                t.inner_types().push_back(inner.data());  
+            else
+                dbg() << "um... this is an error?\n";
+            return t;
         }
     }
 

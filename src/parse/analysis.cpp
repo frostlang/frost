@@ -45,8 +45,8 @@ Optional<Type> Analyser::visit(BlockAST* ast, AnalysisCtx ctx){
 }
 
 Optional<Type> Analyser::visit(DeclAST* decl_ast, AnalysisCtx ctx){
+
     if(decl_ast->requires_inference()){
-        dbg() << "infering type...\n";
         auto rhs = visit(decl_ast->value(), ctx);
         ASSERT(rhs.has());
         decl_ast->lit_type()=rhs.data();
@@ -115,7 +115,7 @@ Optional<Type> Analyser::visit(DeclAST* decl_ast, AnalysisCtx ctx){
     if(decl_ast->initialised())
         visit(decl_ast->value(), ctx);
     
-
+    
     return Optional<Type>();
 }
 

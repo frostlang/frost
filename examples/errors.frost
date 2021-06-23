@@ -1,0 +1,14 @@
+
+//
+// the @Err resolver is a generic for an error type
+//
+
+
+dangerous : pub fn (some_data : f32) @Err(u1) {
+    if some_data > 99 {
+        ret error(":(")
+    }
+    ret true
+}
+
+dangerous(100) catch e println(e) 

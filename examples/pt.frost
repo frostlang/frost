@@ -1,0 +1,99 @@
+/*
+James Clarke 2021
+Simple path-tracer in frost
+*/
+
+os : import("std/os")
+concurrent : import("std/concurrent")
+import("std/io")
+
+Colour : type struct {
+    r, g, b, a : u32
+}
+
+Pixel : type = Colour
+
+BLACK : Pixel{0,0,0,0}
+RED : Pixel{255,0,0,255}
+BLUE : Pixel{0,255,0,255}
+GREEN : Pixel{0,0,255,255}
+
+Pos : type struct {
+    x, y, z : f32
+}
+
+
+Obj : type interface {
+    hit : (this, p : Pos) (u1, Colour)
+}
+
+Point : type stuct {
+    p : Pos
+}
+
+Point.hit (this, p : Pos) (u1, Colour) {
+    RED if this.p == p else BLACK
+}
+
+
+Buffer : type struct {
+    w, h : u32
+    pixels : [_]Pixel
+}
+
+PT : type struct {
+    buf : Buffer
+    objs : [_]^Obj
+    @bind threads : concurrent.ThreadGroup = concurrent.ThreadGroup(10000000)
+}
+
+PT.run : (this) {
+
+    trace : (x, y : u32){
+
+        set_pixel : (p : Pixel){
+            this.buf.pixels[x+y*height] = p
+        }
+
+        p : Pos = {x,x,0}
+
+        MAX_STEPS : 1000
+        STEP_DT : .0001
+        
+        for MAX_STEPS {
+            p.z += STEP_DT
+            for o .. this.objs {
+                if hit := o.hit(p)[1]{
+                    set_pixel(hit[0])
+                    ret
+                }
+            }
+        }
+
+    }
+
+    for x ..this.buf.w {
+        for y ..this.buf.h {
+            this.threads.job(trace(x, y)) catch e println("{}", e)
+        }
+    }
+}
+
+main : {
+    
+    pt : PT
+
+    pt.buf.w, pt.buf.h = os.args[0].str, os.args[1].str()
+    pt.buf.pixels = slice(width*height)
+    
+    test_point : Point = {{50,50,50}}
+    pt.objs.push(&test_point)
+
+    pt.run()
+}
+
+build : {
+    import("std/build")
+    b : Builder
+    b.exec("path_tracer")
+}

@@ -1,0 +1,14 @@
+
+
+
+
+
+
+f : (v : any) @Err(any) {
+    @ensure(v, {s32})
+}
+
+// ok
+f(s32)
+// not ok
+f(struct{})

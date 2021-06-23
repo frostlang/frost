@@ -30,6 +30,8 @@ namespace Frost::Gen::C{
                 return "uint32_t";
             case Type::Storage::S32:
                 return "int32_t";
+            case Type::Storage::SLICE:
+                return "struct slice";
         }
         return "unknown";
     }
@@ -38,6 +40,8 @@ namespace Frost::Gen::C{
     void CASTGen::gen(){
         BuildContext ctx = {};
         ctx.emit("#include <stdio.h>\n#include <stdint.h>\n#include <stdlib.h>\n");
+        ctx.emit("struct type{\nconst char* identifier;\nuint32_t size;\n};\n");
+        ctx.emit("struct slice{\nvoid* data;\nuint32_t size;\nstruct type type;\n};\n");
         //ctx.emit("struct type {\nconst char* name;\n};\n");
         //ctx.emit("struct type vec_type = {\"vec\"};\n");
         visit(m_ast, ctx);
@@ -145,9 +149,9 @@ namespace Frost::Gen::C{
     }
 
     Optional<std::string> CASTGen::visit(Parse::DeclAST* ast, BuildContext& ctx){
-        
-        // todo this should be done by the parser...
-        ast->lit_type().token()=ast->token().value();
+
+        // todo im not sure why i put the below in... but may need it later?        
+        //ast->lit_type().token()=ast->token().value();
 
 
         if(
@@ -282,7 +286,6 @@ namespace Frost::Gen::C{
         if(ast->fn_type()==Parse::FnAST::FnType::CONST_FN){
             ctx.new_block();
         }else if (ast->fn_type()==Parse::FnAST::FnType::LAMBDA){
-            dbg() << "before main..."<<(s32)active<<"\n";
             ctx.insert_block(-1);
             active++; // todo this is nasty as we have to keep track of this offset
         }
